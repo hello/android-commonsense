@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 // Used for both the 'aar' file and publish.
-def VERSION_NAME = "0.1.0"
+def VERSION_NAME = "0.1.0-SNAPSHOT"
 def PACKAGE = 'is.hello.commonsense'
 
 apply plugin: 'com.android.library'
@@ -76,7 +76,7 @@ publishing {
         publications {
             mavenJava(MavenPublication) {
                 groupId = PACKAGE
-                artifactId = 'core'
+                artifactId = 'ble'
                 version = VERSION_NAME
 
                 artifact(sourceJar)
