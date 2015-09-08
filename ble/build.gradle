@@ -1,0 +1,114 @@
+import java.text.SimpleDateFormat
+
+// Used for both the 'aar' file and publish.
+def VERSION_NAME = "0.1.0"
+def PACKAGE = 'is.hello.commonsense'
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+def generateVersionCode() {
+    def now = new Date()
+    def formatter = new SimpleDateFormat("yyMMddHH")
+    Integer.parseInt(formatter.format(now))
+}
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 22
+        versionCode generateVersionCode()
+        versionName VERSION_NAME
+
+        testApplicationId "${PACKAGE}.tests"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile 'io.reactivex:rxjava:1.0.9'
+    compile 'is.hello.buruberi:core:0.1.0'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    testCompile "org.robolectric:robolectric:3.0"
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+}
+
+// See README.md for deploy instructions.
+//
+// Based on information from the following sources:
+// <http://mike-neck.github.io/blog/2013/06/21/how-to-publish-artifacts-with-gradle-maven-publish-plugin-version-1-dot-6>
+// <http://stackoverflow.com/questions/26874498/maven-publish-android-library-with-aar-and-source-jar>
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "source"
+}
+
+publishing {
+    repositories {
+        maven {
+            if (VERSION_NAME.endsWith('-SNAPSHOT')) {
+                url "s3://hello-maven/snapshot"
+            } else {
+                url "s3://hello-maven/release"
+            }
+            credentials(AwsCredentials) {
+                accessKey helloAwsAccessKeyID
+                secretKey helloAwsSecretKey
+            }
+        }
+
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = PACKAGE
+                artifactId = 'core'
+                version = VERSION_NAME
+
+                artifact(sourceJar)
+                artifact("${project.buildDir}/outputs/aar/${project.name}-release.aar")
+
+                // The publication doesn't know about our dependencies,
+                // so we have to manually add them to the pom
+                pom.withXml {
+                    asNode().children().last() + {
+                        resolveStrategy = DELEGATE_FIRST
+                        name 'android-commonsense'
+                        description 'Client classes for Sense.'
+                        url 'https://github.com/hello/buruberi'
+                        scm {
+                            url 'https://github.com/hello/android-commonsense'
+                            connection 'scm:git:git@github.com:hello/android-commonsense.git'
+                            developerConnection 'scm:git:git@github.com:hello/android-commonsense.git'
+                        }
+                    }
+
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    configurations.compile.allDependencies.each {
+                        // Skip the libs rule
+                        if(it.group != null) {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
