@@ -4,11 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
-import is.hello.buruberi.bluetooth.errors.PeripheralBondAlterationError;
+import is.hello.buruberi.bluetooth.errors.BondException;
+import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.commonsense.R;
 
 import static junit.framework.Assert.assertEquals;
@@ -25,14 +24,14 @@ public class ErrorsTests extends CommonSenseTestCase {
     public void getType() throws Exception {
         assertEquals("java.lang.Throwable", Errors.getType(new Throwable()));
         assertEquals("java.lang.RuntimeException", Errors.getType(new RuntimeException()));
-        assertEquals("is.hello.buruberi.bluetooth.errors.BluetoothError", Errors.getType(new BluetoothError("test")));
+        assertEquals("is.hello.buruberi.bluetooth.errors.BuruberiException", Errors.getType(new BuruberiException("test")));
         assertNull(Errors.getType(null));
     }
 
     @Test
     public void getContextInfo() throws Exception {
         assertNull(Errors.getContextInfo(new Throwable()));
-        PeripheralBondAlterationError error = new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_REMOVED);
+        BondException error = new BondException(BondException.REASON_REMOVED);
         assertEquals("REASON_REMOVED", Errors.getContextInfo(error));
     }
 
@@ -46,7 +45,7 @@ public class ErrorsTests extends CommonSenseTestCase {
         assertNotNull(throwableMessage);
         assertEquals("test", throwableMessage.resolve(context));
 
-        PeripheralBondAlterationError error = new PeripheralBondAlterationError(PeripheralBondAlterationError.REASON_REMOTE_DEVICE_DOWN);
+        BondException error = new BondException(BondException.REASON_REMOTE_DEVICE_DOWN);
         StringRef errorMessage = Errors.getDisplayMessage(error);
         assertNotNull(errorMessage);
         assertEquals(context.getString(R.string.error_bluetooth_out_of_range), errorMessage.resolve(context));

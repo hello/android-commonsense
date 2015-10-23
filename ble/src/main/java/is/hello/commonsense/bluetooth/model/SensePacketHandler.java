@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothConnectionLostError;
+import is.hello.buruberi.bluetooth.errors.LostConnectionException;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.errors.SenseProtobufError;
@@ -309,7 +309,7 @@ public class SensePacketHandler implements GattPeripheral.PacketHandler {
          */
         void onTransportDisconnected() {
             cleanUp();
-            dispatchError(new BluetoothConnectionLostError());
+            dispatchError(new LostConnectionException());
         }
 
         //endregion

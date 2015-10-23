@@ -15,10 +15,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothConnectionLostError;
-import is.hello.buruberi.bluetooth.errors.OperationTimeoutError;
-import is.hello.buruberi.bluetooth.errors.PeripheralBusyError;
-import is.hello.buruberi.bluetooth.errors.PeripheralNotFoundError;
+import is.hello.buruberi.bluetooth.errors.LostConnectionException;
+import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.OperationTimeout;
@@ -28,7 +26,9 @@ import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
 import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
+import is.hello.commonsense.bluetooth.errors.SenseBusyError;
 import is.hello.commonsense.bluetooth.errors.SenseConnectWifiError;
+import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
 import is.hello.commonsense.bluetooth.errors.SenseUnexpectedResponseError;
@@ -119,7 +119,7 @@ public class SensePeripheral {
             @Override
             public Observable<? extends SensePeripheral> call(List<SensePeripheral> peripherals) {
                 if (peripherals.isEmpty()) {
-                    return Observable.error(new PeripheralNotFoundError());
+                    return Observable.error(new SenseNotFoundError());
                 } else {
                     return Observable.just(peripherals.get(0));
                 }
@@ -339,7 +339,7 @@ public class SensePeripheral {
                 responseHandler.configure(subscriber, timeout);
 
                 if (isBusy()) {
-                    responseHandler.onError(new PeripheralBusyError());
+                    responseHandler.onError(new SenseBusyError());
                     return;
                 }
 
@@ -384,7 +384,7 @@ public class SensePeripheral {
                             public void onError(final Throwable error) {
                                 timeout.unschedule();
 
-                                if (error instanceof BluetoothConnectionLostError || !isConnected()) {
+                                if (error instanceof LostConnectionException || !isConnected()) {
                                     onError.call(error);
                                 } else {
                                     Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
@@ -487,7 +487,7 @@ public class SensePeripheral {
 
             @Override
             void onError(Throwable e) {
-                if (e instanceof BluetoothConnectionLostError) {
+                if (e instanceof LostConnectionException) {
                     packetHandler.setResponseListener(null);
 
                     subscriber.onNext(command);
@@ -546,7 +546,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "putIntoNormalMode()");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -562,7 +562,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "putIntoPairingMode()");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -580,7 +580,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "connectToWiFiNetwork(" + ssid + ")");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         if (securityType != wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_OPEN &&
@@ -726,7 +726,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "getWifiNetwork()");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -748,7 +748,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "pairPill(" + accountToken + ")");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -770,7 +770,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "linkAccount(" + accountToken + ")");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -787,7 +787,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "factoryReset()");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -803,7 +803,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "pushData()");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -819,7 +819,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "runLedAnimation(" + animationType + ")");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
@@ -835,7 +835,7 @@ public class SensePeripheral {
         logger.info(GattPeripheral.LOG_TAG, "scanForWifiNetworks()");
 
         if (isBusy()) {
-            return Observable.error(new PeripheralBusyError());
+            return Observable.error(new SenseBusyError());
         }
 
         final MorpheusCommand command = MorpheusCommand.newBuilder()
@@ -929,7 +929,7 @@ public class SensePeripheral {
 
         void propagateResponseError(@NonNull MorpheusCommand response, @Nullable Throwable nestedCause) {
             if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
-                subscriber.onError(new OperationTimeoutError(OperationTimeoutError.Operation.COMMAND_RESPONSE));
+                subscriber.onError(new OperationTimeoutException(OperationTimeoutException.Operation.COMMAND_RESPONSE));
             } else {
                 subscriber.onError(new SensePeripheralError(response.getError(), nestedCause));
             }
