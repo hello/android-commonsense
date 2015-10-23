@@ -39,7 +39,7 @@ android {
 
 dependencies {
     compile 'io.reactivex:rxjava:1.0.9'
-    compile 'is.hello.buruberi:core:0.3.2'
+    compile 'com.android.support:support-v4:23.0.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 

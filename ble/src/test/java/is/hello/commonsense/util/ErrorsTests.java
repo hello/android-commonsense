@@ -53,34 +53,33 @@ public class ErrorsTests extends CommonSenseTestCase {
 
     @Test
     public void registry() {
-        final IllegalStateException exception = new IllegalStateException();
-        assertThat(Errors.getReporting(exception), is(nullValue()));
-
-        Errors.registerReportingImplementation(IllegalStateException.class,
-                                               new IllegalStateReporting());
+        Errors.registerReportingProvider(IllegalStateException.class,
+                                         new IllegalStateReportingProvider());
 
         try {
-            assertThat(Errors.getReporting(exception), is(notNullValue()));
+            final IllegalStateException exception = new IllegalStateException();
             assertThat(Errors.getContextInfo(exception), is(equalTo("hello, world")));
             //noinspection ConstantConditions
             assertThat(Errors.getDisplayMessage(exception).resolve(getContext()),
                        is(equalTo("Something went terribly wrong!")));
         } finally {
-            Errors.REPORTING_REGISTRY.remove(IllegalStateException.class);
+            Errors.PROVIDERS.remove(IllegalStateException.class);
         }
     }
 
 
-    static class IllegalStateReporting implements Errors.Reporting {
+    static class IllegalStateReportingProvider implements Errors.ReportingProvider {
         @Nullable
         @Override
-        public String getContextInfo() {
+        public String getContextInfo(@NonNull Throwable e) {
+            assertThat(e, is(notNullValue()));
             return "hello, world";
         }
 
         @NonNull
         @Override
-        public StringRef getDisplayMessage() {
+        public StringRef getDisplayMessage(@NonNull Throwable e) {
+            assertThat(e, is(notNullValue()));
             return StringRef.from("Something went terribly wrong!");
         }
     }

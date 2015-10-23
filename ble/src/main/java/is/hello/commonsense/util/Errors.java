@@ -23,12 +23,15 @@ public class Errors {
      * @see Reporting#getContextInfo()
      */
     public static @Nullable String getContextInfo(@Nullable Throwable e) {
-        final Reporting reporting = getReporting(e);
-        if (reporting != null) {
-            return reporting.getContextInfo();
-        } else {
-            return null;
+        if (e instanceof Reporting) {
+            return ((Reporting) e).getContextInfo();
+        } else if (e != null) {
+            final ReportingProvider reporting = PROVIDERS.get(e.getClass());
+            if (reporting != null) {
+                return reporting.getContextInfo(e);
+            }
         }
+        return null;
     }
 
     /**
@@ -37,10 +40,14 @@ public class Errors {
      * @see Reporting#getDisplayMessage()
      */
     public static @Nullable StringRef getDisplayMessage(@Nullable Throwable e) {
-        final Reporting reporting = getReporting(e);
-        if (reporting != null) {
-            return reporting.getDisplayMessage();
+        if (e instanceof Reporting) {
+            return ((Reporting) e).getDisplayMessage();
         } else if (e != null) {
+            final ReportingProvider reporting = PROVIDERS.get(e.getClass());
+            if (reporting != null) {
+                return reporting.getDisplayMessage(e);
+            }
+
             String messageString = e.getMessage();
             if (messageString != null) {
                 return StringRef.from(messageString);
@@ -68,40 +75,35 @@ public class Errors {
     }
 
     /**
-     * Stores non-inlined implementations of reporting.
+     * An external implementation of {@link Reporting}.
      */
-    @VisibleForTesting
-    static final SimpleArrayMap<Class<?>, Reporting> REPORTING_REGISTRY = new SimpleArrayMap<>();
+    public interface ReportingProvider {
+        /**
+         * Returns the context of an error. Meaning and form
+         * depends on error, provided as a means of disambiguation.
+         */
+        @Nullable String getContextInfo(@NonNull Throwable e);
 
-    /**
-     * Registers an implementation of {@link Reporting} for a given class.
-     * @param clazz The class to register for.
-     * @param implementation The implementation.
-     */
-    public static void registerReportingImplementation(@NonNull Class<?> clazz,
-                                                       @NonNull Reporting implementation) {
-        REPORTING_REGISTRY.put(clazz, implementation);
+        /**
+         * Returns the localized message representing the
+         * error's cause, and its potential resolution.
+         */
+        @NonNull StringRef getDisplayMessage(@NonNull Throwable e);
     }
 
     /**
-     * Searches for an implementation of {@link Reporting} for a given {@code Throwable}.
-     * <p>
-     * First checks if the {@code Throwable} itself implements {@code Reporting},
-     * then checks the reporting registry for a viable implementation.
-     *
-     * @param e The throwable to find a reporting implementation for.
-     * @return  The reporting implementation for the throwable, if any.
-     *
-     * @see Errors#getContextInfo(Throwable)
-     * @see Errors#getDisplayMessage(Throwable)
+     * Stores non-inlined implementations of reporting.
      */
-    public static @Nullable Reporting getReporting(@Nullable Throwable e) {
-        if (e == null) {
-            return null;
-        } else if (e instanceof Reporting) {
-            return (Reporting) e;
-        } else {
-            return REPORTING_REGISTRY.get(e.getClass());
-        }
+    @VisibleForTesting
+    static final SimpleArrayMap<Class<?>, ReportingProvider> PROVIDERS = new SimpleArrayMap<>();
+
+    /**
+     * Registers an provider of {@link Reporting} for a given class.
+     * @param clazz The class to register for.
+     * @param provider The provider.
+     */
+    public static void registerReportingProvider(@NonNull Class<?> clazz,
+                                                 @NonNull ReportingProvider provider) {
+        PROVIDERS.put(clazz, provider);
     }
 }
