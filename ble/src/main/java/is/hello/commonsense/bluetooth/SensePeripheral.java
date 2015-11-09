@@ -73,7 +73,6 @@ public class SensePeripheral {
 
     //endregion
 
-
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long REMOVE_BOND_TIMEOUT_S = 15;
     private static final long SIMPLE_COMMAND_TIMEOUT_S = 45;
@@ -576,7 +575,8 @@ public class SensePeripheral {
 
     public Observable<SenseConnectToWiFiUpdate> connectToWiFiNetwork(@NonNull String ssid,
                                                                      @NonNull wifi_endpoint.sec_type securityType,
-                                                                     @Nullable String password) {
+                                                                     @Nullable String password,
+                                                                     @NonNull String countryCode) {
         logger.info(GattPeripheral.LOG_TAG, "connectToWiFiNetwork(" + ssid + ")");
 
         if (isBusy()) {
@@ -594,6 +594,7 @@ public class SensePeripheral {
                                                          .setVersion(version)
                                                          .setAppVersion(APP_VERSION)
                                                          .setWifiSSID(ssid)
+                                                         .setCountryCode(countryCode)
                                                          .setSecurityType(securityType);
         if (version == COMMAND_VERSION_PVT && securityType == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             byte[] keyBytes = Bytes.tryFromString(password);
@@ -913,7 +914,11 @@ public class SensePeripheral {
     }
 
     //endregion
-
+    public static class CountryCodes {
+        public static final String US = "US";
+        public static final String EU = "EU";
+        public static final String JP = "JP";
+    }
 
     private abstract class ResponseHandler<T> implements Action1<Throwable> {
         Subscriber<? super T> subscriber;
