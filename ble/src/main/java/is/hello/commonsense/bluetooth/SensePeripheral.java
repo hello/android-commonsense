@@ -581,7 +581,7 @@ public class SensePeripheral {
     public Observable<SenseConnectToWiFiUpdate> connectToWiFiNetwork(@NonNull String ssid,
                                                                      @NonNull wifi_endpoint.sec_type securityType,
                                                                      @Nullable String password,
-                                                                     @NonNull CountryCodes countryCode) {
+                                                                     @Nullable CountryCodes countryCode) {
         logger.info(GattPeripheral.LOG_TAG, "connectToWiFiNetwork(" + ssid + ")");
 
         if (isBusy()) {
@@ -599,8 +599,11 @@ public class SensePeripheral {
                                                          .setVersion(version)
                                                          .setAppVersion(APP_VERSION)
                                                          .setWifiSSID(ssid)
-                                                         .setCountryCode(countryCode.toString())
                                                          .setSecurityType(securityType);
+        if (countryCode != null){
+            builder.setCountryCode(countryCode.toString());
+        }
+
         if (version == COMMAND_VERSION_PVT && securityType == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             byte[] keyBytes = Bytes.tryFromString(password);
             if (keyBytes == null) {
