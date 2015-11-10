@@ -11,7 +11,7 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_con
 /**
  * Encapsulates status updates from
  * {@link SensePeripheral#connectToWiFiNetwork(String,
- * SenseCommandProtos.wifi_endpoint.sec_type, String, String)}.
+ * SenseCommandProtos.wifi_endpoint.sec_type, String, SensePeripheral.CountryCodes)}.
  * Intended to be used to implement Analytic tracking for
  * WiFi connections on Sense.
  */

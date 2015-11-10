@@ -71,6 +71,11 @@ public class SensePeripheral {
      */
     public static final int COMMAND_VERSION_WEP_FIX = 1;
 
+    public static enum CountryCodes{
+        EU,
+        JP,
+        US
+    }
     //endregion
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
@@ -576,7 +581,7 @@ public class SensePeripheral {
     public Observable<SenseConnectToWiFiUpdate> connectToWiFiNetwork(@NonNull String ssid,
                                                                      @NonNull wifi_endpoint.sec_type securityType,
                                                                      @Nullable String password,
-                                                                     @NonNull String countryCode) {
+                                                                     @NonNull CountryCodes countryCode) {
         logger.info(GattPeripheral.LOG_TAG, "connectToWiFiNetwork(" + ssid + ")");
 
         if (isBusy()) {
@@ -594,7 +599,7 @@ public class SensePeripheral {
                                                          .setVersion(version)
                                                          .setAppVersion(APP_VERSION)
                                                          .setWifiSSID(ssid)
-                                                         .setCountryCode(countryCode)
+                                                         .setCountryCode(countryCode.toString())
                                                          .setSecurityType(securityType);
         if (version == COMMAND_VERSION_PVT && securityType == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             byte[] keyBytes = Bytes.tryFromString(password);
@@ -914,12 +919,6 @@ public class SensePeripheral {
     }
 
     //endregion
-    public static class CountryCodes {
-        public static final String US = "US";
-        public static final String EU = "EU";
-        public static final String JP = "JP";
-    }
-
     private abstract class ResponseHandler<T> implements Action1<Throwable> {
         Subscriber<? super T> subscriber;
         OperationTimeout timeout;
