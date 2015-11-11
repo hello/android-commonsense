@@ -580,8 +580,7 @@ public class SensePeripheral {
 
     public Observable<SenseConnectToWiFiUpdate> connectToWiFiNetwork(@NonNull String ssid,
                                                                      @NonNull wifi_endpoint.sec_type securityType,
-                                                                     @Nullable String password,
-                                                                     @Nullable CountryCodes countryCode) {
+                                                                     @Nullable String password) {
         logger.info(GattPeripheral.LOG_TAG, "connectToWiFiNetwork(" + ssid + ")");
 
         if (isBusy()) {
@@ -600,9 +599,6 @@ public class SensePeripheral {
                                                          .setAppVersion(APP_VERSION)
                                                          .setWifiSSID(ssid)
                                                          .setSecurityType(securityType);
-        if (countryCode != null){
-            builder.setCountryCode(countryCode.toString());
-        }
 
         if (version == COMMAND_VERSION_PVT && securityType == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
             byte[] keyBytes = Bytes.tryFromString(password);
@@ -840,18 +836,23 @@ public class SensePeripheral {
                 .map(Functions.createMapperToVoid());
     }
 
-    public Observable<List<wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<wifi_endpoint>> scanForWifiNetworks(@Nullable CountryCodes countryCode) {
         logger.info(GattPeripheral.LOG_TAG, "scanForWifiNetworks()");
 
         if (isBusy()) {
             return Observable.error(new PeripheralBusyError());
         }
 
-        final MorpheusCommand command = MorpheusCommand.newBuilder()
-                                                       .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
-                                                       .setVersion(commandVersion)
-                                                       .setAppVersion(APP_VERSION)
-                                                       .build();
+        MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
+                .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
+                .setVersion(commandVersion)
+                .setAppVersion(APP_VERSION);
+        if (countryCode != null){
+            builder.setCountryCode(countryCode.toString());
+        }
+
+        final MorpheusCommand command = builder.build();
+
         return performCommand(command, createScanWifiTimeout(), new ResponseHandler<List<wifi_endpoint>>() {
             final List<wifi_endpoint> endpoints = new ArrayList<>();
 
