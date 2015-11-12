@@ -84,7 +84,7 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
         assertNull(responseListener.error);
 
 
-        packetHandler.transportDisconnected();
+        packetHandler.peripheralDisconnected();
 
         responseListener.reset();
         packetHandler.setResponseListener(responseListener);

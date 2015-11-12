@@ -3,6 +3,7 @@ package is.hello.commonsense.bluetooth.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothConnectionLostError;
+import is.hello.buruberi.bluetooth.errors.LostConnectionException;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.errors.SenseProtobufError;
@@ -122,18 +123,18 @@ public class SensePacketHandler implements GattPeripheral.PacketHandler {
     }
 
     @Override
-    public boolean processIncomingPacket(@NonNull UUID characteristicIdentifier, @NonNull byte[] payload) {
+    public void processIncomingPacket(@NonNull UUID characteristicIdentifier, @NonNull byte[] payload) {
         if (parser.canProcessPacket(characteristicIdentifier)) {
             parser.processPacket(payload);
-            return true;
         } else {
-            return false;
+            Log.d(getClass().getSimpleName(),
+                  "Unexpected packet from characteristic: " + characteristicIdentifier);
         }
     }
 
     @Override
-    public void transportDisconnected() {
-        parser.onTransportDisconnected();
+    public void peripheralDisconnected() {
+        parser.peripheralDisconnected();
     }
 
     //endregion
@@ -307,9 +308,9 @@ public class SensePacketHandler implements GattPeripheral.PacketHandler {
         /**
          * Informs the parser that the Bluetooth transport disconnected.
          */
-        void onTransportDisconnected() {
+        void peripheralDisconnected() {
             cleanUp();
-            dispatchError(new BluetoothConnectionLostError());
+            dispatchError(new LostConnectionException());
         }
 
         //endregion

@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Buruberi -->
+
+    <string name="error_bluetooth_disabled">Please enable Bluetooth to continue.</string>
+    <string name="error_bluetooth_gatt_failure_fmt">An internal Bluetooth error has occurred (%1$s)</string>
+    <string name="error_generic_bluetooth_timeout">Bluetooth operation timed out.</string>
+    <string name="error_bluetooth_bonding_change_fmt">Could not modify bond with Sense (%1$s)</string>
+    <string name="error_bluetooth_out_of_range">Lost connection to your Sense. Please make sure your Sense is plugged in and nearby, and try again.</string>
+    <string name="error_bluetooth_no_connection">Operation could not be completed because you are not connected to a Sense.</string>
+    <string name="error_bluetooth_service_discovery_failed">Could not resolve services offered by Sense.</string>
+    <string name="error_bluetooth_power_change">We could not turn your Bluetooth on or off.</string>
+    <string name="error_bluetooth_peripheral_busy">Sense is busy, please retry again in a few moments.</string>
+    <string name="error_bluetooth_connection_lost">The connection to Sense was unexpectedly lost.</string>
+    <string name="error_bluetooth_gatt_stack">An unknown error occurred with your device\'s Bluetooth, please try again.</string>
+    <string name="error_bluetooth_gatt_connection_lost">The connection to your Sense was lost.</string>
+    <string name="error_bluetooth_gatt_connection_timeout">The connection to your Sense timed out.</string>
+    <string name="error_bluetooth_gatt_connection_failed">A connection could not be established to your Sense.</string>
+
+    <string name="error_peripheral_scan_failure">Could not detect a Sense because an error occurred with your device‘s Bluetooth, please try again.</string>
+    <string name="error_sense_not_found">Could not detect a Sense nearby. Make sure Sense is plugged in, nearby, and in pairing mode. Ensure no other devices are connected with Sense over Bluetooth.</string>
+
+    <!-- Sense -->
+
     <string name="error_bluetooth_malformed_wifi_password">Sense does not support ASCII passwords for WEP networks. Please enter your WEP key in hexadecimal format. If you aren’t sure what this is, please visit Support for more details.</string>
     <string name="error_bluetooth_wep_password_nul">Sense does not support WEP passwords containing “00”.</string>
     <string name="error_bluetooth_empty_wifi_password">WiFi network passwords cannot be empty.</string>
@@ -16,4 +38,9 @@
     <string name="error_wifi_ssl_failure">Sense could not establish a secure connection with SSL to the server.</string>
     <string name="error_wifi_hello_key_failure">Sense is not provisioned correctly. Please contact support for directions.</string>
     <string name="error_message_unexpected_response">Unexpected response received for command sent to Sense.</string>
+
+    <!-- Unit Testing -->
+
+    <string name="tests_string_ref_simple">Buruberi Tests</string>
+    <string name="tests_string_ref_fmt">%1$s %2$s</string>
 </resources>

@@ -2,9 +2,9 @@ package is.hello.commonsense.bluetooth.errors;
 
 import android.support.annotation.NonNull;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
+import is.hello.buruberi.bluetooth.errors.BuruberiException;
 
-public class SenseProtobufError extends BluetoothError {
+public class SenseProtobufError extends BuruberiException {
     public final Reason reason;
 
     public SenseProtobufError(@NonNull Reason reason) {

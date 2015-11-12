@@ -3,12 +3,12 @@ package is.hello.commonsense.bluetooth.errors;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import is.hello.buruberi.bluetooth.errors.BluetoothError;
-import is.hello.buruberi.util.Errors;
-import is.hello.buruberi.util.StringRef;
+import is.hello.buruberi.bluetooth.errors.BuruberiException;
 import is.hello.commonsense.R;
+import is.hello.commonsense.util.Errors;
+import is.hello.commonsense.util.StringRef;
 
-public class SenseSetWifiValidationError extends BluetoothError implements Errors.Reporting {
+public class SenseSetWifiValidationError extends BuruberiException implements Errors.Reporting {
     public final Reason reason;
 
     public SenseSetWifiValidationError(@NonNull Reason reason) {
