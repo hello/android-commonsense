@@ -19,8 +19,8 @@ import is.hello.buruberi.bluetooth.errors.LostConnectionException;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
+import is.hello.buruberi.bluetooth.stacks.GattService;
 import is.hello.buruberi.bluetooth.stacks.OperationTimeout;
-import is.hello.buruberi.bluetooth.stacks.PeripheralService;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
@@ -89,7 +89,7 @@ public class SensePeripheral {
 
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
-    @VisibleForTesting PeripheralService peripheralService;
+    @VisibleForTesting GattService GattService;
 
     private final SensePacketHandler packetHandler;
 
@@ -169,10 +169,10 @@ public class SensePeripheral {
                     Observable.just(Operation.BONDING),
                     gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.CONNECTING)),
                     gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<PeripheralService, Operation>() {
+                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
                         @Override
-                        public Operation call(PeripheralService service) {
-                            SensePeripheral.this.peripheralService = service;
+                        public Operation call(GattService service) {
+                            SensePeripheral.this.GattService = service;
                             return Operation.CONNECTED;
                         }
                     })
@@ -182,10 +182,10 @@ public class SensePeripheral {
                     Observable.just(Operation.CONNECTING),
                     gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.BONDING)),
                     gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<PeripheralService, Operation>() {
+                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
                         @Override
-                        public Operation call(PeripheralService service) {
-                            SensePeripheral.this.peripheralService = service;
+                        public Operation call(GattService service) {
+                            SensePeripheral.this.GattService = service;
                             return Operation.CONNECTED;
                         }
                     })
@@ -230,7 +230,7 @@ public class SensePeripheral {
                              .finallyDo(new Action0() {
                                  @Override
                                  public void call() {
-                                     SensePeripheral.this.peripheralService = null;
+                                     SensePeripheral.this.GattService = null;
                                  }
                              });
     }
@@ -260,7 +260,7 @@ public class SensePeripheral {
 
     public boolean isConnected() {
         return (gattPeripheral.getConnectionStatus() == GattPeripheral.STATUS_CONNECTED &&
-                peripheralService != null);
+                GattService != null);
     }
 
     public int getBondStatus() {
@@ -317,7 +317,7 @@ public class SensePeripheral {
 
     @VisibleForTesting
     Observable<UUID> subscribeResponse(@NonNull OperationTimeout timeout) {
-        return gattPeripheral.enableNotification(peripheralService,
+        return gattPeripheral.enableNotification(GattService,
                                                  SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE,
                                                  SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG,
                                                  timeout);
@@ -326,7 +326,7 @@ public class SensePeripheral {
     @VisibleForTesting
     Observable<UUID> unsubscribeResponse(@NonNull OperationTimeout timeout) {
         if (isConnected()) {
-            return gattPeripheral.disableNotification(peripheralService,
+            return gattPeripheral.disableNotification(GattService,
                                                       SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE,
                                                       SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG,
                                                       timeout);
@@ -537,12 +537,12 @@ public class SensePeripheral {
                             subscriber.onCompleted();
                         } else {
                             logger.info(GattPeripheral.LOG_TAG, "Writing next chunk of large command " + commandUUID);
-                            gattPeripheral.writeCommand(peripheralService, commandUUID, GattPeripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), createStackTimeout("Write Partial Command")).subscribe(this);
+                            gattPeripheral.writeCommand(GattService, commandUUID, GattPeripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), createStackTimeout("Write Partial Command")).subscribe(this);
                         }
                     }
                 };
                 logger.info(GattPeripheral.LOG_TAG, "Writing first chunk of large command (" + remainingPackets.size() + " chunks) " + commandUUID);
-                gattPeripheral.writeCommand(peripheralService, commandUUID, GattPeripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), SensePeripheral.this.createStackTimeout("Write Partial Command")).subscribe(writeObserver);
+                gattPeripheral.writeCommand(GattService, commandUUID, GattPeripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), SensePeripheral.this.createStackTimeout("Write Partial Command")).subscribe(writeObserver);
             }
         });
     }
