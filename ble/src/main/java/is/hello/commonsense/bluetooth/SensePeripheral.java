@@ -77,8 +77,17 @@ public class SensePeripheral {
      */
     public static final int COMMAND_VERSION_WEP_FIX = 1;
 
-    //endregion
+    /**
+     * Country codes supported by Sense during Wi-Fi scans. Literal enum
+     * value corresponds to expected string value in Sense firmware.
+     */
+    public enum CountryCodes {
+        EU,
+        JP,
+        US
+    }
 
+    //endregion
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
     private static final long REMOVE_BOND_TIMEOUT_S = 15;
@@ -914,19 +923,24 @@ public class SensePeripheral {
     }
 
     @CheckResult
-    public Observable<List<wifi_endpoint>> scanForWifiNetworks() {
+    public Observable<List<wifi_endpoint>> scanForWifiNetworks(@Nullable CountryCodes countryCode) {
         logger.info(GattPeripheral.LOG_TAG, "scanForWifiNetworks()");
 
         if (isBusy()) {
             return Observable.error(new SenseBusyError());
         }
 
-        final MorpheusCommand command =
+        final MorpheusCommand.Builder builder =
                 MorpheusCommand.newBuilder()
                                .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
                                .setVersion(commandVersion)
-                               .setAppVersion(APP_VERSION)
-                               .build();
+                               .setAppVersion(APP_VERSION);
+        if (countryCode != null){
+            builder.setCountryCode(countryCode.toString());
+        }
+
+        final MorpheusCommand command = builder.build();
+
         return performCommand(command, createScanWifiTimeout(), new ResponseHandler<List<wifi_endpoint>>() {
             final List<wifi_endpoint> endpoints = new ArrayList<>();
 
@@ -1000,8 +1014,6 @@ public class SensePeripheral {
     }
 
     //endregion
-
-
     private abstract class ResponseHandler<T> implements Action1<Throwable> {
         Subscriber<? super T> subscriber;
         OperationTimeout timeout;
