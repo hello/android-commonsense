@@ -1,6 +1,7 @@
 package is.hello.commonsense.bluetooth;
 
 import android.os.Build;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -98,6 +99,7 @@ public class SensePeripheral {
 
     //region Lifecycle
 
+    @CheckResult
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
                                                              @NonNull PeripheralCriteria criteria) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
@@ -110,6 +112,7 @@ public class SensePeripheral {
         });
     }
 
+    @CheckResult
     public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
                                                          @NonNull String deviceId,
                                                          boolean includeHighPowerPreScan) {
@@ -156,40 +159,40 @@ public class SensePeripheral {
     /**
      * Connects to the Sense, ensures a bond is present, and performs service discovery.
      */
+    @CheckResult
     public Observable<Operation> connect() {
-        Observable<Operation> sequence;
-
-        OperationTimeout timeout = createStackTimeout("Connect");
+        final OperationTimeout timeout = createStackTimeout("Connect");
+        final Observable<Operation> sequence;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // Some Lollipop devices (not all!) do not support establishing
             // bonds after connecting. This is the exact opposite of the
             // behavior in KitKat and Gingerbread, which cannot establish
             // bonds without an active connection.
             sequence = Observable.concat(
-                    Observable.just(Operation.BONDING),
-                    gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.CONNECTING)),
-                    gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
-                        @Override
-                        public Operation call(GattService service) {
-                            SensePeripheral.this.GattService = service;
-                            return Operation.CONNECTED;
-                        }
-                    })
-                                        );
+                Observable.just(Operation.BONDING),
+                gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.CONNECTING)),
+                gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
+                    @Override
+                    public Operation call(GattService service) {
+                        SensePeripheral.this.GattService = service;
+                        return Operation.CONNECTED;
+                    }
+                })
+            );
         } else {
             sequence = Observable.concat(
-                    Observable.just(Operation.CONNECTING),
-                    gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.BONDING)),
-                    gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
-                        @Override
-                        public Operation call(GattService service) {
-                            SensePeripheral.this.GattService = service;
-                            return Operation.CONNECTED;
-                        }
+                Observable.just(Operation.CONNECTING),
+                gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.BONDING)),
+                gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
+                    @Override
+                    public Operation call(GattService service) {
+                        SensePeripheral.this.GattService = service;
+                        return Operation.CONNECTED;
+                    }
                     })
-                                        );
+            );
         }
 
         return sequence.subscribeOn(gattPeripheral.getStack().getScheduler())
@@ -224,6 +227,7 @@ public class SensePeripheral {
                        });
     }
 
+    @CheckResult
     public Observable<SensePeripheral> disconnect() {
         return gattPeripheral.disconnect()
                              .map(Functions.createMapperToValue(this))
@@ -235,8 +239,11 @@ public class SensePeripheral {
                              });
     }
 
+    @CheckResult
     public Observable<SensePeripheral> removeBond() {
-        OperationTimeout timeout = gattPeripheral.createOperationTimeout("Remove bond", REMOVE_BOND_TIMEOUT_S, TimeUnit.SECONDS);
+        final OperationTimeout timeout = gattPeripheral.createOperationTimeout("Remove bond",
+                                                                               REMOVE_BOND_TIMEOUT_S,
+                                                                               TimeUnit.SECONDS);
         return gattPeripheral.removeBond(timeout)
                              .map(Functions.createMapperToValue(this));
     }
@@ -268,13 +275,17 @@ public class SensePeripheral {
     }
 
     public @Nullable String getDeviceId() {
-        AdvertisingData advertisingData = gattPeripheral.getAdvertisingData();
-        Collection<byte[]> serviceDataRecords = advertisingData.getRecordsForType(AdvertisingData.TYPE_SERVICE_DATA);
+        final AdvertisingData advertisingData = gattPeripheral.getAdvertisingData();
+        final Collection<byte[]> serviceDataRecords =
+                advertisingData.getRecordsForType(AdvertisingData.TYPE_SERVICE_DATA);
         if (serviceDataRecords != null) {
-            byte[] servicePrefix = Bytes.fromString(SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT);
-            for (byte[] serviceDataRecord : serviceDataRecords) {
+            final byte[] servicePrefix =
+                    Bytes.fromString(SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT);
+            for (final byte[] serviceDataRecord : serviceDataRecords) {
                 if (Bytes.startWith(serviceDataRecord, servicePrefix)) {
-                    return Bytes.toString(serviceDataRecord, servicePrefix.length, serviceDataRecord.length);
+                    return Bytes.toString(serviceDataRecord,
+                                          servicePrefix.length,
+                                          serviceDataRecord.length);
                 }
             }
         }
@@ -292,23 +303,33 @@ public class SensePeripheral {
     //region Internal
 
     private @NonNull OperationTimeout createStackTimeout(@NonNull String name) {
-        return gattPeripheral.createOperationTimeout(name, STACK_OPERATION_TIMEOUT_S, TimeUnit.SECONDS);
+        return gattPeripheral.createOperationTimeout(name,
+                                                     STACK_OPERATION_TIMEOUT_S,
+                                                     TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createSimpleCommandTimeout() {
-        return gattPeripheral.createOperationTimeout("Simple Command", SIMPLE_COMMAND_TIMEOUT_S, TimeUnit.SECONDS);
+        return gattPeripheral.createOperationTimeout("Simple Command",
+                                                     SIMPLE_COMMAND_TIMEOUT_S,
+                                                     TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createScanWifiTimeout() {
-        return gattPeripheral.createOperationTimeout("Scan Wifi", WIFI_SCAN_TIMEOUT_S, TimeUnit.SECONDS);
+        return gattPeripheral.createOperationTimeout("Scan Wifi",
+                                                     WIFI_SCAN_TIMEOUT_S,
+                                                     TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createPairPillTimeout() {
-        return gattPeripheral.createOperationTimeout("Pair Pill", PAIR_PILL_TIMEOUT_S, TimeUnit.SECONDS);
+        return gattPeripheral.createOperationTimeout("Pair Pill",
+                                                     PAIR_PILL_TIMEOUT_S,
+                                                     TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createAnimationTimeout() {
-        return gattPeripheral.createOperationTimeout("Animation", ANIMATION_TIMEOUT_S, TimeUnit.SECONDS);
+        return gattPeripheral.createOperationTimeout("Animation",
+                                                     ANIMATION_TIMEOUT_S,
+                                                     TimeUnit.SECONDS);
     }
 
     private boolean isBusy() {
@@ -335,6 +356,7 @@ public class SensePeripheral {
         }
     }
 
+    @CheckResult
     private <T> Observable<T> performCommand(@NonNull final MorpheusCommand command,
                                              @NonNull final OperationTimeout timeout,
                                              @NonNull final ResponseHandler<T> responseHandler) {
@@ -355,11 +377,12 @@ public class SensePeripheral {
 
                         packetHandler.setResponseListener(null);
 
-                        MorpheusCommand timeoutResponse = MorpheusCommand.newBuilder()
-                                                                         .setVersion(commandVersion)
-                                                                         .setType(CommandType.MORPHEUS_COMMAND_ERROR)
-                                                                         .setError(SenseCommandProtos.ErrorType.TIME_OUT)
-                                                                         .build();
+                        final MorpheusCommand timeoutResponse =
+                                MorpheusCommand.newBuilder()
+                                               .setVersion(commandVersion)
+                                               .setType(CommandType.MORPHEUS_COMMAND_ERROR)
+                                               .setError(SenseCommandProtos.ErrorType.TIME_OUT)
+                                               .build();
                         responseHandler.onResponse(timeoutResponse);
                     }
                 }, gattPeripheral.getStack().getScheduler());
@@ -373,7 +396,7 @@ public class SensePeripheral {
                         responseHandler.onError(error);
                     }
                 };
-                Observable<UUID> subscribe = subscribeResponse(createStackTimeout("Subscribe"));
+                final Observable<UUID> subscribe = subscribeResponse(createStackTimeout("Subscribe"));
                 subscribe.subscribe(new Action1<UUID>() {
                     @Override
                     public void call(UUID subscribedCharacteristic) {
@@ -392,8 +415,11 @@ public class SensePeripheral {
                                 if (error instanceof LostConnectionException || !isConnected()) {
                                     onError.call(error);
                                 } else {
-                                    Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
-                                    logger.error(GattPeripheral.LOG_TAG, "Could not complete command " + command, error);
+                                    final Observable<UUID> unsubscribe =
+                                            unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                                    logger.error(GattPeripheral.LOG_TAG,
+                                                 "Could not complete command " + command,
+                                                 error);
                                     unsubscribe.subscribe(new Action1<UUID>() {
                                         @Override
                                         public void call(UUID ignored) {
@@ -407,7 +433,9 @@ public class SensePeripheral {
                         logger.info(GattPeripheral.LOG_TAG, "Writing command " + command);
 
                         final byte[] commandData = command.toByteArray();
-                        Observable<Void> write = SensePeripheral.this.writeLargeCommand(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND, commandData);
+                        final Observable<Void> write =
+                                writeLargeCommand(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND,
+                                                  commandData);
                         write.subscribe(new Action1<Void>() {
                             @Override
                             public void call(Void ignored) {
@@ -421,6 +449,7 @@ public class SensePeripheral {
         });
     }
 
+    @CheckResult
     private Observable<MorpheusCommand> performSimpleCommand(@NonNull final MorpheusCommand command,
                                                              @NonNull final OperationTimeout commandTimeout) {
         return performCommand(command, commandTimeout, new ResponseHandler<MorpheusCommand>() {
@@ -428,7 +457,8 @@ public class SensePeripheral {
             void onResponse(@NonNull final MorpheusCommand response) {
                 timeout.unschedule();
 
-                Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                final Observable<UUID> unsubscribe =
+                        unsubscribeResponse(createStackTimeout("Unsubscribe"));
                 unsubscribe.subscribe(new Action1<UUID>() {
                     @Override
                     public void call(UUID ignored) {
@@ -448,6 +478,7 @@ public class SensePeripheral {
         });
     }
 
+    @CheckResult
     private Observable<MorpheusCommand> performDisconnectingCommand(@NonNull final MorpheusCommand command,
                                                                     @NonNull final OperationTimeout commandTimeout) {
         return performCommand(command, commandTimeout, new ResponseHandler<MorpheusCommand>() {
@@ -464,7 +495,8 @@ public class SensePeripheral {
 
                         @Override
                         public void onError(Throwable e) {
-                            logger.warn(GattPeripheral.LOG_TAG, "Could not cleanly disconnect from Sense, ignoring.", e);
+                            logger.warn(GattPeripheral.LOG_TAG,
+                                        "Could not cleanly disconnect from Sense, ignoring.", e);
 
                             packetHandler.setResponseListener(null);
 
@@ -509,6 +541,7 @@ public class SensePeripheral {
     //region Operations
 
     @VisibleForTesting
+    @CheckResult
     Observable<Void> writeLargeCommand(@NonNull final UUID commandUUID,
                                        @NonNull final byte[] commandData) {
         List<byte[]> blePackets = packetHandler.createOutgoingPackets(commandData);
@@ -531,22 +564,38 @@ public class SensePeripheral {
                     public void onNext(Void ignored) {
                         remainingPackets.removeFirst();
                         if (remainingPackets.isEmpty()) {
-                            logger.info(GattPeripheral.LOG_TAG, "Write large command " + commandUUID);
+                            logger.info(GattPeripheral.LOG_TAG,
+                                        "Write large command " + commandUUID);
 
                             subscriber.onNext(null);
                             subscriber.onCompleted();
                         } else {
-                            logger.info(GattPeripheral.LOG_TAG, "Writing next chunk of large command " + commandUUID);
-                            gattPeripheral.writeCommand(GattService, commandUUID, GattPeripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), createStackTimeout("Write Partial Command")).subscribe(this);
+                            logger.info(GattPeripheral.LOG_TAG,
+                                        "Writing next chunk of large command " + commandUUID);
+                            gattPeripheral.writeCommand(GattService,
+                                                        commandUUID,
+                                                        GattPeripheral.WriteType.NO_RESPONSE,
+                                                        remainingPackets.getFirst(),
+                                                        createStackTimeout("Write Partial Command"))
+                                          .subscribe(this);
                         }
                     }
                 };
-                logger.info(GattPeripheral.LOG_TAG, "Writing first chunk of large command (" + remainingPackets.size() + " chunks) " + commandUUID);
-                gattPeripheral.writeCommand(GattService, commandUUID, GattPeripheral.WriteType.NO_RESPONSE, remainingPackets.getFirst(), SensePeripheral.this.createStackTimeout("Write Partial Command")).subscribe(writeObserver);
+
+                logger.info(GattPeripheral.LOG_TAG,
+                            "Writing first chunk of large command (" +
+                                    remainingPackets.size() + " chunks) " + commandUUID);
+                gattPeripheral.writeCommand(GattService,
+                                            commandUUID,
+                                            GattPeripheral.WriteType.NO_RESPONSE,
+                                            remainingPackets.getFirst(),
+                                            createStackTimeout("Write Partial Command"))
+                              .subscribe(writeObserver);
             }
         });
     }
 
+    @CheckResult
     public Observable<Void> putIntoNormalMode() {
         logger.info(GattPeripheral.LOG_TAG, "putIntoNormalMode()");
 
@@ -554,15 +603,17 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_NORMAL_MODE)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_NORMAL_MODE)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
                 .map(Functions.createMapperToVoid());
     }
 
+    @CheckResult
     public Observable<Void> putIntoPairingMode() {
         logger.info(GattPeripheral.LOG_TAG, "putIntoPairingMode()");
 
@@ -570,15 +621,17 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_PAIRING_MODE)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_SWITCH_TO_PAIRING_MODE)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout())
                 .map(Functions.createMapperToVoid());
     }
 
+    @CheckResult
     public Observable<SenseConnectToWiFiUpdate> connectToWiFiNetwork(@NonNull String ssid,
                                                                      @NonNull wifi_endpoint.sec_type securityType,
                                                                      @Nullable String password) {
@@ -593,32 +646,36 @@ public class SensePeripheral {
             return Observable.error(new SenseSetWifiValidationError(SenseSetWifiValidationError.Reason.EMPTY_PASSWORD));
         }
 
-        int version = commandVersion;
-        MorpheusCommand.Builder builder = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
-                                                         .setVersion(version)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .setWifiSSID(ssid)
-                                                         .setSecurityType(securityType);
+        final int version = commandVersion;
+        final MorpheusCommand.Builder builder =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT)
+                               .setVersion(version)
+                               .setAppVersion(APP_VERSION)
+                               .setWifiSSID(ssid)
+                               .setSecurityType(securityType);
         if (version == COMMAND_VERSION_PVT && securityType == wifi_endpoint.sec_type.SL_SCAN_SEC_TYPE_WEP) {
-            byte[] keyBytes = Bytes.tryFromString(password);
+            final byte[] keyBytes = Bytes.tryFromString(password);
             if (keyBytes == null) {
                 return Observable.error(new SenseSetWifiValidationError(SenseSetWifiValidationError.Reason.MALFORMED_BYTES));
             } else if (Bytes.contains(keyBytes, (byte) 0x0)) {
                 return Observable.error(new SenseSetWifiValidationError(SenseSetWifiValidationError.Reason.CONTAINS_NUL_BYTE));
             }
-            ByteString keyString = ByteString.copyFrom(keyBytes);
+            final ByteString keyString = ByteString.copyFrom(keyBytes);
             builder.setWifiPasswordBytes(keyString);
         } else {
             builder.setWifiPassword(password);
         }
 
         final MorpheusCommand command = builder.build();
-        OperationTimeout commandTimeout = gattPeripheral.createOperationTimeout("Set Wifi", SET_WIFI_TIMEOUT_S, TimeUnit.SECONDS);
+        final OperationTimeout commandTimeout =
+                gattPeripheral.createOperationTimeout("Set Wifi",
+                                                      SET_WIFI_TIMEOUT_S,
+                                                      TimeUnit.SECONDS);
         return performCommand(command, commandTimeout, new ResponseHandler<SenseConnectToWiFiUpdate>() {
             @Override
             void onResponse(@NonNull final MorpheusCommand response) {
-                Action1<Throwable> onError = new Action1<Throwable>() {
+                final Action1<Throwable> onError = new Action1<Throwable>() {
                     @Override
                     public void call(Throwable e) {
                         packetHandler.setResponseListener(null);
@@ -635,7 +692,8 @@ public class SensePeripheral {
                     if (status.state == wifi_connection_state.CONNECTED) {
                         timeout.unschedule();
 
-                        Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                        final Observable<UUID> unsubscribe =
+                                unsubscribeResponse(createStackTimeout("Unsubscribe"));
                         unsubscribe.subscribe(new Action1<UUID>() {
                             @Override
                             public void call(UUID ignored) {
@@ -648,7 +706,8 @@ public class SensePeripheral {
                     } else if (SenseConnectWifiError.isImmediateError(status)) {
                         timeout.unschedule();
 
-                        Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                        final Observable<UUID> unsubscribe =
+                                unsubscribeResponse(createStackTimeout("Unsubscribe"));
                         unsubscribe.subscribe(new Action1<UUID>() {
                                                   @Override
                                                   public void call(UUID ignored) {
@@ -669,13 +728,16 @@ public class SensePeripheral {
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_SET_WIFI_ENDPOINT) { //old fw
                     timeout.unschedule();
 
-                    Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                    final Observable<UUID> unsubscribe =
+                            unsubscribeResponse(createStackTimeout("Unsubscribe"));
                     unsubscribe.subscribe(new Action1<UUID>() {
                         @Override
                         public void call(UUID ignored) {
                             packetHandler.setResponseListener(null);
 
-                            SenseConnectToWiFiUpdate fakeStatus = new SenseConnectToWiFiUpdate(wifi_connection_state.CONNECTED, null, null);
+                            final SenseConnectToWiFiUpdate fakeStatus =
+                                    new SenseConnectToWiFiUpdate(wifi_connection_state.CONNECTED,
+                                                                 null, null);
                             subscriber.onNext(fakeStatus);
                             subscriber.onCompleted();
                         }
@@ -683,7 +745,8 @@ public class SensePeripheral {
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
                     timeout.unschedule();
 
-                    Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                    final Observable<UUID> unsubscribe =
+                            unsubscribeResponse(createStackTimeout("Unsubscribe"));
                     unsubscribe.subscribe(new Subscriber<UUID>() {
                         @Override
                         public void onCompleted() {
@@ -705,7 +768,8 @@ public class SensePeripheral {
                     timeout.unschedule();
                     packetHandler.setResponseListener(null);
 
-                    Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                    final Observable<UUID> unsubscribe =
+                            unsubscribeResponse(createStackTimeout("Unsubscribe"));
                     unsubscribe.subscribe(new Subscriber<UUID>() {
                         @Override
                         public void onCompleted() {
@@ -727,6 +791,7 @@ public class SensePeripheral {
 
     }
 
+    @CheckResult
     public Observable<SenseNetworkStatus> getWifiNetwork() {
         logger.info(GattPeripheral.LOG_TAG, "getWifiNetwork()");
 
@@ -734,21 +799,24 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_GET_WIFI_ENDPOINT)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .build();
 
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
                 .map(new Func1<MorpheusCommand, SenseNetworkStatus>() {
                     @Override
                     public SenseNetworkStatus call(MorpheusCommand response) {
-                        return new SenseNetworkStatus(response.getWifiSSID(), response.getWifiConnectionState());
+                        return new SenseNetworkStatus(response.getWifiSSID(),
+                                                      response.getWifiConnectionState());
                     }
                 });
     }
 
+    @CheckResult
     public Observable<String> pairPill(final String accountToken) {
         logger.info(GattPeripheral.LOG_TAG, "pairPill(" + accountToken + ")");
 
@@ -756,12 +824,13 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_PAIR_PILL)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .setAccountId(accountToken)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_PAIR_PILL)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .setAccountId(accountToken)
+                               .build();
         return performSimpleCommand(morpheusCommand, createPairPillTimeout())
                 .map(new Func1<MorpheusCommand, String>() {
                     @Override
@@ -771,6 +840,7 @@ public class SensePeripheral {
                 });
     }
 
+    @CheckResult
     public Observable<Void> linkAccount(final String accountToken) {
         logger.info(GattPeripheral.LOG_TAG, "linkAccount(" + accountToken + ")");
 
@@ -778,16 +848,18 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .setAccountId(accountToken)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_PAIR_SENSE)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .setAccountId(accountToken)
+                               .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
                 .map(Functions.createMapperToVoid());
     }
 
+    @CheckResult
     public Observable<Void> factoryReset() {
         logger.info(GattPeripheral.LOG_TAG, "factoryReset()");
 
@@ -795,15 +867,17 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_FACTORY_RESET)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout())
                 .map(Functions.createMapperToVoid());
     }
 
+    @CheckResult
     public Observable<Void> pushData() {
         logger.info(GattPeripheral.LOG_TAG, "pushData()");
 
@@ -811,15 +885,17 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(CommandType.MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_PUSH_DATA_AFTER_SET_TIMEZONE)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
                 .map(Functions.createMapperToVoid());
     }
 
+    @CheckResult
     public Observable<Void> runLedAnimation(@NonNull SenseLedAnimation animationType) {
         logger.info(GattPeripheral.LOG_TAG, "runLedAnimation(" + animationType + ")");
 
@@ -827,15 +903,17 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        MorpheusCommand morpheusCommand = MorpheusCommand.newBuilder()
-                                                         .setType(animationType.commandType)
-                                                         .setVersion(commandVersion)
-                                                         .setAppVersion(APP_VERSION)
-                                                         .build();
+        final MorpheusCommand morpheusCommand =
+                MorpheusCommand.newBuilder()
+                               .setType(animationType.commandType)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .build();
         return performSimpleCommand(morpheusCommand, createAnimationTimeout())
                 .map(Functions.createMapperToVoid());
     }
 
+    @CheckResult
     public Observable<List<wifi_endpoint>> scanForWifiNetworks() {
         logger.info(GattPeripheral.LOG_TAG, "scanForWifiNetworks()");
 
@@ -843,11 +921,12 @@ public class SensePeripheral {
             return Observable.error(new SenseBusyError());
         }
 
-        final MorpheusCommand command = MorpheusCommand.newBuilder()
-                                                       .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
-                                                       .setVersion(commandVersion)
-                                                       .setAppVersion(APP_VERSION)
-                                                       .build();
+        final MorpheusCommand command =
+                MorpheusCommand.newBuilder()
+                               .setType(CommandType.MORPHEUS_COMMAND_START_WIFISCAN)
+                               .setVersion(commandVersion)
+                               .setAppVersion(APP_VERSION)
+                               .build();
         return performCommand(command, createScanWifiTimeout(), new ResponseHandler<List<wifi_endpoint>>() {
             final List<wifi_endpoint> endpoints = new ArrayList<>();
 
@@ -862,7 +941,8 @@ public class SensePeripheral {
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {
                     timeout.unschedule();
 
-                    Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                    final Observable<UUID> unsubscribe =
+                            unsubscribeResponse(createStackTimeout("Unsubscribe"));
                     unsubscribe.subscribe(new Action1<UUID>() {
                         @Override
                         public void call(UUID ignored) {
@@ -875,7 +955,8 @@ public class SensePeripheral {
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
                     timeout.unschedule();
 
-                    Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                    final Observable<UUID> unsubscribe =
+                            unsubscribeResponse(createStackTimeout("Unsubscribe"));
                     unsubscribe.subscribe(new Subscriber<UUID>() {
                         @Override
                         public void onCompleted() {
@@ -896,7 +977,8 @@ public class SensePeripheral {
 
                     packetHandler.setResponseListener(null);
 
-                    Observable<UUID> unsubscribe = unsubscribeResponse(createStackTimeout("Unsubscribe"));
+                    final Observable<UUID> unsubscribe =
+                            unsubscribeResponse(createStackTimeout("Unsubscribe"));
                     unsubscribe.subscribe(new Subscriber<UUID>() {
                         @Override
                         public void onCompleted() {
