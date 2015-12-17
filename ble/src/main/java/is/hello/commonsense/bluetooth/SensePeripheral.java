@@ -170,6 +170,7 @@ public class SensePeripheral {
      */
     @CheckResult
     public Observable<Operation> connect() {
+        final int connectFlags = GattPeripheral.CONNECT_FLAG_DEFAULTS;
         final OperationTimeout timeout = createStackTimeout("Connect");
         final Observable<Operation> sequence;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -180,7 +181,7 @@ public class SensePeripheral {
             sequence = Observable.concat(
                 Observable.just(Operation.BONDING),
                 gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.CONNECTING)),
-                gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
+                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
                 gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
                     @Override
                     public Operation call(GattService service) {
@@ -192,7 +193,7 @@ public class SensePeripheral {
         } else {
             sequence = Observable.concat(
                 Observable.just(Operation.CONNECTING),
-                gattPeripheral.connect(timeout).map(Functions.createMapperToValue(Operation.BONDING)),
+                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(Operation.BONDING)),
                 gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
                 gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
                     @Override
@@ -200,7 +201,7 @@ public class SensePeripheral {
                         SensePeripheral.this.GattService = service;
                         return Operation.CONNECTED;
                     }
-                    })
+                })
             );
         }
 
