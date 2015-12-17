@@ -170,7 +170,15 @@ public class SensePeripheral {
      */
     @CheckResult
     public Observable<Operation> connect() {
-        final int connectFlags = GattPeripheral.CONNECT_FLAG_DEFAULTS;
+        final int connectFlags;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Waiting for the device to become available breaks
+            // connect on older Android versions. Just because.
+            connectFlags = (GattPeripheral.CONNECT_FLAG_TRANSPORT_LE |
+                    GattPeripheral.CONNECT_FLAG_WAIT_AVAILABLE);
+        } else {
+            connectFlags = GattPeripheral.CONNECT_FLAG_TRANSPORT_LE;
+        }
         final OperationTimeout timeout = createStackTimeout("Connect");
         final Observable<Operation> sequence;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
