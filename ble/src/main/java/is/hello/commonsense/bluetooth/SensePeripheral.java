@@ -170,7 +170,7 @@ public class SensePeripheral {
      */
     @CheckResult
     public Observable<Operation> connect() {
-        final @GattPeripheral.ConnectFlags int connectFlags = GattPeripheral.CONNECT_FLAG_DEFAULTS;
+        final int connectFlags = GattPeripheral.CONNECT_FLAG_DEFAULTS;
         final OperationTimeout timeout = createStackTimeout("Connect");
         final Observable<Operation> sequence;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
