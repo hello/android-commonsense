@@ -241,9 +241,10 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
     public void connectSucceeded() throws Exception {
         final BluetoothStack stack = createMockBluetoothStack();
         final GattPeripheral device = createMockPeripheral(stack);
+        //noinspection ResourceType
         doReturn(Observable.just(device))
                 .when(device)
-                .connect(any(OperationTimeout.class));
+                .connect(any(int.class), any(OperationTimeout.class));
         doReturn(Observable.just(device))
                 .when(device)
                 .createBond();
@@ -255,7 +256,8 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
 
         Sync.last(peripheral.connect());
 
-        verify(device).connect(any(OperationTimeout.class));
+        //noinspection ResourceType
+        verify(device).connect(any(int.class), any(OperationTimeout.class));
         verify(device).createBond();
         verify(device).discoverService(eq(SenseIdentifiers.SERVICE), any(OperationTimeout.class));
     }
@@ -264,9 +266,10 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
     public void connectFailedFromConnect() throws Exception {
         final BluetoothStack stack = createMockBluetoothStack();
         final GattPeripheral device = createMockPeripheral(stack);
+        //noinspection ResourceType
         doReturn(Observable.error(new UserDisabledBuruberiException()))
                 .when(device)
-                .connect(any(OperationTimeout.class));
+                .connect(any(int.class), any(OperationTimeout.class));
         doReturn(Observable.just(device))
                 .when(device)
                 .createBond();
@@ -287,9 +290,10 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
     public void connectFailedFromCreateBond() throws Exception {
         final BluetoothStack stack = createMockBluetoothStack();
         final GattPeripheral device = createMockPeripheral(stack);
+        //noinspection ResourceType
         doReturn(Observable.error(new UserDisabledBuruberiException()))
                 .when(device)
-                .connect(any(OperationTimeout.class));
+                .connect(any(int.class), any(OperationTimeout.class));
         doReturn(Observable.error(new BondException(BondException.REASON_ANDROID_API_CHANGED)))
                 .when(device)
                 .createBond();
@@ -310,9 +314,10 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
     public void connectFailedFromDiscoverService() throws Exception {
         final BluetoothStack stack = createMockBluetoothStack();
         final GattPeripheral device = createMockPeripheral(stack);
+        //noinspection ResourceType
         doReturn(Observable.error(new UserDisabledBuruberiException()))
                 .when(device)
-                .connect(any(OperationTimeout.class));
+                .connect(any(int.class), any(OperationTimeout.class));
         doReturn(Observable.just(device))
                 .when(device)
                 .createBond();
