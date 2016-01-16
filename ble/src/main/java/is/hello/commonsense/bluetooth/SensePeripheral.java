@@ -26,8 +26,8 @@ import is.hello.buruberi.bluetooth.stacks.OperationTimeout;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
-import is.hello.buruberi.bluetooth.stacks.util.Operation;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
+import is.hello.buruberi.util.Operation;
 import is.hello.commonsense.bluetooth.errors.BuruberiReportingProvider;
 import is.hello.commonsense.bluetooth.errors.SenseBusyError;
 import is.hello.commonsense.bluetooth.errors.SenseConnectWifiError;
@@ -35,12 +35,13 @@ import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
 import is.hello.commonsense.bluetooth.errors.SensePeripheralError;
 import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
 import is.hello.commonsense.bluetooth.errors.SenseUnexpectedResponseError;
+import is.hello.commonsense.bluetooth.model.ProtobufPacketListener;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
-import is.hello.commonsense.bluetooth.model.SensePacketHandler;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Functions;
 import rx.Observable;
 import rx.Observer;
@@ -82,7 +83,7 @@ public class SensePeripheral {
      * Country codes supported by Sense during Wi-Fi scans. Literal enum
      * value corresponds to expected string value in Sense firmware.
      */
-    public enum CountryCodes {
+    public enum CountryCode {
         EU,
         JP,
         US
@@ -104,7 +105,7 @@ public class SensePeripheral {
     @VisibleForTesting GattCharacteristic commandCharacteristic;
     @VisibleForTesting GattCharacteristic responseCharacteristic;
 
-    private final SensePacketHandler packetHandler;
+    private final ProtobufPacketListener packetListener;
 
     private int commandVersion = COMMAND_VERSION_PVT;
 
@@ -159,8 +160,7 @@ public class SensePeripheral {
         this.logger = gattPeripheral.getStack().getLogger();
         this.gattPeripheral = gattPeripheral;
 
-        this.packetHandler = new SensePacketHandler();
-        gattPeripheral.setPacketHandler(packetHandler);
+        this.packetListener = new ProtobufPacketListener();
     }
 
     //endregion
@@ -172,7 +172,7 @@ public class SensePeripheral {
      * Connects to the Sense, ensures a bond is present, and performs service discovery.
      */
     @CheckResult
-    public Observable<Operation> connect() {
+    public Observable<ConnectProgress> connect() {
         final int connectFlags;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Waiting for the device to become available breaks
@@ -183,47 +183,48 @@ public class SensePeripheral {
             connectFlags = GattPeripheral.CONNECT_FLAG_TRANSPORT_LE;
         }
         final OperationTimeout timeout = createStackTimeout("Connect");
-        final Observable<Operation> sequence;
+        final Observable<ConnectProgress> sequence;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // Some Lollipop devices (not all!) do not support establishing
             // bonds after connecting. This is the exact opposite of the
             // behavior in KitKat and Gingerbread, which cannot establish
             // bonds without an active connection.
             sequence = Observable.concat(
-                Observable.just(Operation.BONDING),
-                gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.CONNECTING)),
-                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
-                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
+                Observable.just(ConnectProgress.BONDING),
+                gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.CONNECTING)),
+                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, ConnectProgress>() {
                     @Override
-                    public Operation call(GattService service) {
+                    public ConnectProgress call(GattService service) {
                         SensePeripheral.this.gattService = service;
                         SensePeripheral.this.responseCharacteristic =
                                 gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
                         SensePeripheral.this.commandCharacteristic =
                                 gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
-                        return Operation.CONNECTED;
+                        commandCharacteristic.setPacketListener(packetListener);
+                        return ConnectProgress.CONNECTED;
                     }
                 })
             );
         } else {
             sequence = Observable.concat(
-                Observable.just(Operation.CONNECTING),
-                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(Operation.BONDING)),
-                gattPeripheral.createBond().map(Functions.createMapperToValue(Operation.DISCOVERING_SERVICES)),
-                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, Operation>() {
+                Observable.just(ConnectProgress.CONNECTING),
+                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.BONDING)),
+                gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, ConnectProgress>() {
                     @Override
-                    public Operation call(GattService service) {
+                    public ConnectProgress call(GattService service) {
                         SensePeripheral.this.gattService = service;
-                        return Operation.CONNECTED;
+                        return ConnectProgress.CONNECTED;
                     }
                 })
             );
         }
 
         return sequence.subscribeOn(gattPeripheral.getStack().getScheduler())
-                       .doOnNext(new Action1<Operation>() {
+                       .doOnNext(new Action1<ConnectProgress>() {
                            @Override
-                           public void call(Operation s) {
+                           public void call(ConnectProgress s) {
                                logger.info(LOG_TAG, "is " + s);
                            }
                        })
@@ -360,7 +361,7 @@ public class SensePeripheral {
     }
 
     private boolean isBusy() {
-        return packetHandler.hasResponseListener();
+        return packetListener.hasResponseListener();
     }
 
     @VisibleForTesting
@@ -398,7 +399,7 @@ public class SensePeripheral {
                     public void call() {
                         logger.error(GattPeripheral.LOG_TAG, "Command timed out " + command, null);
 
-                        packetHandler.setResponseListener(null);
+                        packetListener.setResponseListener(null);
 
                         final MorpheusCommand timeoutResponse =
                                 MorpheusCommand.newBuilder()
@@ -414,7 +415,7 @@ public class SensePeripheral {
                     @Override
                     public void call(Throwable error) {
                         timeout.unschedule();
-                        packetHandler.setResponseListener(null);
+                        packetListener.setResponseListener(null);
 
                         responseHandler.onError(error);
                     }
@@ -423,7 +424,7 @@ public class SensePeripheral {
                 subscribe.subscribe(new Action1<UUID>() {
                     @Override
                     public void call(UUID subscribedCharacteristic) {
-                        packetHandler.setResponseListener(new SensePacketHandler.ResponseListener() {
+                        packetListener.setResponseListener(new ProtobufPacketListener.ResponseListener() {
                             @Override
                             public void onDataReady(MorpheusCommand response) {
                                 logger.info(GattPeripheral.LOG_TAG, "Got response to command " + command + ": " + response);
@@ -485,7 +486,7 @@ public class SensePeripheral {
                 unsubscribe.subscribe(new Action1<UUID>() {
                     @Override
                     public void call(UUID ignored) {
-                        packetHandler.setResponseListener(null);
+                        packetListener.setResponseListener(null);
 
                         if (response.getType() == command.getType()) {
                             subscriber.onNext(response);
@@ -521,7 +522,7 @@ public class SensePeripheral {
                             logger.warn(GattPeripheral.LOG_TAG,
                                         "Could not cleanly disconnect from Sense, ignoring.", e);
 
-                            packetHandler.setResponseListener(null);
+                            packetListener.setResponseListener(null);
 
                             subscriber.onNext(response);
                             subscriber.onCompleted();
@@ -529,17 +530,17 @@ public class SensePeripheral {
 
                         @Override
                         public void onNext(SensePeripheral sensePeripheral) {
-                            packetHandler.setResponseListener(null);
+                            packetListener.setResponseListener(null);
 
                             subscriber.onNext(response);
                         }
                     });
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_ERROR) {
-                    packetHandler.setResponseListener(null);
+                    packetListener.setResponseListener(null);
 
                     propagateResponseError(response, null);
                 } else {
-                    packetHandler.setResponseListener(null);
+                    packetListener.setResponseListener(null);
 
                     propagateUnexpectedResponseError(command.getType(), response);
                 }
@@ -548,7 +549,7 @@ public class SensePeripheral {
             @Override
             void onError(Throwable e) {
                 if (e instanceof LostConnectionException) {
-                    packetHandler.setResponseListener(null);
+                    packetListener.setResponseListener(null);
 
                     subscriber.onNext(command);
                     subscriber.onCompleted();
@@ -566,7 +567,7 @@ public class SensePeripheral {
     @VisibleForTesting
     @CheckResult
     Observable<Void> writeLargeCommand(@NonNull final byte[] commandData) {
-        List<byte[]> blePackets = packetHandler.createOutgoingPackets(commandData);
+        List<byte[]> blePackets = packetListener.createOutgoingPackets(commandData);
         final LinkedList<byte[]> remainingPackets = new LinkedList<>(blePackets);
 
         return Observable.create(new Observable.OnSubscribe<Void>() {
@@ -695,7 +696,7 @@ public class SensePeripheral {
                 final Action1<Throwable> onError = new Action1<Throwable>() {
                     @Override
                     public void call(Throwable e) {
-                        packetHandler.setResponseListener(null);
+                        packetListener.setResponseListener(null);
                         subscriber.onError(e);
                     }
                 };
@@ -714,7 +715,7 @@ public class SensePeripheral {
                         unsubscribe.subscribe(new Action1<UUID>() {
                             @Override
                             public void call(UUID ignored) {
-                                packetHandler.setResponseListener(null);
+                                packetListener.setResponseListener(null);
 
                                 subscriber.onNext(status);
                                 subscriber.onCompleted();
@@ -738,7 +739,7 @@ public class SensePeripheral {
                                                   }
                                               });
 
-                        packetHandler.setResponseListener(null);
+                        packetListener.setResponseListener(null);
                     } else {
                         subscriber.onNext(status);
                     }
@@ -750,7 +751,7 @@ public class SensePeripheral {
                     unsubscribe.subscribe(new Action1<UUID>() {
                         @Override
                         public void call(UUID ignored) {
-                            packetHandler.setResponseListener(null);
+                            packetListener.setResponseListener(null);
 
                             final SenseConnectToWiFiUpdate fakeStatus =
                                     new SenseConnectToWiFiUpdate(wifi_connection_state.CONNECTED,
@@ -780,10 +781,10 @@ public class SensePeripheral {
                         }
                     });
 
-                    packetHandler.setResponseListener(null);
+                    packetListener.setResponseListener(null);
                 } else {
                     timeout.unschedule();
-                    packetHandler.setResponseListener(null);
+                    packetListener.setResponseListener(null);
 
                     final Observable<UUID> unsubscribe =
                             unsubscribeResponse(createStackTimeout("Unsubscribe"));
@@ -931,7 +932,7 @@ public class SensePeripheral {
     }
 
     @CheckResult
-    public Observable<List<wifi_endpoint>> scanForWifiNetworks(@Nullable CountryCodes countryCode) {
+    public Observable<List<wifi_endpoint>> scanForWifiNetworks(@Nullable CountryCode countryCode) {
         logger.info(GattPeripheral.LOG_TAG, "scanForWifiNetworks()");
 
         if (isBusy()) {
@@ -968,7 +969,7 @@ public class SensePeripheral {
                     unsubscribe.subscribe(new Action1<UUID>() {
                         @Override
                         public void call(UUID ignored) {
-                            packetHandler.setResponseListener(null);
+                            packetListener.setResponseListener(null);
 
                             subscriber.onNext(endpoints);
                             subscriber.onCompleted();
@@ -997,7 +998,7 @@ public class SensePeripheral {
                 } else {
                     timeout.unschedule();
 
-                    packetHandler.setResponseListener(null);
+                    packetListener.setResponseListener(null);
 
                     final Observable<UUID> unsubscribe =
                             unsubscribeResponse(createStackTimeout("Unsubscribe"));
@@ -1036,7 +1037,7 @@ public class SensePeripheral {
 
         void propagateResponseError(@NonNull MorpheusCommand response, @Nullable Throwable nestedCause) {
             if (response.getError() == SenseCommandProtos.ErrorType.TIME_OUT) {
-                subscriber.onError(new OperationTimeoutException(OperationTimeoutException.Operation.COMMAND_RESPONSE));
+                subscriber.onError(new OperationTimeoutException(Operation.COMMAND_RESPONSE));
             } else {
                 subscriber.onError(new SensePeripheralError(response.getError(), nestedCause));
             }
@@ -1047,7 +1048,7 @@ public class SensePeripheral {
         }
 
         void onError(Throwable e) {
-            packetHandler.setResponseListener(null);
+            packetListener.setResponseListener(null);
             subscriber.onError(e);
         }
 

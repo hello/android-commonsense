@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
-    private final SensePacketHandler packetHandler = new SensePacketHandler();
+    private final ProtobufPacketListener packetHandler = new ProtobufPacketListener();
 
     private static final byte[] LONG_SEQUENCE = {
             0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x07, 0x08, 0x09,
@@ -84,7 +84,7 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
         assertNull(responseListener.error);
 
 
-        packetHandler.peripheralDisconnected();
+        packetHandler.onPeripheralDisconnected();
 
         responseListener.reset();
         packetHandler.setResponseListener(responseListener);
@@ -120,7 +120,7 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
     }
 
 
-    static class TestResponseListener implements SensePacketHandler.ResponseListener {
+    static class TestResponseListener implements ProtobufPacketListener.ResponseListener {
         MorpheusCommand data;
         Throwable error;
 

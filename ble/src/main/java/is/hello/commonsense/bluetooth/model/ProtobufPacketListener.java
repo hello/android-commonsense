@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 import is.hello.buruberi.bluetooth.errors.LostConnectionException;
-import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
+import is.hello.buruberi.bluetooth.stacks.GattCharacteristic;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.errors.SenseProtobufError;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
@@ -22,7 +22,7 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.Morpheus
  * Implements packet division and parsing for
  * {@link is.hello.commonsense.bluetooth.SensePeripheral}.
  */
-public class SensePacketHandler implements GattPeripheral.PacketHandler {
+public class ProtobufPacketListener implements GattCharacteristic.PacketListener {
     /**
      * The length of the first packet's header.
      *
@@ -84,7 +84,7 @@ public class SensePacketHandler implements GattPeripheral.PacketHandler {
             int bytesRemaining = payload.length;
             for (int packetIndex = 0; packetIndex < packetCount; packetIndex++) {
                 if (packetIndex == 0) {
-                    final byte[] headerPacket = new byte[GattPeripheral.PacketHandler.PACKET_LENGTH];
+                    final byte[] headerPacket = new byte[GattCharacteristic.PACKET_LENGTH];
                     headerPacket[0] = (byte) packetIndex;
                     headerPacket[1] = (byte) packetCount;
 
@@ -99,7 +99,7 @@ public class SensePacketHandler implements GattPeripheral.PacketHandler {
 
                     packets.add(headerPacket);
                 } else {
-                    final int packetLength = (packetIndex == packetCount - 1) ? (bytesRemaining + 1) : GattPeripheral.PacketHandler.PACKET_LENGTH;
+                    final int packetLength = (packetIndex == packetCount - 1) ? (bytesRemaining + 1) : GattCharacteristic.PACKET_LENGTH;
                     final byte[] packet = new byte[packetLength];
                     packet[0] = (byte) packetIndex;
 
@@ -123,17 +123,17 @@ public class SensePacketHandler implements GattPeripheral.PacketHandler {
     }
 
     @Override
-    public void processIncomingPacket(@NonNull UUID characteristicIdentifier, @NonNull byte[] payload) {
-        if (parser.canProcessPacket(characteristicIdentifier)) {
-            parser.processPacket(payload);
+    public void onCharacteristicNotify(@NonNull UUID uuid, @NonNull byte[] bytes) {
+        if (parser.canProcessPacket(uuid)) {
+            parser.processPacket(bytes);
         } else {
             Log.d(getClass().getSimpleName(),
-                  "Unexpected packet from characteristic: " + characteristicIdentifier);
+                  "Unexpected packet from characteristic: " + uuid);
         }
     }
 
     @Override
-    public void peripheralDisconnected() {
+    public void onPeripheralDisconnected() {
         parser.peripheralDisconnected();
     }
 

@@ -22,6 +22,7 @@ import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.AdvertisingDataBuilder;
+import is.hello.buruberi.util.Operation;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.CommonSenseTestCase;
 import is.hello.commonsense.util.Sync;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@SuppressWarnings("ResourceType")
 public class CommonSensePeripheralTests extends CommonSenseTestCase {
     private static final String TEST_DEVICE_ID = "CA154FFA";
 
@@ -261,7 +263,11 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
         doReturn(Observable.just(device))
                 .when(device)
                 .createBond();
-        doReturn(Observable.just(mock(GattService.class)))
+        final GattService service = mock(GattService.class);
+        doReturn(mock(GattCharacteristic.class))
+                .when(service)
+                .getCharacteristic(any(UUID.class));
+        doReturn(Observable.just(service))
                 .when(device)
                 .discoverService(eq(SenseIdentifiers.SERVICE), any(OperationTimeout.class));
 
@@ -335,7 +341,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
                 .when(device)
                 .createBond();
         doReturn(Observable.error(new GattException(BluetoothGatt.GATT_FAILURE,
-                                                    GattException.Operation.DISCOVER_SERVICES)))
+                                                    Operation.DISCOVER_SERVICES)))
                 .when(device)
                 .discoverService(eq(SenseIdentifiers.SERVICE), any(OperationTimeout.class));
         doReturn(Observable.just(device))
@@ -367,7 +373,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
         final BluetoothStack stack = createMockBluetoothStack();
         final GattPeripheral device = createMockPeripheral(stack);
         doReturn(Observable.error(new GattException(BluetoothGatt.GATT_FAILURE,
-                                                    GattException.Operation.DISCONNECT)))
+                                                    Operation.DISCONNECT)))
                 .when(device)
                 .disconnect();
 
@@ -410,7 +416,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
 
 
         doReturn(Observable.error(new GattException(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION,
-                                                    GattException.Operation.ENABLE_NOTIFICATION)))
+                                                    Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral.responseCharacteristic)
                 .enableNotification(eq(descriptorId),
                                     any(OperationTimeout.class));
@@ -445,7 +451,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
         peripheral.responseCharacteristic = createMockGattCharacteristic(peripheral.gattService,
                                                                          SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
         doReturn(Observable.error(new GattException(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION,
-                                                    GattException.Operation.ENABLE_NOTIFICATION)))
+                                                    Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral.responseCharacteristic)
                 .enableNotification(eq(descriptorId),
                                     any(OperationTimeout.class));
@@ -482,7 +488,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
 
 
         doReturn(Observable.error(new GattException(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION,
-                                                    GattException.Operation.ENABLE_NOTIFICATION)))
+                                                    Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral.responseCharacteristic)
                 .disableNotification(eq(descriptorId),
                                      any(OperationTimeout.class));
@@ -509,7 +515,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
         peripheral.responseCharacteristic = createMockGattCharacteristic(peripheral.gattService,
                                                                          SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
         doReturn(Observable.error(new GattException(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION,
-                                                    GattException.Operation.ENABLE_NOTIFICATION)))
+                                                    Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral.responseCharacteristic)
                 .disableNotification(eq(descriptorId),
                                      any(OperationTimeout.class));
@@ -584,7 +590,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
                                                                          SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
 
         doReturn(Observable.error(new GattException(GattException.GATT_STACK_ERROR,
-                                                    GattException.Operation.WRITE_COMMAND)))
+                                                    Operation.WRITE_COMMAND)))
                 .when(peripheral.commandCharacteristic)
                 .write(any(GattPeripheral.WriteType.class),
                        any(byte[].class),

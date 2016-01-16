@@ -15,7 +15,7 @@ def generateVersionCode() {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         minSdkVersion 18
@@ -40,7 +40,7 @@ android {
 dependencies {
     compile 'io.reactivex:rxjava:1.0.9'
     compile 'com.android.support:support-v4:23.1.1'
-    compile 'is.hello:buruberi-core:0.9.2'
+    compile 'is.hello:buruberi-core:1.0.0'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
