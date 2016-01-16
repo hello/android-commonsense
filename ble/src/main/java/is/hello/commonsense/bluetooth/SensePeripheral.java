@@ -183,6 +183,19 @@ public class SensePeripheral {
             connectFlags = GattPeripheral.CONNECT_FLAG_TRANSPORT_LE;
         }
         final OperationTimeout timeout = createStackTimeout("Connect");
+        final Func1<GattService, ConnectProgress> onDiscoveredServices = new Func1<GattService, ConnectProgress>() {
+            @Override
+            public ConnectProgress call(GattService service) {
+                SensePeripheral.this.gattService = service;
+                SensePeripheral.this.commandCharacteristic =
+                        gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
+                SensePeripheral.this.responseCharacteristic =
+                        gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
+                responseCharacteristic.setPacketListener(packetListener);
+                return ConnectProgress.CONNECTED;
+            }
+        };
+
         final Observable<ConnectProgress> sequence;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // Some Lollipop devices (not all!) do not support establishing
@@ -190,35 +203,18 @@ public class SensePeripheral {
             // behavior in KitKat and Gingerbread, which cannot establish
             // bonds without an active connection.
             sequence = Observable.concat(
-                Observable.just(ConnectProgress.BONDING),
-                gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.CONNECTING)),
-                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
-                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, ConnectProgress>() {
-                    @Override
-                    public ConnectProgress call(GattService service) {
-                        SensePeripheral.this.gattService = service;
-                        SensePeripheral.this.responseCharacteristic =
-                                gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
-                        SensePeripheral.this.commandCharacteristic =
-                                gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
-                        commandCharacteristic.setPacketListener(packetListener);
-                        return ConnectProgress.CONNECTED;
-                    }
-                })
-            );
+                    Observable.just(ConnectProgress.BONDING),
+                    gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.CONNECTING)),
+                    gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
+                                        );
         } else {
             sequence = Observable.concat(
-                Observable.just(ConnectProgress.CONNECTING),
-                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.BONDING)),
-                gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
-                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(new Func1<GattService, ConnectProgress>() {
-                    @Override
-                    public ConnectProgress call(GattService service) {
-                        SensePeripheral.this.gattService = service;
-                        return ConnectProgress.CONNECTED;
-                    }
-                })
-            );
+                    Observable.just(ConnectProgress.CONNECTING),
+                    gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.BONDING)),
+                    gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
+                                        );
         }
 
         return sequence.subscribeOn(gattPeripheral.getStack().getScheduler())
@@ -367,14 +363,14 @@ public class SensePeripheral {
     @VisibleForTesting
     Observable<UUID> subscribeResponse(@NonNull OperationTimeout timeout) {
         return responseCharacteristic.enableNotification(SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG,
-                                                        timeout);
+                                                         timeout);
     }
 
     @VisibleForTesting
     Observable<UUID> unsubscribeResponse(@NonNull OperationTimeout timeout) {
         if (isConnected()) {
             return responseCharacteristic.disableNotification(SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG,
-                                                             timeout);
+                                                              timeout);
         } else {
             return Observable.just(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
         }
@@ -597,7 +593,7 @@ public class SensePeripheral {
                             commandCharacteristic.write(GattPeripheral.WriteType.NO_RESPONSE,
                                                         remainingPackets.getFirst(),
                                                         createStackTimeout("Write Partial Command"))
-                                          .subscribe(this);
+                                                 .subscribe(this);
                         }
                     }
                 };
