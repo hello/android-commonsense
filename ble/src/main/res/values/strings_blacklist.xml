@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Case-sensitive listing of all device models unsupported by CommonSense -->
+    <string-array name="model_blacklist">
+    </string-array>
+</resources>
