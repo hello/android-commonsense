@@ -16,6 +16,7 @@
     <string name="error_bluetooth_gatt_connection_lost">The connection to your Sense was lost.</string>
     <string name="error_bluetooth_gatt_connection_timeout">The connection to your Sense timed out.</string>
     <string name="error_bluetooth_gatt_connection_failed">A connection could not be established to your Sense.</string>
+    <string name="error_bluetooth_bond_removed">There appears to be a problem with the Bluetooth pairing between Sense and your mobile device. Please make sure Sense is in Pairing Mode, and try again.</string>
 
     <string name="error_peripheral_scan_failure">Could not detect a Sense because an error occurred with your device‘s Bluetooth, please try again.</string>
     <string name="error_sense_not_found">Could not detect a Sense nearby. Make sure Sense is plugged in, nearby, and in pairing mode. Ensure no other devices are connected with Sense over Bluetooth.</string>
