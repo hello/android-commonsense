@@ -2,5 +2,6 @@
 <resources>
     <!-- Case-sensitive listing of all device models unsupported by CommonSense -->
     <string-array name="model_blacklist">
+        <item>MotoE2</item>
     </string-array>
 </resources>
