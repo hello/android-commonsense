@@ -80,6 +80,7 @@ public class BuruberiReportingProvider implements Errors.ReportingProvider {
                     return StringRef.from(R.string.error_bluetooth_gatt_stack);
                 }
 
+                case GattException.GATT_CONN_TERMINATE_PEER_USER:
                 case GattException.GATT_CONN_TERMINATE_LOCAL_HOST: {
                     return StringRef.from(R.string.error_bluetooth_gatt_connection_lost);
                 }
@@ -100,6 +101,8 @@ public class BuruberiReportingProvider implements Errors.ReportingProvider {
             final BondException bondException = (BondException) e;
             if (bondException.reason == BondException.REASON_REMOTE_DEVICE_DOWN) {
                 return StringRef.from(R.string.error_bluetooth_out_of_range);
+            } else if (bondException.reason == BondException.REASON_REMOVED) {
+                return StringRef.from(R.string.error_bluetooth_bond_removed);
             } else {
                 return StringRef.from(R.string.error_bluetooth_bonding_change_fmt, getContextInfo(e));
             }
