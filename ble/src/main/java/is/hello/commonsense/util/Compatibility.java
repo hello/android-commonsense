@@ -19,7 +19,7 @@ public class Compatibility {
     @VisibleForTesting
     static boolean isModelBlacklisted(@NonNull String[] blacklist, @NonNull String model) {
         for (final String match : blacklist) {
-            if (match.equals(model)) {
+            if (match.equalsIgnoreCase(model)) {
                 return true;
             }
         }

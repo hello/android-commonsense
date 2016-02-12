@@ -11,6 +11,8 @@ public class CompatibilityTests extends CommonSenseTestCase {
     @Test
     public void isModelBlacklisted() {
         assertThat(Compatibility.isModelBlacklisted(BLACKLIST, "Nexus 4"), is(true));
+        assertThat(Compatibility.isModelBlacklisted(BLACKLIST, "nexus 4"), is(true));
+        assertThat(Compatibility.isModelBlacklisted(BLACKLIST, "NEXUS 4"), is(true));
         assertThat(Compatibility.isModelBlacklisted(BLACKLIST, "Nexus 5"), is(false));
     }
 }

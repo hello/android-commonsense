@@ -3,5 +3,10 @@
     <!-- Case-sensitive listing of all device models unsupported by CommonSense -->
     <string-array name="model_blacklist">
         <item>MotoE2</item>
+        <item>sm_t230nu</item>
+        <item>sm_g900p</item>
+        <item>XT1080</item>
+        <item>XT1585</item>
+        <item>SM-G920P</item>
     </string-array>
 </resources>
