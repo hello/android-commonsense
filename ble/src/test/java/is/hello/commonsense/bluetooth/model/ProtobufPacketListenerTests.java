@@ -17,8 +17,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
-    private final ProtobufPacketListener packetHandler = new ProtobufPacketListener();
+public class ProtobufPacketListenerTests extends CommonSenseTestCase {
+    private final ProtobufPacketListener packetListener = new ProtobufPacketListener();
 
     private static final byte[] LONG_SEQUENCE = {
             0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x07, 0x08, 0x09,
@@ -31,7 +31,7 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
 
     @Test
     public void createPackets() throws Exception {
-        List<byte[]> packets = packetHandler.createOutgoingPackets(LONG_SEQUENCE);
+        List<byte[]> packets = packetListener.createOutgoingPackets(LONG_SEQUENCE);
         assertEquals(4, packets.size());
         int index = 0;
         for (byte[] packet : packets) {
@@ -42,13 +42,13 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
     @Test
     public void allPacketsRightLength() throws Exception {
         byte[] failureCase = Bytes.fromString("08011002320832574952453137373A083257495245313737420A303132333435363738397803");
-        List<byte[]> failureCasePackets = packetHandler.createOutgoingPackets(failureCase);
+        List<byte[]> failureCasePackets = packetListener.createOutgoingPackets(failureCase);
         for (byte[] packet : failureCasePackets) {
             assertTrue(packet.length <= 20);
         }
 
         byte[] successCase = Bytes.fromString("080110023A083257495245313737420A303132333435363738397803");
-        List<byte[]> successCasePackets = packetHandler.createOutgoingPackets(successCase);
+        List<byte[]> successCasePackets = packetListener.createOutgoingPackets(successCase);
         for (byte[] packet : successCasePackets) {
             assertTrue(packet.length <= 20);
         }
@@ -56,16 +56,16 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
 
     @Test
     public void shouldProcessCharacteristic() throws Exception {
-        assertTrue(packetHandler.parser.canProcessPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
-        assertFalse(packetHandler.parser.canProcessPacket(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
+        assertTrue(packetListener.parser.canProcessPacket(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE));
+        assertFalse(packetListener.parser.canProcessPacket(UUID.fromString("D1700CFA-A6F8-47FC-92F5-9905D15F261C")));
     }
 
     @Test
     public void processPacketOutOfOrder() throws Exception {
         TestResponseListener responseListener = new TestResponseListener();
-        packetHandler.setResponseListener(responseListener);
+        packetListener.setResponseListener(responseListener);
 
-        packetHandler.parser.processPacket(new byte[]{99});
+        packetListener.parser.processPacket(new byte[]{99});
 
         assertNull(responseListener.data);
         assertNotNull(responseListener.error);
@@ -76,20 +76,20 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
         byte[] testPacket = { 0, /* packetCount */ 2, 0x00 };
 
         TestResponseListener responseListener = new TestResponseListener();
-        packetHandler.setResponseListener(responseListener);
+        packetListener.setResponseListener(responseListener);
 
-        packetHandler.parser.processPacket(testPacket);
+        packetListener.parser.processPacket(testPacket);
 
         assertNull(responseListener.data);
         assertNull(responseListener.error);
 
 
-        packetHandler.onPeripheralDisconnected();
+        packetListener.onPeripheralDisconnected();
 
         responseListener.reset();
-        packetHandler.setResponseListener(responseListener);
+        packetListener.setResponseListener(responseListener);
 
-        packetHandler.parser.processPacket(testPacket);
+        packetListener.parser.processPacket(testPacket);
 
         assertNull(responseListener.data);
         assertNull(responseListener.error);
@@ -104,13 +104,13 @@ public class CommonSensePacketHandlerTests extends CommonSenseTestCase {
                 .setVersion(0)
                 .build();
 
-        List<byte[]> rawPackets = packetHandler.createOutgoingPackets(morpheusCommand.toByteArray());
+        List<byte[]> rawPackets = packetListener.createOutgoingPackets(morpheusCommand.toByteArray());
 
         TestResponseListener responseListener = new TestResponseListener();
-        packetHandler.setResponseListener(responseListener);
+        packetListener.setResponseListener(responseListener);
 
         for (byte[] packet : rawPackets) {
-            packetHandler.parser.processPacket(packet);
+            packetListener.parser.processPacket(packet);
         }
 
         assertNull(responseListener.error);

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("ResourceType")
-public class CommonSensePeripheralTests extends CommonSenseTestCase {
+public class SensePeripheralTests extends CommonSenseTestCase {
     private static final String TEST_DEVICE_ID = "CA154FFA";
 
     //region Vending Mocks
