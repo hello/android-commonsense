@@ -1,19 +1,28 @@
 package is.hello.commonsense.service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.util.List;
+import java.util.Objects;
 
 import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
+import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
+import is.hello.buruberi.util.Rx;
+import is.hello.buruberi.util.SerialQueue;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
@@ -23,9 +32,11 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_end
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Functions;
 import rx.Observable;
-import rx.functions.Action0;
 
 public class SenseService extends Service {
+    private static final String LOG_TAG = SenseService.class.getSimpleName();
+
+    private final SerialQueue queue = new SerialQueue();
     private @Nullable SensePeripheral sense;
 
     //region Service Lifecycle
@@ -48,12 +59,36 @@ public class SenseService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        final IntentFilter intentFilter = new IntentFilter(GattPeripheral.ACTION_DISCONNECTED);
+        LocalBroadcastManager.getInstance(this)
+                             .registerReceiver(peripheralDisconnected, intentFilter);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        LocalBroadcastManager.getInstance(this)
+                             .unregisterReceiver(peripheralDisconnected);
+
+        if (sense != null && sense.isConnected()) {
+            Log.w(LOG_TAG, "Service being destroyed with active connection");
+        }
     }
+
+    private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (sense != null) {
+                final String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
+                final String senseAddress = sense.getAddress();
+                if (Objects.equals(intentAddress, senseAddress)) {
+                    onPeripheralDisconnected();
+                }
+            }
+        }
+    };
 
     //endregion
 
@@ -69,6 +104,11 @@ public class SenseService extends Service {
 
     //region Managing Connectivity
 
+    private void onPeripheralDisconnected() {
+        this.sense = null;
+        queue.cancelPending(createNoDeviceException());
+    }
+
     public void preparePeripheralCriteria(@NonNull PeripheralCriteria criteria,
                                           @Nullable String deviceId) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
@@ -78,6 +118,13 @@ public class SenseService extends Service {
             criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA,
                                             SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
         }
+    }
+
+    public Observable<List<GattPeripheral>> discover(@NonNull BluetoothStack onStack,
+                                                     @Nullable String deviceId) {
+        final PeripheralCriteria criteria = new PeripheralCriteria();
+        preparePeripheralCriteria(criteria, deviceId);
+        return onStack.discoverPeripherals(criteria);
     }
 
     @CheckResult
@@ -91,6 +138,7 @@ public class SenseService extends Service {
             return Observable.just(ConnectProgress.CONNECTED);
         }
 
+        // Intentionally not serialized on #queue
         return sense.connect();
     }
 
@@ -100,15 +148,9 @@ public class SenseService extends Service {
             return Observable.just(null);
         }
 
+        // Intentionally not serialized on #queue
         return sense.disconnect()
-                    .map(Functions.createMapperToVoid())
-                    .doOnTerminate(new Action0() {
-                        @CheckResult
-                        @Override
-                        public void call() {
-                            SenseService.this.sense = null;
-                        }
-                    });
+                    .map(Functions.createMapperToVoid());
     }
 
     @CheckResult
@@ -117,6 +159,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
+        // Intentionally not serialized on #queue
         return sense.removeBond()
                     .map(Functions.createMapperToVoid());
     }
@@ -132,7 +175,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.runLedAnimation(animationType);
+        return Rx.serialize(sense.runLedAnimation(animationType), queue);
     }
 
     @CheckResult
@@ -141,7 +184,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.scanForWifiNetworks(countryCode);
+        return Rx.serialize(sense.scanForWifiNetworks(countryCode), queue);
     }
 
     @CheckResult
@@ -161,7 +204,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.connectToWiFiNetwork(ssid, securityType, password);
+        return Rx.serialize(sense.connectToWiFiNetwork(ssid, securityType, password), queue);
     }
 
     @CheckResult
@@ -170,7 +213,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.linkAccount(accessToken);
+        return Rx.serialize(sense.linkAccount(accessToken), queue);
     }
 
     @CheckResult
@@ -179,7 +222,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.pairPill(accessToken);
+        return Rx.serialize(sense.pairPill(accessToken), queue);
     }
 
     @CheckResult
@@ -188,7 +231,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.pushData();
+        return Rx.serialize(sense.pushData(), queue);
     }
 
     @CheckResult
@@ -197,7 +240,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.putIntoPairingMode();
+        return Rx.serialize(sense.putIntoPairingMode(), queue);
     }
 
     @CheckResult
@@ -206,7 +249,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.factoryReset();
+        return Rx.serialize(sense.factoryReset(), queue);
     }
 
     //endregion
