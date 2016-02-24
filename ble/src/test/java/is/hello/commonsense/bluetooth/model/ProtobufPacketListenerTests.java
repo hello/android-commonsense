@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.UUID;
 
 import is.hello.buruberi.bluetooth.stacks.util.Bytes;
+import is.hello.commonsense.CommonSenseTestCase;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand;
-import is.hello.commonsense.util.CommonSenseTestCase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

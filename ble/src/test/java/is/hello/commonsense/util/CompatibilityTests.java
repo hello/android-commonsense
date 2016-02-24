@@ -2,6 +2,8 @@ package is.hello.commonsense.util;
 
 import org.junit.Test;
 
+import is.hello.commonsense.CommonSenseTestCase;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
