@@ -14,9 +14,9 @@ import java.util.List;
 /**
  * Helper class to facilitate communication between a component and the {@link SenseService}.
  */
-public class SenseServiceHelper implements ServiceConnection {
+public class SenseServiceConnection implements ServiceConnection {
     private final Context context;
-    private final List<Consumer> consumers = new ArrayList<>();
+    private final List<Listener> listeners = new ArrayList<>();
     private @Nullable SenseService senseService;
 
     //region Lifecycle
@@ -25,7 +25,7 @@ public class SenseServiceHelper implements ServiceConnection {
      * Construct a service helper.
      * @param context   The context whose lifecycle this helper will be bound to.
      */
-    public SenseServiceHelper(@NonNull Context context) {
+    public SenseServiceConnection(@NonNull Context context) {
         this.context = context;
     }
 
@@ -49,8 +49,8 @@ public class SenseServiceHelper implements ServiceConnection {
     public void onServiceConnected(ComponentName name, IBinder service) {
         this.senseService = ((SenseService.LocalBinder) service).getService();
 
-        for (int i = consumers.size() - 1; i >= 0; i--) {
-            consumers.get(i).onSenseServiceAvailable(senseService);
+        for (int i = listeners.size() - 1; i >= 0; i--) {
+            listeners.get(i).onSenseServiceConnected(senseService);
         }
     }
 
@@ -58,8 +58,8 @@ public class SenseServiceHelper implements ServiceConnection {
     public void onServiceDisconnected(ComponentName name) {
         this.senseService = null;
 
-        for (int i = consumers.size() - 1; i >= 0; i--) {
-            consumers.get(i).onSenseServiceUnavailable();
+        for (int i = listeners.size() - 1; i >= 0; i--) {
+            listeners.get(i).onSenseServiceDisconnected();
         }
     }
 
@@ -71,29 +71,29 @@ public class SenseServiceHelper implements ServiceConnection {
     /**
      * Register a new consumer with the helper. The consumer will receive an immediate
      * callback if the service helper is already bound to the service.
-     * @param consumer  The consumer.
+     * @param listener  The consumer.
      */
-    public void registerConsumer(@NonNull Consumer consumer) {
-        consumers.add(consumer);
+    public void registerConsumer(@NonNull Listener listener) {
+        listeners.add(listener);
 
         if (senseService != null) {
-            consumer.onSenseServiceAvailable(senseService);
+            listener.onSenseServiceConnected(senseService);
         }
     }
 
     /**
-     * Unregister a consumer from the helper. Safe to call within {@link Consumer} callbacks.
-     * @param consumer  The consumer.
+     * Unregister a consumer from the helper. Safe to call within {@link Listener} callbacks.
+     * @param listener  The consumer.
      */
-    public void unregisterConsumer(@NonNull Consumer consumer) {
-        consumers.remove(consumer);
+    public void unregisterConsumer(@NonNull Listener listener) {
+        listeners.remove(listener);
     }
 
     /**
-     * Unregisters all consumers from the helper. Not safe to call within {@link Consumer} callbacks.
+     * Unregisters all consumers from the helper. Not safe to call within {@link Listener} callbacks.
      */
     public void removeAllConsumers() {
-        consumers.clear();
+        listeners.clear();
     }
 
     /**
@@ -110,17 +110,17 @@ public class SenseServiceHelper implements ServiceConnection {
     /**
      * Specifies a class that is interested in communicating with the {@link SenseService}.
      */
-    public interface Consumer {
+    public interface Listener {
         /**
-         * Called when the {@link SenseService} is available for usel
+         * Called when the {@link SenseService} is available for use.
          * @param service   The service.
          */
-        void onSenseServiceAvailable(@NonNull SenseService service);
+        void onSenseServiceConnected(@NonNull SenseService service);
 
         /**
          * Called when the {@link SenseService} becomes unavailable. Any external
          * references to it should be immediately cleared.
          */
-        void onSenseServiceUnavailable();
+        void onSenseServiceDisconnected();
     }
 }
