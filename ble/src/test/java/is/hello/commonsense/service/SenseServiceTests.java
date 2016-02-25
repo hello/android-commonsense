@@ -79,14 +79,14 @@ public class SenseServiceTests extends CommonSenseTestCase {
     }
 
     @Test
-    public void preparePeripheralCriteria() {
+    public void prepareForScan() {
         final AdvertisingData withoutDeviceId = new AdvertisingDataBuilder()
                 .add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
                      SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT)
                 .build();
 
         final PeripheralCriteria criteriaWithoutDeviceId = new PeripheralCriteria();
-        service.preparePeripheralCriteria(criteriaWithoutDeviceId, null);
+        SenseService.prepareForScan(criteriaWithoutDeviceId, null);
         assertThat(criteriaWithoutDeviceId.matches(withoutDeviceId), is(true));
 
 
@@ -98,7 +98,7 @@ public class SenseServiceTests extends CommonSenseTestCase {
                 .build();
 
         final PeripheralCriteria criteriaWithDeviceId = new PeripheralCriteria();
-        service.preparePeripheralCriteria(criteriaWithDeviceId, Mocks.DEVICE_ID);
+        SenseService.prepareForScan(criteriaWithDeviceId, Mocks.DEVICE_ID);
         assertThat(criteriaWithDeviceId.limit, is(equalTo(1)));
         assertThat(criteriaWithDeviceId.matches(withDeviceId), is(true));
     }

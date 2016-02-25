@@ -109,8 +109,8 @@ public class SenseService extends Service {
         queue.cancelPending(createNoDeviceException());
     }
 
-    public void preparePeripheralCriteria(@NonNull PeripheralCriteria criteria,
-                                          @Nullable String deviceId) {
+    public static void prepareForScan(@NonNull PeripheralCriteria criteria,
+                                      @Nullable String deviceId) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
                                         SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         if (deviceId != null) {
