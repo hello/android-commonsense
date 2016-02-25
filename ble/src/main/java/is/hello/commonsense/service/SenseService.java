@@ -30,7 +30,7 @@ import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.commonsense.util.ConnectProgress;
-import is.hello.commonsense.util.Functions;
+import is.hello.commonsense.util.Func;
 import rx.Observable;
 
 public class SenseService extends Service {
@@ -133,25 +133,25 @@ public class SenseService extends Service {
     }
 
     @CheckResult
-    public Observable<Void> disconnect() {
+    public Observable<SenseService> disconnect() {
         if (sense == null) {
             return Observable.just(null);
         }
 
         // Intentionally not serialized on #queue
         return sense.disconnect()
-                    .map(Functions.createMapperToVoid());
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
-    public Observable<Void> removeBond() {
+    public Observable<SenseService> removeBond() {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
         // Intentionally not serialized on #queue
         return sense.removeBond()
-                    .map(Functions.createMapperToVoid());
+                    .map(Func.justValue(this));
     }
 
     public boolean isConnected() {
@@ -172,12 +172,13 @@ public class SenseService extends Service {
     //region Commands
 
     @CheckResult
-    public Observable<Void> runLedAnimation(@NonNull SenseLedAnimation animationType) {
+    public Observable<SenseService> runLedAnimation(@NonNull SenseLedAnimation animationType) {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.runLedAnimation(animationType), queue);
+        return Rx.serialize(sense.runLedAnimation(animationType)
+                                 .map(Func.justValue(this)), queue);
     }
 
     @CheckResult
@@ -210,48 +211,53 @@ public class SenseService extends Service {
     }
 
     @CheckResult
-    public Observable<Void> linkAccount(@NonNull String accessToken) {
+    public Observable<SenseService> linkAccount(@NonNull String accessToken) {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.linkAccount(accessToken), queue);
+        return Rx.serialize(sense.linkAccount(accessToken)
+                                 .map(Func.justValue(this)), queue);
     }
 
     @CheckResult
-    public Observable<String> linkPill(@NonNull String accessToken) {
+    public Observable<SenseService> linkPill(@NonNull String accessToken) {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.pairPill(accessToken), queue);
+        return Rx.serialize(sense.pairPill(accessToken)
+                                 .map(Func.justValue(this)), queue);
     }
 
     @CheckResult
-    public Observable<Void> pushData() {
+    public Observable<SenseService> pushData() {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.pushData(), queue);
+        return Rx.serialize(sense.pushData()
+                                 .map(Func.justValue(this)), queue);
     }
 
     @CheckResult
-    public Observable<Void> putIntoPairingMode() {
+    public Observable<SenseService> putIntoPairingMode() {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.putIntoPairingMode(), queue);
+        return Rx.serialize(sense.putIntoPairingMode()
+                                 .map(Func.justValue(this)), queue);
     }
 
     @CheckResult
-    public Observable<Void> factoryReset() {
+    public Observable<SenseService> factoryReset() {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.factoryReset(), queue);
+        return Rx.serialize(sense.factoryReset()
+                                 .map(Func.justValue(this)), queue);
     }
 
     //endregion

@@ -42,7 +42,7 @@ import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
 import is.hello.commonsense.util.ConnectProgress;
-import is.hello.commonsense.util.Functions;
+import is.hello.commonsense.util.Func;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -204,15 +204,15 @@ public class SensePeripheral {
             // bonds without an active connection.
             sequence = Observable.concat(
                     Observable.just(ConnectProgress.BONDING),
-                    gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.CONNECTING)),
-                    gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                    gattPeripheral.createBond().map(Func.justValue(ConnectProgress.CONNECTING)),
+                    gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
                     gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
                                         );
         } else {
             sequence = Observable.concat(
                     Observable.just(ConnectProgress.CONNECTING),
-                    gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.BONDING)),
-                    gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                    gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.BONDING)),
+                    gattPeripheral.createBond().map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
                     gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
                                         );
         }
@@ -252,7 +252,7 @@ public class SensePeripheral {
     @CheckResult
     public Observable<SensePeripheral> disconnect() {
         return gattPeripheral.disconnect()
-                             .map(Functions.createMapperToValue(this))
+                             .map(Func.justValue(this))
                              .finallyDo(new Action0() {
                                  @Override
                                  public void call() {
@@ -269,7 +269,7 @@ public class SensePeripheral {
                                                                                REMOVE_BOND_TIMEOUT_S,
                                                                                TimeUnit.SECONDS);
         return gattPeripheral.removeBond(timeout)
-                             .map(Functions.createMapperToValue(this));
+                             .map(Func.justValue(this));
     }
 
     //endregion
@@ -624,7 +624,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -642,7 +642,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -870,7 +870,7 @@ public class SensePeripheral {
                                .setAccountId(accountToken)
                                .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -888,7 +888,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -906,7 +906,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -924,7 +924,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performSimpleCommand(morpheusCommand, createAnimationTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
