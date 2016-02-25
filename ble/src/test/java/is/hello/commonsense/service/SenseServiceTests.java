@@ -59,14 +59,13 @@ public class SenseServiceTests extends CommonSenseTestCase {
     //endregion
 
     @Test
-    public void prepareForScan() {
+    public void createSenseCriteria() {
         final AdvertisingData withoutDeviceId = new AdvertisingDataBuilder()
                 .add(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
                      SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT)
                 .build();
 
-        final PeripheralCriteria criteriaWithoutDeviceId = new PeripheralCriteria();
-        SenseService.prepareForScan(criteriaWithoutDeviceId, null);
+        final PeripheralCriteria criteriaWithoutDeviceId = SenseService.createSenseCriteria();
         assertThat(criteriaWithoutDeviceId.matches(withoutDeviceId), is(true));
 
 
@@ -77,8 +76,7 @@ public class SenseServiceTests extends CommonSenseTestCase {
                      SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + Mocks.DEVICE_ID)
                 .build();
 
-        final PeripheralCriteria criteriaWithDeviceId = new PeripheralCriteria();
-        SenseService.prepareForScan(criteriaWithDeviceId, Mocks.DEVICE_ID);
+        final PeripheralCriteria criteriaWithDeviceId = SenseService.createSenseCriteria(Mocks.DEVICE_ID);
         assertThat(criteriaWithDeviceId.limit, is(equalTo(1)));
         assertThat(criteriaWithDeviceId.matches(withDeviceId), is(true));
     }
@@ -144,6 +142,27 @@ public class SenseServiceTests extends CommonSenseTestCase {
     public void runLedAnimationRequiresDevice() {
         Sync.last(service.runLedAnimation(SenseLedAnimation.BUSY));
     }
+
+    @Test(expected = ConnectionStateException.class)
+    public void trippyLEDs() {
+        Sync.last(service.trippyLEDs());
+    }
+
+    @Test(expected = ConnectionStateException.class)
+    public void busyLEDs() {
+        Sync.last(service.busyLEDs());
+    }
+
+    @Test(expected = ConnectionStateException.class)
+    public void fadeOutLEDs() {
+        Sync.last(service.fadeOutLEDs());
+    }
+
+    @Test(expected = ConnectionStateException.class)
+    public void stopLEDs() {
+        Sync.last(service.stopLEDs());
+    }
+
 
     @Test(expected = ConnectionStateException.class)
     public void scanForWifiNetworksRequiresDevice() {

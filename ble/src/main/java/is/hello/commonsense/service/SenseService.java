@@ -25,6 +25,7 @@ import is.hello.buruberi.util.Rx;
 import is.hello.buruberi.util.SerialQueue;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.SensePeripheral;
+import is.hello.commonsense.bluetooth.SensePeripheral.CountryCode;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
@@ -109,15 +110,19 @@ public class SenseService extends Service {
         queue.cancelPending(createNoDeviceException());
     }
 
-    public static void prepareForScan(@NonNull PeripheralCriteria criteria,
-                                      @Nullable String deviceId) {
+    public static PeripheralCriteria createSenseCriteria() {
+        final PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
                                         SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
-        if (deviceId != null) {
-            criteria.setLimit(1);
-            criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA,
-                                            SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
-        }
+        return criteria;
+    }
+
+    public static PeripheralCriteria createSenseCriteria(@NonNull String deviceId) {
+        final PeripheralCriteria criteria = createSenseCriteria();
+        criteria.setLimit(1);
+        criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA,
+                                        SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
+        return criteria;
     }
 
     @CheckResult
@@ -158,14 +163,6 @@ public class SenseService extends Service {
         return (sense != null && sense.isConnected());
     }
 
-    public int getBondStatus() {
-        if (sense == null) {
-            return GattPeripheral.BOND_NONE;
-        } else {
-            return sense.getBondStatus();
-        }
-    }
-
     //endregion
 
 
@@ -182,7 +179,27 @@ public class SenseService extends Service {
     }
 
     @CheckResult
-    public Observable<List<wifi_endpoint>> scanForWifiNetworks(@Nullable SensePeripheral.CountryCode countryCode) {
+    public Observable<SenseService> trippyLEDs() {
+        return runLedAnimation(SenseLedAnimation.TRIPPY);
+    }
+
+    @CheckResult
+    public Observable<SenseService> busyLEDs() {
+        return runLedAnimation(SenseLedAnimation.BUSY);
+    }
+
+    @CheckResult
+    public Observable<SenseService> fadeOutLEDs() {
+        return runLedAnimation(SenseLedAnimation.FADE_OUT);
+    }
+
+    @CheckResult
+    public Observable<SenseService> stopLEDs() {
+        return runLedAnimation(SenseLedAnimation.STOP);
+    }
+
+    @CheckResult
+    public Observable<List<wifi_endpoint>> scanForWifiNetworks(@Nullable CountryCode countryCode) {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
