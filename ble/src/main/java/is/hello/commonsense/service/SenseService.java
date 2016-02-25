@@ -154,6 +154,18 @@ public class SenseService extends Service {
                     .map(Functions.createMapperToVoid());
     }
 
+    public boolean isConnected() {
+        return (sense != null && sense.isConnected());
+    }
+
+    public int getBondStatus() {
+        if (sense == null) {
+            return GattPeripheral.BOND_NONE;
+        } else {
+            return sense.getBondStatus();
+        }
+    }
+
     //endregion
 
 

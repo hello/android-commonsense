@@ -11,6 +11,9 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+import rx.subjects.AsyncSubject;
+
 /**
  * Helper class to facilitate communication between a component and the {@link SenseService}.
  */
@@ -102,6 +105,33 @@ public class SenseServiceConnection implements ServiceConnection {
     @Nullable
     public SenseService getSenseService() {
         return senseService;
+    }
+
+    /**
+     * Creates an {@code Observable} that will produce the
+     * {@link SenseService} as soon as it becomes available.
+     */
+    public Observable<SenseService> senseService() {
+        if (senseService != null) {
+            return Observable.just(senseService);
+        } else {
+            final AsyncSubject<SenseService> mirror = AsyncSubject.create();
+            registerConsumer(new Listener() {
+                @Override
+                public void onSenseServiceConnected(@NonNull SenseService service) {
+                    mirror.onNext(service);
+                    mirror.onCompleted();
+
+                    unregisterConsumer(this);
+                }
+
+                @Override
+                public void onSenseServiceDisconnected() {
+                    // Do nothing.
+                }
+            });
+            return mirror;
+        }
     }
 
     //endregion
