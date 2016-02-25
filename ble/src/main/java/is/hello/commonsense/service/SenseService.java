@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 
 import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
-import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
@@ -36,8 +36,8 @@ import rx.Observable;
 public class SenseService extends Service {
     private static final String LOG_TAG = SenseService.class.getSimpleName();
 
-    private final SerialQueue queue = new SerialQueue();
-    private @Nullable SensePeripheral sense;
+    @VisibleForTesting final SerialQueue queue = new SerialQueue();
+    @VisibleForTesting @Nullable SensePeripheral sense;
 
     //region Service Lifecycle
 
@@ -77,19 +77,6 @@ public class SenseService extends Service {
         }
     }
 
-    private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (sense != null) {
-                final String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
-                final String senseAddress = sense.getAddress();
-                if (Objects.equals(intentAddress, senseAddress)) {
-                    onPeripheralDisconnected();
-                }
-            }
-        }
-    };
-
     //endregion
 
 
@@ -103,6 +90,19 @@ public class SenseService extends Service {
 
 
     //region Managing Connectivity
+
+    private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (sense != null) {
+                final String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
+                final String senseAddress = sense.getAddress();
+                if (Objects.equals(intentAddress, senseAddress)) {
+                    onPeripheralDisconnected();
+                }
+            }
+        }
+    };
 
     private void onPeripheralDisconnected() {
         this.sense = null;
@@ -120,13 +120,6 @@ public class SenseService extends Service {
         }
     }
 
-    public Observable<List<GattPeripheral>> discover(@NonNull BluetoothStack onStack,
-                                                     @Nullable String deviceId) {
-        final PeripheralCriteria criteria = new PeripheralCriteria();
-        preparePeripheralCriteria(criteria, deviceId);
-        return onStack.discoverPeripherals(criteria);
-    }
-
     @CheckResult
     public Observable<ConnectProgress> connect(@NonNull GattPeripheral peripheral) {
         if (this.sense != null) {
@@ -134,9 +127,6 @@ public class SenseService extends Service {
         }
 
         this.sense = new SensePeripheral(peripheral);
-        if (sense.isConnected()) {
-            return Observable.just(ConnectProgress.CONNECTED);
-        }
 
         // Intentionally not serialized on #queue
         return sense.connect();
@@ -199,7 +189,7 @@ public class SenseService extends Service {
     @CheckResult
     public Observable<SenseConnectToWiFiUpdate> sendWifiCredentials(@NonNull String ssid,
                                                                     @NonNull wifi_endpoint.sec_type securityType,
-                                                                    @NonNull String password) {
+                                                                    @Nullable String password) {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
