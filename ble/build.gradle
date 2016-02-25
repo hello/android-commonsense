@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 // Used for both the 'aar' file and publish.
-def VERSION_NAME = "2016.2.12.1" // <year>.<month>.<day>.<build-number>
+def VERSION_NAME = "2016.2.24.1" // <year>.<month>.<day>.<build-number>
 def PACKAGE = 'is.hello.commonsense'
 
 apply plugin: 'com.android.library'
