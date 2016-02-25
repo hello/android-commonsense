@@ -93,13 +93,6 @@ public class SenseServiceConnection implements ServiceConnection {
     }
 
     /**
-     * Unregisters all consumers from the helper. Not safe to call within {@link Listener} callbacks.
-     */
-    public void removeAllConsumers() {
-        listeners.clear();
-    }
-
-    /**
      * @return The {@link SenseService} if it's currently bound; {@code null} otherwise.
      */
     @Nullable
@@ -132,6 +125,14 @@ public class SenseServiceConnection implements ServiceConnection {
             });
             return mirror;
         }
+    }
+
+    /**
+     * Indicates whether or not the {@link SenseService} is currently
+     * available, and connected to a remote Sense peripheral.
+     */
+    public boolean isConnectedToSense() {
+        return (senseService != null && senseService.isConnected());
     }
 
     //endregion

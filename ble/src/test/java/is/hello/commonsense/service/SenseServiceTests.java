@@ -30,12 +30,9 @@ import is.hello.commonsense.util.Sync;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class SenseServiceTests extends CommonSenseTestCase {
     private SenseService service;
@@ -60,23 +57,6 @@ public class SenseServiceTests extends CommonSenseTestCase {
     }
 
     //endregion
-
-
-    @Test
-    public void serviceConnection() {
-        final SenseServiceConnection.Listener listener = mock(SenseServiceConnection.Listener.class);
-        final SenseServiceConnection helper = new SenseServiceConnection(getContext());
-        helper.registerConsumer(listener);
-        helper.create();
-
-        assertThat(helper.getSenseService(), is(notNullValue()));
-        //noinspection ConstantConditions
-        verify(listener).onSenseServiceConnected(helper.getSenseService());
-
-        helper.destroy();
-        assertThat(helper.getSenseService(), is(nullValue()));
-        verify(listener).onSenseServiceDisconnected();
-    }
 
     @Test
     public void prepareForScan() {
