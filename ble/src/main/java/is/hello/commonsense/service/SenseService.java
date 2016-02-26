@@ -148,19 +148,13 @@ public class SenseService extends Service {
                     .map(Func.justValue(this));
     }
 
-    @CheckResult
-    public Observable<SenseService> removeBond() {
-        if (sense == null) {
-            return Observable.error(createNoDeviceException());
-        }
-
-        // Intentionally not serialized on #queue
-        return sense.removeBond()
-                    .map(Func.justValue(this));
-    }
-
     public boolean isConnected() {
         return (sense != null && sense.isConnected());
+    }
+
+    @Nullable
+    public String getDeviceId() {
+        return sense != null ? sense.getDeviceId() : null;
     }
 
     //endregion

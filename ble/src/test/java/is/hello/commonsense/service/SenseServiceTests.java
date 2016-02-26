@@ -33,6 +33,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class SenseServiceTests extends CommonSenseTestCase {
     private SenseService service;
@@ -57,6 +59,17 @@ public class SenseServiceTests extends CommonSenseTestCase {
     }
 
     //endregion
+
+    @Test
+    public void getDeviceId() {
+        assertThat(service.getDeviceId(), is(nullValue()));
+
+        final SensePeripheral peripheral = mock(SensePeripheral.class);
+        doReturn(Mocks.DEVICE_ID).when(peripheral).getDeviceId();
+        service.sense = peripheral;
+
+        assertThat(service.getDeviceId(), is(equalTo(Mocks.DEVICE_ID)));
+    }
 
     @Test
     public void createSenseCriteria() {
@@ -131,11 +144,6 @@ public class SenseServiceTests extends CommonSenseTestCase {
     @Test
     public void disconnectWithNoDevice() {
         assertThat(Sync.last(service.disconnect()), is(equalTo(null)));
-    }
-
-    @Test(expected = ConnectionStateException.class)
-    public void removeBondRequiresDevice() {
-        Sync.last(service.removeBond());
     }
 
     @Test(expected = ConnectionStateException.class)
