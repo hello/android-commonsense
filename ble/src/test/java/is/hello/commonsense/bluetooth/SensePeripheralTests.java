@@ -211,6 +211,9 @@ public class SensePeripheralTests extends CommonSenseTestCase {
         doReturn(Observable.just(device))
                 .when(device)
                 .createBond();
+        doReturn(GattPeripheral.STATUS_CONNECTED)
+                .when(device)
+                .getConnectionStatus();
         final GattService service = mock(GattService.class);
         doReturn(mock(GattCharacteristic.class))
                 .when(service)

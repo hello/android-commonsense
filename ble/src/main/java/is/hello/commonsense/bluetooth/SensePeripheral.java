@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
 import is.hello.buruberi.bluetooth.errors.LostConnectionException;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
@@ -178,16 +179,22 @@ public class SensePeripheral {
             connectFlags = GattPeripheral.CONNECT_FLAG_TRANSPORT_LE;
         }
         final OperationTimeout timeout = createStackTimeout("Connect");
-        final Func1<GattService, ConnectProgress> onDiscoveredServices = new Func1<GattService, ConnectProgress>() {
+        final Func1<GattService, Observable<ConnectProgress>> onDiscoveredServices = new Func1<GattService, Observable<ConnectProgress>>() {
             @Override
-            public ConnectProgress call(GattService service) {
-                SensePeripheral.this.gattService = service;
-                SensePeripheral.this.commandCharacteristic =
-                        gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
-                SensePeripheral.this.responseCharacteristic =
-                        gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
-                responseCharacteristic.setPacketListener(packetListener);
-                return ConnectProgress.CONNECTED;
+            public Observable<ConnectProgress> call(GattService service) {
+                // Guard against the device connection being dropped in the
+                // 3 second delay that happens after discovering services.
+                if (gattPeripheral.getConnectionStatus() == GattPeripheral.STATUS_CONNECTED) {
+                    SensePeripheral.this.gattService = service;
+                    SensePeripheral.this.commandCharacteristic =
+                            gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
+                    SensePeripheral.this.responseCharacteristic =
+                            gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
+                    responseCharacteristic.setPacketListener(packetListener);
+                    return Observable.just(ConnectProgress.CONNECTED);
+                } else {
+                    return Observable.error(new ConnectionStateException());
+                }
             }
         };
 
@@ -198,18 +205,18 @@ public class SensePeripheral {
             // behavior in KitKat and Gingerbread, which cannot establish
             // bonds without an active connection.
             sequence = Observable.concat(
-                    Observable.just(ConnectProgress.BONDING),
-                    gattPeripheral.createBond().map(Func.justValue(ConnectProgress.CONNECTING)),
-                    gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
-                                        );
+                Observable.just(ConnectProgress.BONDING),
+                gattPeripheral.createBond().map(Func.justValue(ConnectProgress.CONNECTING)),
+                gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).flatMap(onDiscoveredServices)
+            );
         } else {
             sequence = Observable.concat(
-                    Observable.just(ConnectProgress.CONNECTING),
-                    gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.BONDING)),
-                    gattPeripheral.createBond().map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
-                                        );
+                Observable.just(ConnectProgress.CONNECTING),
+                gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.BONDING)),
+                gattPeripheral.createBond().map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).flatMap(onDiscoveredServices)
+            );
         }
 
         return sequence.subscribeOn(gattPeripheral.getStack().getScheduler())
