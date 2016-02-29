@@ -127,7 +127,7 @@ public class SenseService extends Service {
 
     @CheckResult
     public Observable<ConnectProgress> connect(@NonNull GattPeripheral peripheral) {
-        if (this.sense != null) {
+        if (this.sense != null && sense.isConnected()) {
             return Observable.error(new IllegalStateException("Cannot connect to multiple Senses at once."));
         }
 

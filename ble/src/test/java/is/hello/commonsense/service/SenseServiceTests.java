@@ -35,6 +35,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 public class SenseServiceTests extends CommonSenseTestCase {
     private SenseService service;
@@ -98,7 +99,8 @@ public class SenseServiceTests extends CommonSenseTestCase {
     public void connectSingleDeviceOnly() {
         final BluetoothStack stack = Mocks.createBluetoothStack();
         final GattPeripheral device = Mocks.createPeripheral(stack);
-        service.sense = new SensePeripheral(device);
+        service.sense = spy(new SensePeripheral(device));
+        doReturn(true).when(service.sense).isConnected();
         Sync.last(service.connect(device)); // should throw
     }
 
