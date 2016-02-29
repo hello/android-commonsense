@@ -222,7 +222,7 @@ public class SenseService extends Service {
     }
 
     @CheckResult
-    public Observable<SenseService> linkAccount(@NonNull String accessToken) {
+    public Observable<SenseService> linkAccount(String accessToken) {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
@@ -232,7 +232,7 @@ public class SenseService extends Service {
     }
 
     @CheckResult
-    public Observable<SenseService> linkPill(@NonNull String accessToken) {
+    public Observable<SenseService> linkPill(String accessToken) {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
