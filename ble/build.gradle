@@ -1,7 +1,8 @@
+
 import java.text.SimpleDateFormat
 
 // Used for both the 'aar' file and publish.
-def VERSION_NAME = "2016.2.24.1" // <year>.<month>.<day>.<build-number>
+def VERSION_NAME = "2016.2.29.1" // <year>.<month>.<day>.<build-number>
 def PACKAGE = 'is.hello.commonsense'
 
 apply plugin: 'com.android.library'
@@ -12,7 +13,6 @@ def generateVersionCode() {
     def formatter = new SimpleDateFormat("yyMMddHH")
     Integer.parseInt(formatter.format(now))
 }
-
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
@@ -44,7 +44,7 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    testCompile "org.robolectric:robolectric:3.0"
+    testCompile 'org.robolectric:robolectric:3.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
@@ -90,7 +90,7 @@ publishing {
                         resolveStrategy = DELEGATE_FIRST
                         name 'android-commonsense'
                         description 'Client classes for Sense.'
-                        url 'https://github.com/hello/buruberi'
+                        url 'https://github.com/hello/android-commonsense'
                         scm {
                             url 'https://github.com/hello/android-commonsense'
                             connection 'scm:git:git@github.com:hello/android-commonsense.git'

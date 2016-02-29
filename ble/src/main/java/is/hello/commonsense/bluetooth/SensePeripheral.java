@@ -28,7 +28,6 @@ import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Operation;
-import is.hello.commonsense.bluetooth.errors.BuruberiReportingProvider;
 import is.hello.commonsense.bluetooth.errors.SenseBusyError;
 import is.hello.commonsense.bluetooth.errors.SenseConnectWifiError;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
@@ -56,10 +55,6 @@ import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.w
 
 public class SensePeripheral {
     public static final String LOG_TAG = SensePeripheral.class.getSimpleName();
-
-    static {
-        BuruberiReportingProvider.register();
-    }
 
     //region Versions
 
