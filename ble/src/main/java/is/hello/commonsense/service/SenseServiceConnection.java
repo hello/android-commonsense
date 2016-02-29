@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.functions.Func1;
 import rx.subjects.AsyncSubject;
 
 /**
@@ -124,6 +125,25 @@ public class SenseServiceConnection implements ServiceConnection {
                 }
             });
             return mirror;
+        }
+    }
+
+    /**
+     * Apply a functor producing an operation {@code Observable}
+     * to the {@link SenseService} this connection is bound to.
+     * <p>
+     * This method is more efficient than just calling {@code #flatMap(Func1)}
+     * on the {@code Observable} returned by {@link #senseService()}.
+     * @param <R>   The type of value produced by the returned {@code Observable}.
+     * @param f     Applied immediately if the {@code SenseService} is available; otherwise applied
+     *              once the {@code SenseService} is connected.
+     * @return An operation observable.
+     */
+    public <R> Observable<R> perform(@NonNull Func1<SenseService, Observable<R>> f) {
+        if (senseService != null) {
+            return f.call(senseService);
+        } else {
+            return senseService().flatMap(f);
         }
     }
 

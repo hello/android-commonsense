@@ -15,7 +15,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import is.hello.commonsense.CommonSenseTestCase;
 import is.hello.commonsense.bluetooth.SensePeripheral;
+import rx.Observable;
 import rx.Observer;
+import rx.functions.Func1;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -24,6 +26,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 public class SenseServiceConnectionTests extends CommonSenseTestCase {
@@ -124,6 +128,47 @@ public class SenseServiceConnectionTests extends CommonSenseTestCase {
 
         assertThat(completed.get(), is(true));
         assertThat(service, is(notNullValue()));
+    }
+
+    @Test
+    public void performCold() {
+        final SenseServiceConnection connection = spy(new SenseServiceConnection(getContext()));
+        assertThat(connection.getSenseService(), is(nullValue()));
+
+        final AtomicBoolean functorCalled = new AtomicBoolean(false);
+        connection.perform(new Func1<SenseService, Observable<SenseService>>() {
+            @Override
+            public Observable<SenseService> call(SenseService service) {
+                functorCalled.set(true);
+                return Observable.just(service);
+            }
+        }).subscribe();
+
+        connection.create();
+
+        verify(connection).senseService();
+        assertThat(functorCalled.get(), is(true));
+    }
+
+    @Test
+    public void performWarm() {
+        final SenseServiceConnection connection = spy(new SenseServiceConnection(getContext()));
+        connection.create();
+        assertThat(connection.getSenseService(), is(notNullValue()));
+
+        final AtomicBoolean functorCalled = new AtomicBoolean(false);
+        connection.perform(new Func1<SenseService, Observable<SenseService>>() {
+            @Override
+            public Observable<SenseService> call(SenseService service) {
+                functorCalled.set(true);
+                return Observable.just(service);
+            }
+        }).subscribe();
+
+        connection.create();
+
+        verify(connection, never()).senseService();
+        assertThat(functorCalled.get(), is(true));
     }
 
     @Test

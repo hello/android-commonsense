@@ -205,8 +205,13 @@ public class SenseServiceTests extends CommonSenseTestCase {
     }
 
     @Test(expected = ConnectionStateException.class)
-    public void putIntoPairingModeRequiresDevice() {
-        Sync.last(service.putIntoPairingMode());
+    public void enablePairingModeRequiresDevice() {
+        Sync.last(service.enablePairingMode());
+    }
+
+    @Test(expected = ConnectionStateException.class)
+    public void disablePairingModeRequiresDevice() {
+        Sync.last(service.disablePairingMode());
     }
 
     @Test(expected = ConnectionStateException.class)

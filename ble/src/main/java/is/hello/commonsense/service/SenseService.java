@@ -252,12 +252,22 @@ public class SenseService extends Service {
     }
 
     @CheckResult
-    public Observable<SenseService> putIntoPairingMode() {
+    public Observable<SenseService> enablePairingMode() {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
         return Rx.serialize(sense.putIntoPairingMode()
+                                 .map(Func.justValue(this)), queue);
+    }
+
+    @CheckResult
+    public Observable<SenseService> disablePairingMode() {
+        if (sense == null) {
+            return Observable.error(createNoDeviceException());
+        }
+
+        return Rx.serialize(sense.putIntoNormalMode()
                                  .map(Func.justValue(this)), queue);
     }
 
