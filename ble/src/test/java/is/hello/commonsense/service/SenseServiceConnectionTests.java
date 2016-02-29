@@ -62,19 +62,19 @@ public class SenseServiceConnectionTests extends CommonSenseTestCase {
         connection.registerConsumer(listener);
         connection.create();
 
-        assertThat(connection.getSenseService(), is(notNullValue()));
+        assertThat(connection.senseService, is(notNullValue()));
         //noinspection ConstantConditions
-        verify(listener).onSenseServiceConnected(connection.getSenseService());
+        verify(listener).onSenseServiceConnected(connection.senseService);
 
         connection.destroy();
-        assertThat(connection.getSenseService(), is(nullValue()));
+        assertThat(connection.senseService, is(nullValue()));
         verify(listener).onSenseServiceDisconnected();
     }
 
     @Test
     public void senseServiceCold() {
         final SenseServiceConnection connection = new SenseServiceConnection(getContext());
-        assertThat(connection.getSenseService(), is(nullValue()));
+        assertThat(connection.senseService, is(nullValue()));
 
         final AtomicBoolean completed = new AtomicBoolean(false);
         final AtomicReference<SenseService> service = new AtomicReference<>();
@@ -105,7 +105,7 @@ public class SenseServiceConnectionTests extends CommonSenseTestCase {
     public void senseServiceWarm() {
         final SenseServiceConnection connection = new SenseServiceConnection(getContext());
         connection.create();
-        assertThat(connection.getSenseService(), is(notNullValue()));
+        assertThat(connection.senseService, is(notNullValue()));
 
         final AtomicBoolean completed = new AtomicBoolean(false);
         final AtomicReference<SenseService> service = new AtomicReference<>();
@@ -133,7 +133,7 @@ public class SenseServiceConnectionTests extends CommonSenseTestCase {
     @Test
     public void performCold() {
         final SenseServiceConnection connection = spy(new SenseServiceConnection(getContext()));
-        assertThat(connection.getSenseService(), is(nullValue()));
+        assertThat(connection.senseService, is(nullValue()));
 
         final AtomicBoolean functorCalled = new AtomicBoolean(false);
         connection.perform(new Func1<SenseService, Observable<SenseService>>() {
@@ -154,7 +154,7 @@ public class SenseServiceConnectionTests extends CommonSenseTestCase {
     public void performWarm() {
         final SenseServiceConnection connection = spy(new SenseServiceConnection(getContext()));
         connection.create();
-        assertThat(connection.getSenseService(), is(notNullValue()));
+        assertThat(connection.senseService, is(notNullValue()));
 
         final AtomicBoolean functorCalled = new AtomicBoolean(false);
         connection.perform(new Func1<SenseService, Observable<SenseService>>() {
@@ -177,13 +177,13 @@ public class SenseServiceConnectionTests extends CommonSenseTestCase {
         assertThat(connection.isConnectedToSense(), is(false));
 
         connection.create();
-        assertThat(connection.getSenseService(), is(notNullValue()));
+        assertThat(connection.senseService, is(notNullValue()));
         assertThat(connection.isConnectedToSense(), is(false));
 
         final SensePeripheral fakePeripheral = mock(SensePeripheral.class);
         doReturn(true).when(fakePeripheral).isConnected();
         //noinspection ConstantConditions
-        connection.getSenseService().sense = fakePeripheral;
+        connection.senseService.sense = fakePeripheral;
 
         assertThat(connection.isConnectedToSense(), is(true));
 

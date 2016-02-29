@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import rx.subjects.AsyncSubject;
 public class SenseServiceConnection implements ServiceConnection {
     private final Context context;
     private final List<Listener> listeners = new ArrayList<>();
-    private @Nullable SenseService senseService;
+    @VisibleForTesting @Nullable SenseService senseService;
 
     //region Lifecycle
 
@@ -91,14 +92,6 @@ public class SenseServiceConnection implements ServiceConnection {
      */
     public void unregisterConsumer(@NonNull Listener listener) {
         listeners.remove(listener);
-    }
-
-    /**
-     * @return The {@link SenseService} if it's currently bound; {@code null} otherwise.
-     */
-    @Nullable
-    public SenseService getSenseService() {
-        return senseService;
     }
 
     /**
