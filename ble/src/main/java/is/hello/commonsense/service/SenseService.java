@@ -87,6 +87,15 @@ public class SenseService extends Service {
         return new ConnectionStateException("Not connected to Sense");
     }
 
+    /**
+     * Binds an {@code Observable} to the {@code SenseService}'s internal job queue. The returned
+     * observable will act like observables returned by other methods in {@code SenseService} and
+     * only run when all work submitted before it has completed.
+     */
+    public <T> Observable<T> serialize(@NonNull Observable<T> observable) {
+        return Rx.serialize(observable, queue);
+    }
+
     //endregion
 
 
@@ -133,8 +142,7 @@ public class SenseService extends Service {
 
         this.sense = new SensePeripheral(peripheral);
 
-        // Intentionally not serialized on #queue
-        return sense.connect();
+        return serialize(sense.connect());
     }
 
     @CheckResult
@@ -143,7 +151,8 @@ public class SenseService extends Service {
             return Observable.just(null);
         }
 
-        // Intentionally not serialized on #queue
+        // Intentionally not serialized on #queue so that disconnect
+        // can happen as soon as possible relative to its call site.
         return sense.disconnect()
                     .map(Func.justValue(this));
     }
@@ -168,8 +177,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.runLedAnimation(animationType)
-                                 .map(Func.justValue(this)), queue);
+        return sense.runLedAnimation(animationType)
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
@@ -198,7 +207,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.scanForWifiNetworks(countryCode), queue);
+        return sense.scanForWifiNetworks(countryCode);
     }
 
     @CheckResult
@@ -207,7 +216,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.getWifiNetwork();
+        return serialize(sense.getWifiNetwork());
     }
 
     @CheckResult
@@ -218,7 +227,7 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.connectToWiFiNetwork(ssid, securityType, password), queue);
+        return sense.connectToWiFiNetwork(ssid, securityType, password);
     }
 
     @CheckResult
@@ -227,8 +236,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.linkAccount(accessToken)
-                                 .map(Func.justValue(this)), queue);
+        return sense.linkAccount(accessToken)
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
@@ -237,8 +246,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.pairPill(accessToken)
-                                 .map(Func.justValue(this)), queue);
+        return sense.pairPill(accessToken)
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
@@ -247,8 +256,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.pushData()
-                                 .map(Func.justValue(this)), queue);
+        return sense.pushData()
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
@@ -257,8 +266,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.putIntoPairingMode()
-                                 .map(Func.justValue(this)), queue);
+        return sense.putIntoPairingMode()
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
@@ -267,8 +276,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.putIntoNormalMode()
-                                 .map(Func.justValue(this)), queue);
+        return sense.putIntoNormalMode()
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
@@ -277,8 +286,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return Rx.serialize(sense.factoryReset()
-                                 .map(Func.justValue(this)), queue);
+        return sense.factoryReset()
+                    .map(Func.justValue(this));
     }
 
     //endregion
