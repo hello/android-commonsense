@@ -115,6 +115,7 @@ public class SenseService extends Service {
         this.foregroundCount++;
 
         if (foregroundCount == 1) {
+            Log.d(LOG_TAG, "Starting foregrounding");
             startForeground(notificationId, notification);
         }
     }
@@ -122,11 +123,13 @@ public class SenseService extends Service {
     private void decrementForeground() {
         if (foregroundCount == 0) {
             Log.w(LOG_TAG, "decrementForeground() called too many times");
+            return;
         }
 
         this.foregroundCount--;
 
         if (foregroundCount == 0) {
+            Log.d(LOG_TAG, "Stopping foregrounding");
             stopForeground(true);
         }
     }
@@ -160,7 +163,7 @@ public class SenseService extends Service {
      * @return true if the service will run in the foreground when connected to a sense; false otherwise.
      */
     public boolean isForegroundingEnabled() {
-        return (notificationId > 0 && notification != null);
+        return (notificationId != 0 && notification != null);
     }
 
     //endregion
