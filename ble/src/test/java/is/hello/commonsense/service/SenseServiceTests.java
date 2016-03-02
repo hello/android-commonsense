@@ -28,7 +28,6 @@ import is.hello.commonsense.Mocks;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.SensePeripheral;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
-import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Sync;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -130,10 +129,7 @@ public class SenseServiceTests extends CommonSenseTestCase {
             }
         });
 
-        final BluetoothStack stack = Mocks.createBluetoothStack();
-        final GattPeripheral device = Mocks.createPeripheral(stack);
-        doReturn(GattPeripheral.STATUS_CONNECTED).when(device).getConnectionStatus();
-        assertThat(Sync.last(service.connect(device)), is(equalTo(ConnectProgress.CONNECTED)));
+        service.onPeripheralConnected();
 
         verify(service).startForeground(anyInt(), any(Notification.class));
         verify(service).setForegroundEnabled(true);

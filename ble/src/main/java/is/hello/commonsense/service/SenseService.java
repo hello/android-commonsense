@@ -34,7 +34,6 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_end
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Func;
 import rx.Observable;
-import rx.functions.Action0;
 
 /**
  * Encapsulates connection and command management for communicating with a Sense over Bluetooth
@@ -75,9 +74,11 @@ public class SenseService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        final IntentFilter intentFilter = new IntentFilter(GattPeripheral.ACTION_DISCONNECTED);
+        final IntentFilter connectionIntentFilter = new IntentFilter();
+        connectionIntentFilter.addAction(GattPeripheral.ACTION_CONNECTED);
+        connectionIntentFilter.addAction(GattPeripheral.ACTION_DISCONNECTED);
         LocalBroadcastManager.getInstance(this)
-                             .registerReceiver(peripheralDisconnected, intentFilter);
+                             .registerReceiver(connectionBroadcastReceiver, connectionIntentFilter);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class SenseService extends Service {
         super.onDestroy();
 
         LocalBroadcastManager.getInstance(this)
-                             .unregisterReceiver(peripheralDisconnected);
+                             .unregisterReceiver(connectionBroadcastReceiver);
 
         if (sense != null && sense.isConnected()) {
             Log.w(LOG_TAG, "Service being destroyed with active connection");
@@ -159,18 +160,27 @@ public class SenseService extends Service {
 
     //region Managing Connectivity
 
-    private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
+    private final BroadcastReceiver connectionBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (sense != null) {
                 final String intentAddress = intent.getStringExtra(GattPeripheral.EXTRA_ADDRESS);
                 final String senseAddress = sense.getAddress();
                 if (Objects.equals(intentAddress, senseAddress)) {
-                    onPeripheralDisconnected();
+                    final String action = intent.getAction();
+                    if (action.equals(GattPeripheral.ACTION_CONNECTED)) {
+                        onPeripheralConnected();
+                    } else if (action.equals(GattPeripheral.ACTION_DISCONNECTED)) {
+                        onPeripheralDisconnected();
+                    }
                 }
             }
         }
     };
+
+    @VisibleForTesting void onPeripheralConnected() {
+        setForegroundEnabled(true);
+    }
 
     @VisibleForTesting void onPeripheralDisconnected() {
         this.sense = null;
@@ -217,14 +227,7 @@ public class SenseService extends Service {
 
         this.sense = new SensePeripheral(peripheral);
 
-        return serialize(sense.connect()).doOnCompleted(new Action0() {
-            @Override
-            public void call() {
-                if (notificationProvider != null) {
-                    setForegroundEnabled(true);
-                }
-            }
-        });
+        return serialize(sense.connect());
     }
 
     /**
