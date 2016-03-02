@@ -1,5 +1,6 @@
 package is.hello.commonsense.service;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -33,12 +34,17 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_end
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Func;
 import rx.Observable;
+import rx.functions.Action0;
 
 public class SenseService extends Service {
     private static final String LOG_TAG = SenseService.class.getSimpleName();
 
     @VisibleForTesting final SerialQueue queue = new SerialQueue();
     @VisibleForTesting @Nullable SensePeripheral sense;
+
+    private int notificationId = 0;
+    private @Nullable Notification notification;
+    private int foregroundCount = 0;
 
     //region Service Lifecycle
 
@@ -99,6 +105,67 @@ public class SenseService extends Service {
     //endregion
 
 
+    //region Foregrounding
+
+    private void incrementForeground() {
+        if (notification == null) {
+            throw new IllegalStateException("Cannot call incrementForeground() before setting a notification");
+        }
+
+        this.foregroundCount++;
+
+        if (foregroundCount == 1) {
+            startForeground(notificationId, notification);
+        }
+    }
+
+    private void decrementForeground() {
+        if (foregroundCount == 0) {
+            Log.w(LOG_TAG, "decrementForeground() called too many times");
+        }
+
+        this.foregroundCount--;
+
+        if (foregroundCount == 0) {
+            stopForeground(true);
+        }
+    }
+
+    /**
+     * Specifies the notification to display when the {@code SenseService}
+     * is connected to Sense, and has entered foreground mode.
+     * <p>
+     * This method should be called before a connection is created.
+     *
+     * @param id            The id of the notification in the notification manager. Cannot be 0.
+     * @param notification  The notification to display.
+     */
+    public void setForegroundNotification(int id, @Nullable Notification notification) {
+        if (id == 0 && notification != null) {
+            throw new IllegalArgumentException("id cannot be 0");
+        }
+
+        this.notificationId = id;
+        this.notification = notification;
+
+        if (notification == null && foregroundCount > 0) {
+            stopForeground(true);
+            this.foregroundCount = 0;
+        }
+    }
+
+    /**
+     * Indicates whether or not foregrounding is currently enabled for the service.
+     * This is contingent on the service having a notification bound to it.
+     * @return true if the service will run in the foreground when connected to a sense; false otherwise.
+     */
+    public boolean isForegroundingEnabled() {
+        return (notificationId > 0 && notification != null);
+    }
+
+    //endregion
+
+
     //region Managing Connectivity
 
     private final BroadcastReceiver peripheralDisconnected = new BroadcastReceiver() {
@@ -117,6 +184,9 @@ public class SenseService extends Service {
     private void onPeripheralDisconnected() {
         this.sense = null;
         queue.cancelPending(createNoDeviceException());
+        if (isForegroundingEnabled()) {
+            decrementForeground();
+        }
     }
 
     public static PeripheralCriteria createSenseCriteria() {
@@ -142,7 +212,14 @@ public class SenseService extends Service {
 
         this.sense = new SensePeripheral(peripheral);
 
-        return serialize(sense.connect());
+        return serialize(sense.connect()).doOnCompleted(new Action0() {
+            @Override
+            public void call() {
+                if (isForegroundingEnabled()) {
+                    incrementForeground();
+                }
+            }
+        });
     }
 
     @CheckResult
