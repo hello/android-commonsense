@@ -36,15 +36,23 @@ import is.hello.commonsense.util.Func;
 import rx.Observable;
 import rx.functions.Action0;
 
+/**
+ * Encapsulates connection and command management for communicating with a Sense over Bluetooth
+ * Low Energy. The {@code SenseService} class replaces the {@link SensePeripheral} class for all
+ * new code. It provides stronger guarantees around command serialization, and host process
+ * lifecycle management.
+ * <p>
+ * {@code SenseService} is automatically exported when you include the CommonSense library through
+ * maven/gradle. To communicate with {@code SenseService}, use {@link SenseServiceConnection}.
+ */
 public class SenseService extends Service {
     private static final String LOG_TAG = SenseService.class.getSimpleName();
 
     @VisibleForTesting final SerialQueue queue = new SerialQueue();
     @VisibleForTesting @Nullable SensePeripheral sense;
 
-    private int notificationId = 0;
-    private @Nullable Notification notification;
-    private int foregroundCount = 0;
+    private ForegroundNotificationProvider notificationProvider;
+    @VisibleForTesting boolean foregroundEnabled = false;
 
     //region Service Lifecycle
 
@@ -107,63 +115,43 @@ public class SenseService extends Service {
 
     //region Foregrounding
 
-    private void incrementForeground() {
-        if (notification == null) {
-            throw new IllegalStateException("Cannot call incrementForeground() before setting a notification");
-        }
+    /**
+     * Controls the state of foregrounding for the service. This method is idempotent.
+     * @param enabled   Whether or not foregrounding is enabled.
+     * @throws IllegalStateException if {@code enabled} is true, and no notification provider is set.
+     * @see #setForegroundNotificationProvider(ForegroundNotificationProvider)
+     */
+    @VisibleForTesting void setForegroundEnabled(boolean enabled) {
+        if (enabled != this.foregroundEnabled) {
+            this.foregroundEnabled = enabled;
 
-        this.foregroundCount++;
+            if (enabled) {
+                if (notificationProvider == null) {
+                    throw new IllegalStateException("Cannot enable foregrounding without a notification provider");
+                }
 
-        if (foregroundCount == 1) {
-            Log.d(LOG_TAG, "Starting foregrounding");
-            startForeground(notificationId, notification);
-        }
-    }
-
-    private void decrementForeground() {
-        if (foregroundCount == 0) {
-            Log.w(LOG_TAG, "decrementForeground() called too many times");
-            return;
-        }
-
-        this.foregroundCount--;
-
-        if (foregroundCount == 0) {
-            Log.d(LOG_TAG, "Stopping foregrounding");
-            stopForeground(true);
+                Log.d(LOG_TAG, "Foregrounding enabled");
+                startForeground(notificationProvider.getId(),
+                                notificationProvider.getNotification());
+            } else {
+                Log.d(LOG_TAG, "Foregrounding disabled");
+                stopForeground(true);
+            }
         }
     }
 
     /**
-     * Specifies the notification to display when the {@code SenseService}
-     * is connected to Sense, and has entered foreground mode.
-     * <p>
-     * This method should be called before a connection is created.
+     * Sets the foreground notification provider the service should use to establish foreground
+     * status when it has an active connection with a remote Sense peripheral.
      *
-     * @param id            The id of the notification in the notification manager. Cannot be 0.
-     * @param notification  The notification to display.
+     * @param provider The new provider. If {@code null}, foreground status will be discontinued.
      */
-    public void setForegroundNotification(int id, @Nullable Notification notification) {
-        if (id == 0 && notification != null) {
-            throw new IllegalArgumentException("id cannot be 0");
+    public void setForegroundNotificationProvider(@Nullable ForegroundNotificationProvider provider) {
+        this.notificationProvider = provider;
+
+        if (provider == null && foregroundEnabled) {
+            setForegroundEnabled(false);
         }
-
-        this.notificationId = id;
-        this.notification = notification;
-
-        if (notification == null && foregroundCount > 0) {
-            stopForeground(true);
-            this.foregroundCount = 0;
-        }
-    }
-
-    /**
-     * Indicates whether or not foregrounding is currently enabled for the service.
-     * This is contingent on the service having a notification bound to it.
-     * @return true if the service will run in the foreground when connected to a sense; false otherwise.
-     */
-    public boolean isForegroundingEnabled() {
-        return (notificationId != 0 && notification != null);
     }
 
     //endregion
@@ -184,14 +172,16 @@ public class SenseService extends Service {
         }
     };
 
-    private void onPeripheralDisconnected() {
+    @VisibleForTesting void onPeripheralDisconnected() {
         this.sense = null;
         queue.cancelPending(createNoDeviceException());
-        if (isForegroundingEnabled()) {
-            decrementForeground();
-        }
+        setForegroundEnabled(false);
     }
 
+    /**
+     * Creates a {@code PeripheralCriteria} object configured to match zero or more Sense peripherals.
+     * @return A new {@code PeripheralCriteria} object.
+     */
     public static PeripheralCriteria createSenseCriteria() {
         final PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
@@ -199,6 +189,12 @@ public class SenseService extends Service {
         return criteria;
     }
 
+    /**
+     * Creates a {@code PeripheralCriteria} object configured
+     * to match a single Sense peripheral with a given device id.
+     * @param deviceId The device id to match.
+     * @return A new {@code PeripheralCriteria} object.
+     */
     public static PeripheralCriteria createSenseCriteria(@NonNull String deviceId) {
         final PeripheralCriteria criteria = createSenseCriteria();
         criteria.setLimit(1);
@@ -207,6 +203,12 @@ public class SenseService extends Service {
         return criteria;
     }
 
+    /**
+     * Attempts to connect to a Sense {@code GattPeripheral} object, implicitly enabling
+     * service foregrounding if possible after a connection is successfully established.
+     * @param peripheral The Sense to connect to.
+     * @return An {@code Observable} representing the connection attempt operation.
+     */
     @CheckResult
     public Observable<ConnectProgress> connect(@NonNull GattPeripheral peripheral) {
         if (this.sense != null && sense.isConnected()) {
@@ -218,17 +220,26 @@ public class SenseService extends Service {
         return serialize(sense.connect()).doOnCompleted(new Action0() {
             @Override
             public void call() {
-                if (isForegroundingEnabled()) {
-                    incrementForeground();
+                if (notificationProvider != null) {
+                    setForegroundEnabled(true);
                 }
             }
         });
     }
 
+    /**
+     * Disconnects from the Sense {@code GattPeripheral} the service is connected to.
+     * The operation {@code Observable} returned by this method is not serialized like the other
+     * observables returned by {@link SenseService}, the disconnect is guaranteed to be issued
+     * immediately upon subscription.
+     * <p>
+     * This method does nothing if there is no active connection.
+     * @return A disconnect operation {@code Observable}.
+     */
     @CheckResult
     public Observable<SenseService> disconnect() {
         if (sense == null) {
-            return Observable.just(null);
+            return Observable.just(this);
         }
 
         // Intentionally not serialized on #queue so that disconnect
@@ -237,10 +248,18 @@ public class SenseService extends Service {
                     .map(Func.justValue(this));
     }
 
+    /**
+     * Indicates whether or not the service is connected to a Sense peripheral.
+     * @return true if the service is connected; false otherwise.
+     */
     public boolean isConnected() {
         return (sense != null && sense.isConnected());
     }
 
+    /**
+     * Extracts the Sense device id for the currently connected peripheral.
+     * @return The device id for the Sense if one is connected; null otherwise.
+     */
     @Nullable
     public String getDeviceId() {
         return sense != null ? sense.getDeviceId() : null;
@@ -252,33 +271,43 @@ public class SenseService extends Service {
     //region Commands
 
     @CheckResult
-    public Observable<SenseService> runLedAnimation(@NonNull SenseLedAnimation animationType) {
+    public Observable<SenseService> trippyLEDs() {
         if (sense == null) {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.runLedAnimation(animationType)
+        return sense.runLedAnimation(SenseLedAnimation.TRIPPY)
                     .map(Func.justValue(this));
     }
 
     @CheckResult
-    public Observable<SenseService> trippyLEDs() {
-        return runLedAnimation(SenseLedAnimation.TRIPPY);
-    }
-
-    @CheckResult
     public Observable<SenseService> busyLEDs() {
-        return runLedAnimation(SenseLedAnimation.BUSY);
+        if (sense == null) {
+            return Observable.error(createNoDeviceException());
+        }
+
+        return sense.runLedAnimation(SenseLedAnimation.BUSY)
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
     public Observable<SenseService> fadeOutLEDs() {
-        return runLedAnimation(SenseLedAnimation.FADE_OUT);
+        if (sense == null) {
+            return Observable.error(createNoDeviceException());
+        }
+
+        return sense.runLedAnimation(SenseLedAnimation.FADE_OUT)
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
     public Observable<SenseService> stopLEDs() {
-        return runLedAnimation(SenseLedAnimation.STOP);
+        if (sense == null) {
+            return Observable.error(createNoDeviceException());
+        }
+
+        return sense.runLedAnimation(SenseLedAnimation.STOP)
+                    .map(Func.justValue(this));
     }
 
     @CheckResult
@@ -371,4 +400,22 @@ public class SenseService extends Service {
     }
 
     //endregion
+
+
+    /**
+     * Provides the notification used when the {@link SenseService} enters foreground mode.
+     */
+    public interface ForegroundNotificationProvider {
+        /**
+         * Get the id to use for the notification.
+         * @return The id. Must not be {@code 0}.
+         */
+        int getId();
+
+        /**
+         * Get the notification to display. Should have {@code PRIORITY_MIN}, and be marked as ongoing.
+         * @return The notification to display when in the service is in the foreground.
+         */
+        @NonNull Notification getNotification();
+    }
 }

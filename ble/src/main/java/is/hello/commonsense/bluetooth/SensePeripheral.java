@@ -41,6 +41,7 @@ import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import is.hello.commonsense.service.SenseService;
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Func;
 import rx.Observable;
@@ -54,6 +55,9 @@ import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.M
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand.CommandType;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
+/**
+ * Prefer {@link SenseService} for all new code.
+ */
 public class SensePeripheral {
     public static final String LOG_TAG = SensePeripheral.class.getSimpleName();
 
@@ -108,7 +112,11 @@ public class SensePeripheral {
 
     //region Lifecycle
 
+    /**
+     * @deprecated Use {@link SenseService} with your own peripheral discovery code.
+     */
     @CheckResult
+    @Deprecated
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
                                                              @NonNull PeripheralCriteria criteria) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
@@ -121,7 +129,11 @@ public class SensePeripheral {
         });
     }
 
+    /**
+     * @deprecated Use {@link SenseService} with your own peripheral discovery code.
+     */
     @CheckResult
+    @Deprecated
     public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
                                                          @NonNull String deviceId,
                                                          boolean includeHighPowerPreScan) {

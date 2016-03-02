@@ -1,9 +1,12 @@
 package is.hello.commonsense.service;
 
+import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 import org.junit.After;
@@ -24,8 +27,8 @@ import is.hello.commonsense.CommonSenseTestCase;
 import is.hello.commonsense.Mocks;
 import is.hello.commonsense.bluetooth.SenseIdentifiers;
 import is.hello.commonsense.bluetooth.SensePeripheral;
-import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.sec_type;
+import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Sync;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -33,10 +36,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
+@SuppressWarnings("ResourceType")
 public class SenseServiceTests extends CommonSenseTestCase {
     private SenseService service;
 
@@ -104,6 +113,43 @@ public class SenseServiceTests extends CommonSenseTestCase {
         Sync.last(service.connect(device)); // should throw
     }
 
+    public void connectStartsForegrounding() {
+        final SenseService service = spy(this.service);
+        doNothing().when(service).startForeground(anyInt(), any(Notification.class));
+
+        service.setForegroundNotificationProvider(new SenseService.ForegroundNotificationProvider() {
+            @Override
+            public int getId() {
+                return 1;
+            }
+
+            @NonNull
+            @Override
+            public Notification getNotification() {
+                return new NotificationCompat.Builder(getContext()).build();
+            }
+        });
+
+        final BluetoothStack stack = Mocks.createBluetoothStack();
+        final GattPeripheral device = Mocks.createPeripheral(stack);
+        doReturn(GattPeripheral.STATUS_CONNECTED).when(device).getConnectionStatus();
+        assertThat(Sync.last(service.connect(device)), is(equalTo(ConnectProgress.CONNECTED)));
+
+        verify(service).startForeground(anyInt(), any(Notification.class));
+        verify(service).setForegroundEnabled(true);
+    }
+
+    public void disconnectStopsForegrounding() {
+        final SenseService service = spy(this.service);
+        service.foregroundEnabled = true;
+        doNothing().when(service).stopForeground(anyBoolean());
+
+        service.onPeripheralDisconnected();
+
+        verify(service).stopForeground(anyBoolean());
+        verify(service).setForegroundEnabled(false);
+    }
+
     @Test
     public void peripheralDisconnected() {
         final BluetoothStack stack = Mocks.createBluetoothStack();
@@ -145,31 +191,33 @@ public class SenseServiceTests extends CommonSenseTestCase {
 
     @Test
     public void disconnectWithNoDevice() {
-        assertThat(Sync.last(service.disconnect()), is(equalTo(null)));
+        assertThat(Sync.last(service.disconnect()), is(equalTo(service)));
+    }
+
+    @Test
+    public void setForegroundNotificationProviderDisablesForegroundOnNull() {
+        service.foregroundEnabled = true;
+        service.setForegroundNotificationProvider(null);
+        assertThat(service.foregroundEnabled, is(false));
     }
 
     @Test(expected = ConnectionStateException.class)
-    public void runLedAnimationRequiresDevice() {
-        Sync.last(service.runLedAnimation(SenseLedAnimation.BUSY));
-    }
-
-    @Test(expected = ConnectionStateException.class)
-    public void trippyLEDs() {
+    public void trippyLEDsRequiresDevice() {
         Sync.last(service.trippyLEDs());
     }
 
     @Test(expected = ConnectionStateException.class)
-    public void busyLEDs() {
+    public void busyLEDsRequiresDevice() {
         Sync.last(service.busyLEDs());
     }
 
     @Test(expected = ConnectionStateException.class)
-    public void fadeOutLEDs() {
+    public void fadeOutLEDsRequiresDevice() {
         Sync.last(service.fadeOutLEDs());
     }
 
     @Test(expected = ConnectionStateException.class)
-    public void stopLEDs() {
+    public void stopLEDsRequiresDevice() {
         Sync.last(service.stopLEDs());
     }
 
