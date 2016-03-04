@@ -1,4 +1,4 @@
-package is.hello.commonsense.util;
+package is.hello.commonsense;
 
 import android.content.Context;
 
@@ -6,8 +6,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-
-import is.hello.commonsense.BuildConfig;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class,

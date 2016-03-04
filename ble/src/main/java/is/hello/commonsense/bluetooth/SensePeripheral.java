@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
 import is.hello.buruberi.bluetooth.errors.LostConnectionException;
 import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.buruberi.bluetooth.stacks.BluetoothStack;
@@ -28,7 +29,6 @@ import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.Operation;
-import is.hello.commonsense.bluetooth.errors.BuruberiReportingProvider;
 import is.hello.commonsense.bluetooth.errors.SenseBusyError;
 import is.hello.commonsense.bluetooth.errors.SenseConnectWifiError;
 import is.hello.commonsense.bluetooth.errors.SenseNotFoundError;
@@ -41,8 +41,9 @@ import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint;
+import is.hello.commonsense.service.SenseService;
 import is.hello.commonsense.util.ConnectProgress;
-import is.hello.commonsense.util.Functions;
+import is.hello.commonsense.util.Func;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
@@ -54,12 +55,11 @@ import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.M
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand.CommandType;
 import static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_connection_state;
 
+/**
+ * Prefer {@link SenseService} for all new code.
+ */
 public class SensePeripheral {
     public static final String LOG_TAG = SensePeripheral.class.getSimpleName();
-
-    static {
-        BuruberiReportingProvider.register();
-    }
 
     //region Versions
 
@@ -112,7 +112,11 @@ public class SensePeripheral {
 
     //region Lifecycle
 
+    /**
+     * @deprecated Use {@link SenseService} with your own peripheral discovery code.
+     */
     @CheckResult
+    @Deprecated
     public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
                                                              @NonNull PeripheralCriteria criteria) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
@@ -125,7 +129,11 @@ public class SensePeripheral {
         });
     }
 
+    /**
+     * @deprecated Use {@link SenseService} with your own peripheral discovery code.
+     */
     @CheckResult
+    @Deprecated
     public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
                                                          @NonNull String deviceId,
                                                          boolean includeHighPowerPreScan) {
@@ -183,16 +191,22 @@ public class SensePeripheral {
             connectFlags = GattPeripheral.CONNECT_FLAG_TRANSPORT_LE;
         }
         final OperationTimeout timeout = createStackTimeout("Connect");
-        final Func1<GattService, ConnectProgress> onDiscoveredServices = new Func1<GattService, ConnectProgress>() {
+        final Func1<GattService, Observable<ConnectProgress>> onDiscoveredServices = new Func1<GattService, Observable<ConnectProgress>>() {
             @Override
-            public ConnectProgress call(GattService service) {
-                SensePeripheral.this.gattService = service;
-                SensePeripheral.this.commandCharacteristic =
-                        gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
-                SensePeripheral.this.responseCharacteristic =
-                        gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
-                responseCharacteristic.setPacketListener(packetListener);
-                return ConnectProgress.CONNECTED;
+            public Observable<ConnectProgress> call(GattService service) {
+                // Guard against the device connection being dropped in the
+                // 3 second delay that happens after discovering services.
+                if (gattPeripheral.getConnectionStatus() == GattPeripheral.STATUS_CONNECTED) {
+                    SensePeripheral.this.gattService = service;
+                    SensePeripheral.this.commandCharacteristic =
+                            gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
+                    SensePeripheral.this.responseCharacteristic =
+                            gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
+                    responseCharacteristic.setPacketListener(packetListener);
+                    return Observable.just(ConnectProgress.CONNECTED);
+                } else {
+                    return Observable.error(new ConnectionStateException());
+                }
             }
         };
 
@@ -203,18 +217,18 @@ public class SensePeripheral {
             // behavior in KitKat and Gingerbread, which cannot establish
             // bonds without an active connection.
             sequence = Observable.concat(
-                    Observable.just(ConnectProgress.BONDING),
-                    gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.CONNECTING)),
-                    gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
-                                        );
+                Observable.just(ConnectProgress.BONDING),
+                gattPeripheral.createBond().map(Func.justValue(ConnectProgress.CONNECTING)),
+                gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).flatMap(onDiscoveredServices)
+            );
         } else {
             sequence = Observable.concat(
-                    Observable.just(ConnectProgress.CONNECTING),
-                    gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.BONDING)),
-                    gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
-                    gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
-                                        );
+                Observable.just(ConnectProgress.CONNECTING),
+                gattPeripheral.connect(connectFlags, timeout).map(Func.justValue(ConnectProgress.BONDING)),
+                gattPeripheral.createBond().map(Func.justValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).flatMap(onDiscoveredServices)
+            );
         }
 
         return sequence.subscribeOn(gattPeripheral.getStack().getScheduler())
@@ -252,7 +266,7 @@ public class SensePeripheral {
     @CheckResult
     public Observable<SensePeripheral> disconnect() {
         return gattPeripheral.disconnect()
-                             .map(Functions.createMapperToValue(this))
+                             .map(Func.justValue(this))
                              .finallyDo(new Action0() {
                                  @Override
                                  public void call() {
@@ -269,7 +283,7 @@ public class SensePeripheral {
                                                                                REMOVE_BOND_TIMEOUT_S,
                                                                                TimeUnit.SECONDS);
         return gattPeripheral.removeBond(timeout)
-                             .map(Functions.createMapperToValue(this));
+                             .map(Func.justValue(this));
     }
 
     //endregion
@@ -624,7 +638,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -642,7 +656,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -870,7 +884,7 @@ public class SensePeripheral {
                                .setAccountId(accountToken)
                                .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -888,7 +902,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performDisconnectingCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -906,7 +920,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performSimpleCommand(morpheusCommand, createSimpleCommandTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult
@@ -924,7 +938,7 @@ public class SensePeripheral {
                                .setAppVersion(APP_VERSION)
                                .build();
         return performSimpleCommand(morpheusCommand, createAnimationTimeout())
-                .map(Functions.createMapperToVoid());
+                .map(Func.justVoid());
     }
 
     @CheckResult

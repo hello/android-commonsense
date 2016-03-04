@@ -8,7 +8,9 @@ import org.junit.Test;
 
 import is.hello.buruberi.bluetooth.errors.BondException;
 import is.hello.buruberi.bluetooth.errors.BuruberiException;
+import is.hello.commonsense.CommonSenseTestCase;
 import is.hello.commonsense.R;
+import is.hello.commonsense.bluetooth.errors.BuruberiReportingProvider;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -16,10 +18,13 @@ import static junit.framework.Assert.assertNull;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class ErrorsTests extends CommonSenseTestCase {
+    public ErrorsTests() {
+        BuruberiReportingProvider.register();
+    }
+
     @Test
     public void getType() throws Exception {
         assertEquals("java.lang.Throwable", Errors.getType(new Throwable()));

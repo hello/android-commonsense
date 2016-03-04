@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import org.junit.Test;
 
+import is.hello.commonsense.CommonSenseTestCase;
 import is.hello.commonsense.R;
 
 import static junit.framework.Assert.assertEquals;
