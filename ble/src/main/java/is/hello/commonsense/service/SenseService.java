@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import is.hello.buruberi.bluetooth.errors.ConnectionStateException;
+import is.hello.buruberi.bluetooth.errors.OperationTimeoutException;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
@@ -34,6 +35,9 @@ import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_end
 import is.hello.commonsense.util.ConnectProgress;
 import is.hello.commonsense.util.Func;
 import rx.Observable;
+import rx.Subscriber;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 /**
  * Encapsulates connection and command management for communicating with a Sense over Bluetooth
@@ -100,6 +104,35 @@ public class SenseService extends Service {
 
     private static Exception createNoDeviceException() {
         return new ConnectionStateException("Not connected to Sense");
+    }
+
+    private Action1<Throwable> createCleanUpHandler() {
+        return new Action1<Throwable>() {
+            @Override
+            public void call(Throwable e) {
+                // There is basically no recovering from a timeout, it's best
+                // to just abandon the connection and get on with our lives.
+                if (e instanceof OperationTimeoutException) {
+                    Log.d(LOG_TAG, "Dropping connection after timeout");
+                    disconnect().subscribe(new Subscriber<SenseService>() {
+                        @Override
+                        public void onCompleted() {
+                            Log.d(LOG_TAG, "Connection dropped");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(LOG_TAG, "Could not drop connection cleanly", e);
+                        }
+
+                        @Override
+                        public void onNext(SenseService service) {
+                            // Do nothing.
+                        }
+                    });
+                }
+            }
+        };
     }
 
     /**
@@ -248,7 +281,13 @@ public class SenseService extends Service {
         // Intentionally not serialized on #queue so that disconnect
         // can happen as soon as possible relative to its call site.
         return sense.disconnect()
-                    .map(Func.justValue(this));
+                    .map(Func.justValue(this))
+                    .doOnCompleted(new Action0() {
+                        @Override
+                        public void call() {
+                            queue.cancelPending();
+                        }
+                    });
     }
 
     /**
@@ -279,8 +318,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.runLedAnimation(SenseLedAnimation.TRIPPY)
-                    .map(Func.justValue(this));
+        return serialize(sense.runLedAnimation(SenseLedAnimation.TRIPPY)
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -289,8 +329,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.runLedAnimation(SenseLedAnimation.BUSY)
-                    .map(Func.justValue(this));
+        return serialize(sense.runLedAnimation(SenseLedAnimation.BUSY)
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -299,8 +340,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.runLedAnimation(SenseLedAnimation.FADE_OUT)
-                    .map(Func.justValue(this));
+        return serialize(sense.runLedAnimation(SenseLedAnimation.FADE_OUT)
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -309,8 +351,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.runLedAnimation(SenseLedAnimation.STOP)
-                    .map(Func.justValue(this));
+        return serialize(sense.runLedAnimation(SenseLedAnimation.STOP)
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -319,7 +362,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.scanForWifiNetworks(countryCode);
+        return serialize(sense.scanForWifiNetworks(countryCode)
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -328,7 +372,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return serialize(sense.getWifiNetwork());
+        return serialize(sense.getWifiNetwork()
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -339,7 +384,8 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.connectToWiFiNetwork(ssid, securityType, password);
+        return serialize(sense.connectToWiFiNetwork(ssid, securityType, password)
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -348,8 +394,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.linkAccount(accessToken)
-                    .map(Func.justValue(this));
+        return serialize(sense.linkAccount(accessToken)
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -358,8 +405,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.pairPill(accessToken)
-                    .map(Func.justValue(this));
+        return serialize(sense.pairPill(accessToken)
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -368,8 +416,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.pushData()
-                    .map(Func.justValue(this));
+        return serialize(sense.pushData()
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -378,8 +427,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.putIntoPairingMode()
-                    .map(Func.justValue(this));
+        return serialize(sense.putIntoPairingMode()
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -388,8 +438,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.putIntoNormalMode()
-                    .map(Func.justValue(this));
+        return serialize(sense.putIntoNormalMode()
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     @CheckResult
@@ -398,8 +449,9 @@ public class SenseService extends Service {
             return Observable.error(createNoDeviceException());
         }
 
-        return sense.factoryReset()
-                    .map(Func.justValue(this));
+        return serialize(sense.factoryReset()
+                              .map(Func.justValue(this))
+                              .doOnError(createCleanUpHandler()));
     }
 
     //endregion
