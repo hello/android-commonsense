@@ -592,7 +592,35 @@ public final class SenseCommandProtos {
       /**
        * <code>SL_SCAN_SEC_TYPE_WPA2 = 3;</code>
        */
-      SL_SCAN_SEC_TYPE_WPA2(3, 3),
+      SL_WLAN_SEC_TYPE_WPS_PBC(3, 3),
+      /**
+       * <code>SL_SCAN_SEC_TYPE_WPA2 = 4;</code>
+       */
+      SL_WLAN_SEC_TYPE_WPS_PIN(4, 4),
+      /**
+       * <code>SL_SCAN_SEC_TYPE_WPA2 = 5;</code>
+       */
+      SL_WLAN_SEC_TYPE_WPA_ENT(5, 5),
+      /**
+       * <code>SL_SCAN_SEC_TYPE_WPA2 = 6;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PBC(6, 6),
+      /**
+       * <code>SL_SCAN_SEC_TYPE_WPA2 = 7;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PIN_KEYPAD(7, 7),
+      /**
+       * <code>SL_SCAN_SEC_TYPE_WPA2 = 8;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PIN_DISPLAY(8, 8),
+      /**
+       * <code>SL_SCAN_SEC_TYPE_WPA2 = 9;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PIN_AUTO(9, 9),
+      /**
+       * <code>SL_SCAN_SEC_TYPE_WPA2 = 10;</code>
+       */
+      SL_WLAN_SEC_TYPE_WEP_SHARED(10, 10),
       ;
 
       /**
@@ -620,7 +648,6 @@ public final class SenseCommandProtos {
           case 0: return SL_SCAN_SEC_TYPE_OPEN;
           case 1: return SL_SCAN_SEC_TYPE_WEP;
           case 2: return SL_SCAN_SEC_TYPE_WPA;
-          case 3: return SL_SCAN_SEC_TYPE_WPA2;
           default: return null;
         }
       }
