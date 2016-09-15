@@ -954,7 +954,7 @@ public class SensePeripheral {
                 if (response.getType() == CommandType.MORPHEUS_COMMAND_START_WIFISCAN) {
                     timeout.reschedule();
 
-                    if (response.getWifiScanResultCount() == 1) {
+                    if (response.getWifiScanResultCount() == 1 && response.getWifiSSID() != null && !response.getWifiSSID().isEmpty()) {
                         endpoints.add(response.getWifiScanResult(0));
                     }
                 } else if (response.getType() == CommandType.MORPHEUS_COMMAND_STOP_WIFISCAN) {

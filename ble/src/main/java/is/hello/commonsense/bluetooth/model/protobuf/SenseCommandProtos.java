@@ -6,13 +6,13 @@ package is.hello.commonsense.bluetooth.model.protobuf;
 public final class SenseCommandProtos {
   private SenseCommandProtos() {}
   public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistryLite registry) {
+          com.google.protobuf.ExtensionRegistryLite registry) {
   }
   /**
    * Protobuf enum {@code ErrorType}
    */
   public enum ErrorType
-      implements com.google.protobuf.Internal.EnumLite {
+          implements com.google.protobuf.Internal.EnumLite {
     /**
      * <code>TIME_OUT = 0;</code>
      *
@@ -242,16 +242,16 @@ public final class SenseCommandProtos {
     }
 
     public static com.google.protobuf.Internal.EnumLiteMap<ErrorType>
-        internalGetValueMap() {
+    internalGetValueMap() {
       return internalValueMap;
     }
     private static com.google.protobuf.Internal.EnumLiteMap<ErrorType>
-        internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<ErrorType>() {
-            public ErrorType findValueByNumber(int number) {
-              return ErrorType.valueOf(number);
-            }
-          };
+            internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<ErrorType>() {
+              public ErrorType findValueByNumber(int number) {
+                return ErrorType.valueOf(number);
+              }
+            };
 
     private final int value;
 
@@ -266,7 +266,7 @@ public final class SenseCommandProtos {
    * Protobuf enum {@code wifi_connection_state}
    */
   public enum wifi_connection_state
-      implements com.google.protobuf.Internal.EnumLite {
+          implements com.google.protobuf.Internal.EnumLite {
     /**
      * <code>NO_WLAN_CONNECTED = 0;</code>
      */
@@ -388,16 +388,16 @@ public final class SenseCommandProtos {
     }
 
     public static com.google.protobuf.Internal.EnumLiteMap<wifi_connection_state>
-        internalGetValueMap() {
+    internalGetValueMap() {
       return internalValueMap;
     }
     private static com.google.protobuf.Internal.EnumLiteMap<wifi_connection_state>
-        internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<wifi_connection_state>() {
-            public wifi_connection_state findValueByNumber(int number) {
-              return wifi_connection_state.valueOf(number);
-            }
-          };
+            internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<wifi_connection_state>() {
+              public wifi_connection_state findValueByNumber(int number) {
+                return wifi_connection_state.valueOf(number);
+              }
+            };
 
     private final int value;
 
@@ -409,8 +409,8 @@ public final class SenseCommandProtos {
   }
 
   public interface wifi_endpointOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:wifi_endpoint)
-      com.google.protobuf.MessageLiteOrBuilder {
+          // @@protoc_insertion_point(interface_extends:wifi_endpoint)
+          com.google.protobuf.MessageLiteOrBuilder {
 
     /**
      * <code>required string ssid = 1;</code>
@@ -419,12 +419,12 @@ public final class SenseCommandProtos {
     /**
      * <code>required string ssid = 1;</code>
      */
-    String getSsid();
+    java.lang.String getSsid();
     /**
      * <code>required string ssid = 1;</code>
      */
     com.google.protobuf.ByteString
-        getSsidBytes();
+    getSsidBytes();
 
     /**
      * <code>optional bytes bssid = 2;</code>
@@ -457,9 +457,9 @@ public final class SenseCommandProtos {
    * Protobuf type {@code wifi_endpoint}
    */
   public static final class wifi_endpoint extends
-      com.google.protobuf.GeneratedMessageLite implements
-      // @@protoc_insertion_point(message_implements:wifi_endpoint)
-      wifi_endpointOrBuilder {
+          com.google.protobuf.GeneratedMessageLite implements
+          // @@protoc_insertion_point(message_implements:wifi_endpoint)
+          wifi_endpointOrBuilder {
     // Use wifi_endpoint.newBuilder() to construct.
     private wifi_endpoint(com.google.protobuf.GeneratedMessageLite.Builder builder) {
       super(builder);
@@ -478,16 +478,16 @@ public final class SenseCommandProtos {
 
     private final com.google.protobuf.ByteString unknownFields;
     private wifi_endpoint(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
       int mutable_bitField0_ = 0;
       com.google.protobuf.ByteString.Output unknownFieldsOutput =
-          com.google.protobuf.ByteString.newOutput();
+              com.google.protobuf.ByteString.newOutput();
       com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
-          com.google.protobuf.CodedOutputStream.newInstance(
-              unknownFieldsOutput);
+              com.google.protobuf.CodedOutputStream.newInstance(
+                      unknownFieldsOutput);
       try {
         boolean done = false;
         while (!done) {
@@ -498,7 +498,7 @@ public final class SenseCommandProtos {
               break;
             default: {
               if (!parseUnknownField(input, unknownFieldsCodedOutput,
-                                     extensionRegistry, tag)) {
+                      extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -537,12 +537,12 @@ public final class SenseCommandProtos {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+                e.getMessage()).setUnfinishedMessage(this);
       } finally {
         try {
           unknownFieldsCodedOutput.flush();
         } catch (java.io.IOException e) {
-        // Should not happen
+          // Should not happen
         } finally {
           unknownFields = unknownFieldsOutput.toByteString();
         }
@@ -550,16 +550,16 @@ public final class SenseCommandProtos {
       }
     }
     public static com.google.protobuf.Parser<wifi_endpoint> PARSER =
-        new com.google.protobuf.AbstractParser<wifi_endpoint>() {
-      public wifi_endpoint parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new wifi_endpoint(input, extensionRegistry);
-      }
-    };
+            new com.google.protobuf.AbstractParser<wifi_endpoint>() {
+              public wifi_endpoint parsePartialFrom(
+                      com.google.protobuf.CodedInputStream input,
+                      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                      throws com.google.protobuf.InvalidProtocolBufferException {
+                return new wifi_endpoint(input, extensionRegistry);
+              }
+            };
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<wifi_endpoint> getParserForType() {
       return PARSER;
     }
@@ -576,7 +576,7 @@ public final class SenseCommandProtos {
      * </pre>
      */
     public enum sec_type
-        implements com.google.protobuf.Internal.EnumLite {
+            implements com.google.protobuf.Internal.EnumLite {
       /**
        * <code>SL_SCAN_SEC_TYPE_OPEN = 0;</code>
        */
@@ -590,9 +590,37 @@ public final class SenseCommandProtos {
        */
       SL_SCAN_SEC_TYPE_WPA(2, 2),
       /**
-       * <code>SL_SCAN_SEC_TYPE_WPA2 = 3;</code>
+       * <code>SL_WLAN_SEC_TYPE_WPS_PBC = 3;</code>
        */
-      SL_SCAN_SEC_TYPE_WPA2(3, 3),
+      SL_WLAN_SEC_TYPE_WPS_PBC(3, 3),
+      /**
+       * <code>SL_WLAN_SEC_TYPE_WPS_PIN = 4;</code>
+       */
+      SL_WLAN_SEC_TYPE_WPS_PIN(4, 4),
+      /**
+       * <code>SL_WLAN_SEC_TYPE_WPA_ENT = 5;</code>
+       */
+      SL_WLAN_SEC_TYPE_WPA_ENT(5, 5),
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PBC = 6;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PBC(6, 6),
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PIN_KEYPAD = 7;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PIN_KEYPAD(7, 7),
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PIN_DISPLAY = 8;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PIN_DISPLAY(8, 8),
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PIN_AUTO = 9;</code>
+       */
+      SL_WLAN_SEC_TYPE_P2P_PIN_AUTO(9, 9),
+      /**
+       * <code>SL_WLAN_SEC_TYPE_WEP_SHARED = 10;</code>
+       */
+      SL_WLAN_SEC_TYPE_WEP_SHARED(10, 10),
       ;
 
       /**
@@ -608,9 +636,37 @@ public final class SenseCommandProtos {
        */
       public static final int SL_SCAN_SEC_TYPE_WPA_VALUE = 2;
       /**
-       * <code>SL_SCAN_SEC_TYPE_WPA2 = 3;</code>
+       * <code>SL_WLAN_SEC_TYPE_WPS_PBC = 3;</code>
        */
-      public static final int SL_SCAN_SEC_TYPE_WPA2_VALUE = 3;
+      public static final int SL_WLAN_SEC_TYPE_WPS_PBC_VALUE = 3;
+      /**
+       * <code>SL_WLAN_SEC_TYPE_WPS_PIN = 4;</code>
+       */
+      public static final int SL_WLAN_SEC_TYPE_WPS_PIN_VALUE = 4;
+      /**
+       * <code>SL_WLAN_SEC_TYPE_WPA_ENT = 5;</code>
+       */
+      public static final int SL_WLAN_SEC_TYPE_WPA_ENT_VALUE = 5;
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PBC = 6;</code>
+       */
+      public static final int SL_WLAN_SEC_TYPE_P2P_PBC_VALUE = 6;
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PIN_KEYPAD = 7;</code>
+       */
+      public static final int SL_WLAN_SEC_TYPE_P2P_PIN_KEYPAD_VALUE = 7;
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PIN_DISPLAY = 8;</code>
+       */
+      public static final int SL_WLAN_SEC_TYPE_P2P_PIN_DISPLAY_VALUE = 8;
+      /**
+       * <code>SL_WLAN_SEC_TYPE_P2P_PIN_AUTO = 9;</code>
+       */
+      public static final int SL_WLAN_SEC_TYPE_P2P_PIN_AUTO_VALUE = 9;
+      /**
+       * <code>SL_WLAN_SEC_TYPE_WEP_SHARED = 10;</code>
+       */
+      public static final int SL_WLAN_SEC_TYPE_WEP_SHARED_VALUE = 10;
 
 
       public final int getNumber() { return value; }
@@ -620,22 +676,29 @@ public final class SenseCommandProtos {
           case 0: return SL_SCAN_SEC_TYPE_OPEN;
           case 1: return SL_SCAN_SEC_TYPE_WEP;
           case 2: return SL_SCAN_SEC_TYPE_WPA;
-          case 3: return SL_SCAN_SEC_TYPE_WPA2;
+          case 3: return SL_WLAN_SEC_TYPE_WPS_PBC;
+          case 4: return SL_WLAN_SEC_TYPE_WPS_PIN;
+          case 5: return SL_WLAN_SEC_TYPE_WPA_ENT;
+          case 6: return SL_WLAN_SEC_TYPE_P2P_PBC;
+          case 7: return SL_WLAN_SEC_TYPE_P2P_PIN_KEYPAD;
+          case 8: return SL_WLAN_SEC_TYPE_P2P_PIN_DISPLAY;
+          case 9: return SL_WLAN_SEC_TYPE_P2P_PIN_AUTO;
+          case 10: return SL_WLAN_SEC_TYPE_WEP_SHARED;
           default: return null;
         }
       }
 
       public static com.google.protobuf.Internal.EnumLiteMap<sec_type>
-          internalGetValueMap() {
+      internalGetValueMap() {
         return internalValueMap;
       }
       private static com.google.protobuf.Internal.EnumLiteMap<sec_type>
-          internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<sec_type>() {
-              public sec_type findValueByNumber(int number) {
-                return sec_type.valueOf(number);
-              }
-            };
+              internalValueMap =
+              new com.google.protobuf.Internal.EnumLiteMap<sec_type>() {
+                public sec_type findValueByNumber(int number) {
+                  return sec_type.valueOf(number);
+                }
+              };
 
       private final int value;
 
@@ -648,7 +711,7 @@ public final class SenseCommandProtos {
 
     private int bitField0_;
     public static final int SSID_FIELD_NUMBER = 1;
-    private Object ssid_;
+    private java.lang.Object ssid_;
     /**
      * <code>required string ssid = 1;</code>
      */
@@ -658,14 +721,14 @@ public final class SenseCommandProtos {
     /**
      * <code>required string ssid = 1;</code>
      */
-    public String getSsid() {
-      Object ref = ssid_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getSsid() {
+      java.lang.Object ref = ssid_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           ssid_ = s;
         }
@@ -676,12 +739,12 @@ public final class SenseCommandProtos {
      * <code>required string ssid = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getSsidBytes() {
-      Object ref = ssid_;
-      if (ref instanceof String) {
+    getSsidBytes() {
+      java.lang.Object ref = ssid_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         ssid_ = b;
         return b;
       } else {
@@ -763,7 +826,7 @@ public final class SenseCommandProtos {
     }
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+            throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, getSsidBytes());
@@ -788,19 +851,19 @@ public final class SenseCommandProtos {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getSsidBytes());
+                .computeBytesSize(1, getSsidBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, bssid_);
+                .computeBytesSize(2, bssid_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(4, rssi_);
+                .computeInt32Size(4, rssi_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(5, securityType_.getNumber());
+                .computeEnumSize(5, securityType_.getNumber());
       }
       size += unknownFields.size();
       memoizedSerializedSize = size;
@@ -808,66 +871,68 @@ public final class SenseCommandProtos {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    protected Object writeReplace()
-        throws java.io.ObjectStreamException {
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+            throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
 
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
-    public static Builder newBuilder() { return Builder.create(); }
+    public static Builder newBuilder() { return Builder.create();
+    }
+
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder(is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint prototype) {
       return newBuilder().mergeFrom(prototype);
@@ -878,12 +943,12 @@ public final class SenseCommandProtos {
      * Protobuf type {@code wifi_endpoint}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint, Builder>
-        implements
-        // @@protoc_insertion_point(builder_implements:wifi_endpoint)
-        is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpointOrBuilder {
-      // Construct using is.hello.commonsense.sense.model.protobuf.SenseCommandProtos.wifi_endpoint.newBuilder()
+            com.google.protobuf.GeneratedMessageLite.Builder<
+                    is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint, Builder>
+            implements
+            // @@protoc_insertion_point(builder_implements:wifi_endpoint)
+            is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpointOrBuilder {
+      // Construct using is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -964,7 +1029,7 @@ public final class SenseCommandProtos {
           setSecurityType(other.getSecurityType());
         }
         setUnknownFields(
-            getUnknownFields().concat(other.unknownFields));
+                getUnknownFields().concat(other.unknownFields));
         return this;
       }
 
@@ -985,9 +1050,9 @@ public final class SenseCommandProtos {
       }
 
       public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
         is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
@@ -1003,7 +1068,7 @@ public final class SenseCommandProtos {
       }
       private int bitField0_;
 
-      private Object ssid_ = "";
+      private java.lang.Object ssid_ = "";
       /**
        * <code>required string ssid = 1;</code>
        */
@@ -1013,30 +1078,30 @@ public final class SenseCommandProtos {
       /**
        * <code>required string ssid = 1;</code>
        */
-      public String getSsid() {
-        Object ref = ssid_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getSsid() {
+        java.lang.Object ref = ssid_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             ssid_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>required string ssid = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getSsidBytes() {
-        Object ref = ssid_;
+      getSsidBytes() {
+        java.lang.Object ref = ssid_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           ssid_ = b;
           return b;
         } else {
@@ -1047,11 +1112,11 @@ public final class SenseCommandProtos {
        * <code>required string ssid = 1;</code>
        */
       public Builder setSsid(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
         ssid_ = value;
 
         return this;
@@ -1069,11 +1134,11 @@ public final class SenseCommandProtos {
        * <code>required string ssid = 1;</code>
        */
       public Builder setSsidBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
         ssid_ = value;
 
         return this;
@@ -1097,9 +1162,9 @@ public final class SenseCommandProtos {
        */
       public Builder setBssid(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
         bssid_ = value;
 
         return this;
@@ -1193,8 +1258,8 @@ public final class SenseCommandProtos {
   }
 
   public interface pill_dataOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:pill_data)
-      com.google.protobuf.MessageLiteOrBuilder {
+          // @@protoc_insertion_point(interface_extends:pill_data)
+          com.google.protobuf.MessageLiteOrBuilder {
 
     /**
      * <code>required string device_id = 1;</code>
@@ -1203,12 +1268,12 @@ public final class SenseCommandProtos {
     /**
      * <code>required string device_id = 1;</code>
      */
-    String getDeviceId();
+    java.lang.String getDeviceId();
     /**
      * <code>required string device_id = 1;</code>
      */
     com.google.protobuf.ByteString
-        getDeviceIdBytes();
+    getDeviceIdBytes();
 
     /**
      * <code>optional int32 battery_level = 2;</code>
@@ -1248,10 +1313,18 @@ public final class SenseCommandProtos {
 
     /**
      * <code>required uint64 timestamp = 6;</code>
+     *
+     * <pre>
+     * In seconds
+     * </pre>
      */
     boolean hasTimestamp();
     /**
      * <code>required uint64 timestamp = 6;</code>
+     *
+     * <pre>
+     * In seconds
+     * </pre>
      */
     long getTimestamp();
 
@@ -1268,9 +1341,9 @@ public final class SenseCommandProtos {
    * Protobuf type {@code pill_data}
    */
   public static final class pill_data extends
-      com.google.protobuf.GeneratedMessageLite implements
-      // @@protoc_insertion_point(message_implements:pill_data)
-      pill_dataOrBuilder {
+          com.google.protobuf.GeneratedMessageLite implements
+          // @@protoc_insertion_point(message_implements:pill_data)
+          pill_dataOrBuilder {
     // Use pill_data.newBuilder() to construct.
     private pill_data(com.google.protobuf.GeneratedMessageLite.Builder builder) {
       super(builder);
@@ -1289,16 +1362,16 @@ public final class SenseCommandProtos {
 
     private final com.google.protobuf.ByteString unknownFields;
     private pill_data(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
       int mutable_bitField0_ = 0;
       com.google.protobuf.ByteString.Output unknownFieldsOutput =
-          com.google.protobuf.ByteString.newOutput();
+              com.google.protobuf.ByteString.newOutput();
       com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
-          com.google.protobuf.CodedOutputStream.newInstance(
-              unknownFieldsOutput);
+              com.google.protobuf.CodedOutputStream.newInstance(
+                      unknownFieldsOutput);
       try {
         boolean done = false;
         while (!done) {
@@ -1309,7 +1382,7 @@ public final class SenseCommandProtos {
               break;
             default: {
               if (!parseUnknownField(input, unknownFieldsCodedOutput,
-                                     extensionRegistry, tag)) {
+                      extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -1356,12 +1429,12 @@ public final class SenseCommandProtos {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+                e.getMessage()).setUnfinishedMessage(this);
       } finally {
         try {
           unknownFieldsCodedOutput.flush();
         } catch (java.io.IOException e) {
-        // Should not happen
+          // Should not happen
         } finally {
           unknownFields = unknownFieldsOutput.toByteString();
         }
@@ -1369,23 +1442,23 @@ public final class SenseCommandProtos {
       }
     }
     public static com.google.protobuf.Parser<pill_data> PARSER =
-        new com.google.protobuf.AbstractParser<pill_data>() {
-      public pill_data parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new pill_data(input, extensionRegistry);
-      }
-    };
+            new com.google.protobuf.AbstractParser<pill_data>() {
+              public pill_data parsePartialFrom(
+                      com.google.protobuf.CodedInputStream input,
+                      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                      throws com.google.protobuf.InvalidProtocolBufferException {
+                return new pill_data(input, extensionRegistry);
+              }
+            };
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<pill_data> getParserForType() {
       return PARSER;
     }
 
     private int bitField0_;
     public static final int DEVICE_ID_FIELD_NUMBER = 1;
-    private Object deviceId_;
+    private java.lang.Object deviceId_;
     /**
      * <code>required string device_id = 1;</code>
      */
@@ -1395,14 +1468,14 @@ public final class SenseCommandProtos {
     /**
      * <code>required string device_id = 1;</code>
      */
-    public String getDeviceId() {
-      Object ref = deviceId_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getDeviceId() {
+      java.lang.Object ref = deviceId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           deviceId_ = s;
         }
@@ -1413,12 +1486,12 @@ public final class SenseCommandProtos {
      * <code>required string device_id = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getDeviceIdBytes() {
-      Object ref = deviceId_;
-      if (ref instanceof String) {
+    getDeviceIdBytes() {
+      java.lang.Object ref = deviceId_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         deviceId_ = b;
         return b;
       } else {
@@ -1490,12 +1563,20 @@ public final class SenseCommandProtos {
     private long timestamp_;
     /**
      * <code>required uint64 timestamp = 6;</code>
+     *
+     * <pre>
+     * In seconds
+     * </pre>
      */
     public boolean hasTimestamp() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
      * <code>required uint64 timestamp = 6;</code>
+     *
+     * <pre>
+     * In seconds
+     * </pre>
      */
     public long getTimestamp() {
       return timestamp_;
@@ -1544,7 +1625,7 @@ public final class SenseCommandProtos {
     }
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+            throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, getDeviceIdBytes());
@@ -1578,31 +1659,31 @@ public final class SenseCommandProtos {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getDeviceIdBytes());
+                .computeBytesSize(1, getDeviceIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, batteryLevel_);
+                .computeInt32Size(2, batteryLevel_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, uptime_);
+                .computeInt32Size(3, uptime_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, motionDataEntrypted_);
+                .computeBytesSize(4, motionDataEntrypted_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(5, firmwareVersion_);
+                .computeInt32Size(5, firmwareVersion_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(6, timestamp_);
+                .computeUInt64Size(6, timestamp_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, rssi_);
+                .computeInt32Size(7, rssi_);
       }
       size += unknownFields.size();
       memoizedSerializedSize = size;
@@ -1610,62 +1691,62 @@ public final class SenseCommandProtos {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    protected Object writeReplace()
-        throws java.io.ObjectStreamException {
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+            throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
 
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
@@ -1680,12 +1761,12 @@ public final class SenseCommandProtos {
      * Protobuf type {@code pill_data}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data, Builder>
-        implements
-        // @@protoc_insertion_point(builder_implements:pill_data)
-        is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_dataOrBuilder {
-      // Construct using is.hello.commonsense.sense.model.protobuf.SenseCommandProtos.pill_data.newBuilder()
+            com.google.protobuf.GeneratedMessageLite.Builder<
+                    is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data, Builder>
+            implements
+            // @@protoc_insertion_point(builder_implements:pill_data)
+            is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_dataOrBuilder {
+      // Construct using is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1793,7 +1874,7 @@ public final class SenseCommandProtos {
           setRssi(other.getRssi());
         }
         setUnknownFields(
-            getUnknownFields().concat(other.unknownFields));
+                getUnknownFields().concat(other.unknownFields));
         return this;
       }
 
@@ -1810,9 +1891,9 @@ public final class SenseCommandProtos {
       }
 
       public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
         is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
@@ -1828,7 +1909,7 @@ public final class SenseCommandProtos {
       }
       private int bitField0_;
 
-      private Object deviceId_ = "";
+      private java.lang.Object deviceId_ = "";
       /**
        * <code>required string device_id = 1;</code>
        */
@@ -1838,30 +1919,30 @@ public final class SenseCommandProtos {
       /**
        * <code>required string device_id = 1;</code>
        */
-      public String getDeviceId() {
-        Object ref = deviceId_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getDeviceId() {
+        java.lang.Object ref = deviceId_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             deviceId_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>required string device_id = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getDeviceIdBytes() {
-        Object ref = deviceId_;
+      getDeviceIdBytes() {
+        java.lang.Object ref = deviceId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           deviceId_ = b;
           return b;
         } else {
@@ -1872,11 +1953,11 @@ public final class SenseCommandProtos {
        * <code>required string device_id = 1;</code>
        */
       public Builder setDeviceId(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
         deviceId_ = value;
 
         return this;
@@ -1894,11 +1975,11 @@ public final class SenseCommandProtos {
        * <code>required string device_id = 1;</code>
        */
       public Builder setDeviceIdBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
         deviceId_ = value;
 
         return this;
@@ -1986,9 +2067,9 @@ public final class SenseCommandProtos {
        */
       public Builder setMotionDataEntrypted(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000008;
         motionDataEntrypted_ = value;
 
         return this;
@@ -2038,18 +2119,30 @@ public final class SenseCommandProtos {
       private long timestamp_ ;
       /**
        * <code>required uint64 timestamp = 6;</code>
+       *
+       * <pre>
+       * In seconds
+       * </pre>
        */
       public boolean hasTimestamp() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
        * <code>required uint64 timestamp = 6;</code>
+       *
+       * <pre>
+       * In seconds
+       * </pre>
        */
       public long getTimestamp() {
         return timestamp_;
       }
       /**
        * <code>required uint64 timestamp = 6;</code>
+       *
+       * <pre>
+       * In seconds
+       * </pre>
        */
       public Builder setTimestamp(long value) {
         bitField0_ |= 0x00000020;
@@ -2059,6 +2152,10 @@ public final class SenseCommandProtos {
       }
       /**
        * <code>required uint64 timestamp = 6;</code>
+       *
+       * <pre>
+       * In seconds
+       * </pre>
        */
       public Builder clearTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000020);
@@ -2111,8 +2208,8 @@ public final class SenseCommandProtos {
   }
 
   public interface MorpheusCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:MorpheusCommand)
-      com.google.protobuf.MessageLiteOrBuilder {
+          // @@protoc_insertion_point(interface_extends:MorpheusCommand)
+          com.google.protobuf.MessageLiteOrBuilder {
 
     /**
      * <code>required int32 version = 1;</code>
@@ -2139,12 +2236,12 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string deviceId = 3;</code>
      */
-    String getDeviceId();
+    java.lang.String getDeviceId();
     /**
      * <code>optional string deviceId = 3;</code>
      */
     com.google.protobuf.ByteString
-        getDeviceIdBytes();
+    getDeviceIdBytes();
 
     /**
      * <code>optional string accountId = 4;</code>
@@ -2161,7 +2258,7 @@ public final class SenseCommandProtos {
      * Used by MORPHEUS_COMMAND_PAIR_PILL
      * </pre>
      */
-    String getAccountId();
+    java.lang.String getAccountId();
     /**
      * <code>optional string accountId = 4;</code>
      *
@@ -2170,7 +2267,7 @@ public final class SenseCommandProtos {
      * </pre>
      */
     com.google.protobuf.ByteString
-        getAccountIdBytes();
+    getAccountIdBytes();
 
     /**
      * <code>optional .ErrorType error = 5;</code>
@@ -2196,12 +2293,12 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string wifiName = 6;</code>
      */
-    String getWifiName();
+    java.lang.String getWifiName();
     /**
      * <code>optional string wifiName = 6;</code>
      */
     com.google.protobuf.ByteString
-        getWifiNameBytes();
+    getWifiNameBytes();
 
     /**
      * <code>optional string wifiSSID = 7;</code>
@@ -2210,12 +2307,12 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string wifiSSID = 7;</code>
      */
-    String getWifiSSID();
+    java.lang.String getWifiSSID();
     /**
      * <code>optional string wifiSSID = 7;</code>
      */
     com.google.protobuf.ByteString
-        getWifiSSIDBytes();
+    getWifiSSIDBytes();
 
     /**
      * <code>optional string wifiPassword = 8;</code>
@@ -2224,12 +2321,12 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string wifiPassword = 8;</code>
      */
-    String getWifiPassword();
+    java.lang.String getWifiPassword();
     /**
      * <code>optional string wifiPassword = 8;</code>
      */
     com.google.protobuf.ByteString
-        getWifiPasswordBytes();
+    getWifiPasswordBytes();
 
     /**
      * <code>optional int32 firmwareVersion = 13;</code>
@@ -2257,8 +2354,8 @@ public final class SenseCommandProtos {
     /**
      * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
      */
-    java.util.List<wifi_endpoint>
-        getWifiScanResultList();
+    java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint>
+    getWifiScanResultList();
     /**
      * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
      */
@@ -2311,12 +2408,12 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string country_code = 19;</code>
      */
-    String getCountryCode();
+    java.lang.String getCountryCode();
     /**
      * <code>optional string country_code = 19;</code>
      */
     com.google.protobuf.ByteString
-        getCountryCodeBytes();
+    getCountryCodeBytes();
 
     /**
      * <code>optional bytes aes_key = 20;</code>
@@ -2334,12 +2431,12 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string top_version = 21;</code>
      */
-    String getTopVersion();
+    java.lang.String getTopVersion();
     /**
      * <code>optional string top_version = 21;</code>
      */
     com.google.protobuf.ByteString
-        getTopVersionBytes();
+    getTopVersionBytes();
 
     /**
      * <code>optional uint32 server_ip = 22;</code>
@@ -2366,12 +2463,12 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string http_response_code = 24;</code>
      */
-    String getHttpResponseCode();
+    java.lang.String getHttpResponseCode();
     /**
      * <code>optional string http_response_code = 24;</code>
      */
     com.google.protobuf.ByteString
-        getHttpResponseCodeBytes();
+    getHttpResponseCodeBytes();
 
     /**
      * <code>optional int32 app_version = 25;</code>
@@ -2386,9 +2483,9 @@ public final class SenseCommandProtos {
    * Protobuf type {@code MorpheusCommand}
    */
   public static final class MorpheusCommand extends
-      com.google.protobuf.GeneratedMessageLite implements
-      // @@protoc_insertion_point(message_implements:MorpheusCommand)
-      MorpheusCommandOrBuilder {
+          com.google.protobuf.GeneratedMessageLite implements
+          // @@protoc_insertion_point(message_implements:MorpheusCommand)
+          MorpheusCommandOrBuilder {
     // Use MorpheusCommand.newBuilder() to construct.
     private MorpheusCommand(com.google.protobuf.GeneratedMessageLite.Builder builder) {
       super(builder);
@@ -2407,16 +2504,16 @@ public final class SenseCommandProtos {
 
     private final com.google.protobuf.ByteString unknownFields;
     private MorpheusCommand(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
       int mutable_bitField0_ = 0;
       com.google.protobuf.ByteString.Output unknownFieldsOutput =
-          com.google.protobuf.ByteString.newOutput();
+              com.google.protobuf.ByteString.newOutput();
       com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
-          com.google.protobuf.CodedOutputStream.newInstance(
-              unknownFieldsOutput);
+              com.google.protobuf.CodedOutputStream.newInstance(
+                      unknownFieldsOutput);
       try {
         boolean done = false;
         while (!done) {
@@ -2427,7 +2524,7 @@ public final class SenseCommandProtos {
               break;
             default: {
               if (!parseUnknownField(input, unknownFieldsCodedOutput,
-                                     extensionRegistry, tag)) {
+                      extensionRegistry, tag)) {
                 done = true;
               }
               break;
@@ -2498,7 +2595,7 @@ public final class SenseCommandProtos {
             }
             case 114: {
               if (!((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
-                wifiScanResult_ = new java.util.ArrayList<wifi_endpoint>();
+                wifiScanResult_ = new java.util.ArrayList<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint>();
                 mutable_bitField0_ |= 0x00000200;
               }
               wifiScanResult_.add(input.readMessage(is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.PARSER, extensionRegistry));
@@ -2590,7 +2687,7 @@ public final class SenseCommandProtos {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+                e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000200) == 0x00000200)) {
           wifiScanResult_ = java.util.Collections.unmodifiableList(wifiScanResult_);
@@ -2598,7 +2695,7 @@ public final class SenseCommandProtos {
         try {
           unknownFieldsCodedOutput.flush();
         } catch (java.io.IOException e) {
-        // Should not happen
+          // Should not happen
         } finally {
           unknownFields = unknownFieldsOutput.toByteString();
         }
@@ -2606,16 +2703,16 @@ public final class SenseCommandProtos {
       }
     }
     public static com.google.protobuf.Parser<MorpheusCommand> PARSER =
-        new com.google.protobuf.AbstractParser<MorpheusCommand>() {
-      public MorpheusCommand parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new MorpheusCommand(input, extensionRegistry);
-      }
-    };
+            new com.google.protobuf.AbstractParser<MorpheusCommand>() {
+              public MorpheusCommand parsePartialFrom(
+                      com.google.protobuf.CodedInputStream input,
+                      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                      throws com.google.protobuf.InvalidProtocolBufferException {
+                return new MorpheusCommand(input, extensionRegistry);
+              }
+            };
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<MorpheusCommand> getParserForType() {
       return PARSER;
     }
@@ -2624,7 +2721,7 @@ public final class SenseCommandProtos {
      * Protobuf enum {@code MorpheusCommand.CommandType}
      */
     public enum CommandType
-        implements com.google.protobuf.Internal.EnumLite {
+            implements com.google.protobuf.Internal.EnumLite {
       /**
        * <code>MORPHEUS_COMMAND_SET_TIME = 0;</code>
        */
@@ -2769,6 +2866,10 @@ public final class SenseCommandProtos {
        * <code>MORPHEUS_COMMAND_CONNECTION_STATE = 34;</code>
        */
       MORPHEUS_COMMAND_CONNECTION_STATE(34, 34),
+      /**
+       * <code>MORPHEUS_COMMAND_PILL_PROX_DATA = 35;</code>
+       */
+      MORPHEUS_COMMAND_PILL_PROX_DATA(35, 35),
       ;
 
       /**
@@ -2915,6 +3016,10 @@ public final class SenseCommandProtos {
        * <code>MORPHEUS_COMMAND_CONNECTION_STATE = 34;</code>
        */
       public static final int MORPHEUS_COMMAND_CONNECTION_STATE_VALUE = 34;
+      /**
+       * <code>MORPHEUS_COMMAND_PILL_PROX_DATA = 35;</code>
+       */
+      public static final int MORPHEUS_COMMAND_PILL_PROX_DATA_VALUE = 35;
 
 
       public final int getNumber() { return value; }
@@ -2956,21 +3061,22 @@ public final class SenseCommandProtos {
           case 32: return MORPHEUS_COMMAND_SET_COUNTRY_CODE;
           case 33: return MORPHEUS_COMMAND_SET_SERVER_IP;
           case 34: return MORPHEUS_COMMAND_CONNECTION_STATE;
+          case 35: return MORPHEUS_COMMAND_PILL_PROX_DATA;
           default: return null;
         }
       }
 
       public static com.google.protobuf.Internal.EnumLiteMap<CommandType>
-          internalGetValueMap() {
+      internalGetValueMap() {
         return internalValueMap;
       }
       private static com.google.protobuf.Internal.EnumLiteMap<CommandType>
-          internalValueMap =
-            new com.google.protobuf.Internal.EnumLiteMap<CommandType>() {
-              public CommandType findValueByNumber(int number) {
-                return CommandType.valueOf(number);
-              }
-            };
+              internalValueMap =
+              new com.google.protobuf.Internal.EnumLiteMap<CommandType>() {
+                public CommandType findValueByNumber(int number) {
+                  return CommandType.valueOf(number);
+                }
+              };
 
       private final int value;
 
@@ -3013,7 +3119,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int DEVICEID_FIELD_NUMBER = 3;
-    private Object deviceId_;
+    private java.lang.Object deviceId_;
     /**
      * <code>optional string deviceId = 3;</code>
      */
@@ -3023,14 +3129,14 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string deviceId = 3;</code>
      */
-    public String getDeviceId() {
-      Object ref = deviceId_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getDeviceId() {
+      java.lang.Object ref = deviceId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           deviceId_ = s;
         }
@@ -3041,12 +3147,12 @@ public final class SenseCommandProtos {
      * <code>optional string deviceId = 3;</code>
      */
     public com.google.protobuf.ByteString
-        getDeviceIdBytes() {
-      Object ref = deviceId_;
-      if (ref instanceof String) {
+    getDeviceIdBytes() {
+      java.lang.Object ref = deviceId_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         deviceId_ = b;
         return b;
       } else {
@@ -3055,7 +3161,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int ACCOUNTID_FIELD_NUMBER = 4;
-    private Object accountId_;
+    private java.lang.Object accountId_;
     /**
      * <code>optional string accountId = 4;</code>
      *
@@ -3073,14 +3179,14 @@ public final class SenseCommandProtos {
      * Used by MORPHEUS_COMMAND_PAIR_PILL
      * </pre>
      */
-    public String getAccountId() {
-      Object ref = accountId_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getAccountId() {
+      java.lang.Object ref = accountId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           accountId_ = s;
         }
@@ -3095,12 +3201,12 @@ public final class SenseCommandProtos {
      * </pre>
      */
     public com.google.protobuf.ByteString
-        getAccountIdBytes() {
-      Object ref = accountId_;
-      if (ref instanceof String) {
+    getAccountIdBytes() {
+      java.lang.Object ref = accountId_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         accountId_ = b;
         return b;
       } else {
@@ -3132,7 +3238,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int WIFINAME_FIELD_NUMBER = 6;
-    private Object wifiName_;
+    private java.lang.Object wifiName_;
     /**
      * <code>optional string wifiName = 6;</code>
      */
@@ -3142,14 +3248,14 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string wifiName = 6;</code>
      */
-    public String getWifiName() {
-      Object ref = wifiName_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getWifiName() {
+      java.lang.Object ref = wifiName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           wifiName_ = s;
         }
@@ -3160,12 +3266,12 @@ public final class SenseCommandProtos {
      * <code>optional string wifiName = 6;</code>
      */
     public com.google.protobuf.ByteString
-        getWifiNameBytes() {
-      Object ref = wifiName_;
-      if (ref instanceof String) {
+    getWifiNameBytes() {
+      java.lang.Object ref = wifiName_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         wifiName_ = b;
         return b;
       } else {
@@ -3174,7 +3280,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int WIFISSID_FIELD_NUMBER = 7;
-    private Object wifiSSID_;
+    private java.lang.Object wifiSSID_;
     /**
      * <code>optional string wifiSSID = 7;</code>
      */
@@ -3184,14 +3290,14 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string wifiSSID = 7;</code>
      */
-    public String getWifiSSID() {
-      Object ref = wifiSSID_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getWifiSSID() {
+      java.lang.Object ref = wifiSSID_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           wifiSSID_ = s;
         }
@@ -3202,12 +3308,12 @@ public final class SenseCommandProtos {
      * <code>optional string wifiSSID = 7;</code>
      */
     public com.google.protobuf.ByteString
-        getWifiSSIDBytes() {
-      Object ref = wifiSSID_;
-      if (ref instanceof String) {
+    getWifiSSIDBytes() {
+      java.lang.Object ref = wifiSSID_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         wifiSSID_ = b;
         return b;
       } else {
@@ -3216,7 +3322,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int WIFIPASSWORD_FIELD_NUMBER = 8;
-    private Object wifiPassword_;
+    private java.lang.Object wifiPassword_;
     /**
      * <code>optional string wifiPassword = 8;</code>
      */
@@ -3226,14 +3332,14 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string wifiPassword = 8;</code>
      */
-    public String getWifiPassword() {
-      Object ref = wifiPassword_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getWifiPassword() {
+      java.lang.Object ref = wifiPassword_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           wifiPassword_ = s;
         }
@@ -3244,12 +3350,12 @@ public final class SenseCommandProtos {
      * <code>optional string wifiPassword = 8;</code>
      */
     public com.google.protobuf.ByteString
-        getWifiPasswordBytes() {
-      Object ref = wifiPassword_;
-      if (ref instanceof String) {
+    getWifiPasswordBytes() {
+      java.lang.Object ref = wifiPassword_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         wifiPassword_ = b;
         return b;
       } else {
@@ -3287,18 +3393,18 @@ public final class SenseCommandProtos {
     }
 
     public static final int WIFI_SCAN_RESULT_FIELD_NUMBER = 14;
-    private java.util.List<wifi_endpoint> wifiScanResult_;
+    private java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint> wifiScanResult_;
     /**
      * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
      */
-    public java.util.List<wifi_endpoint> getWifiScanResultList() {
+    public java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint> getWifiScanResultList() {
       return wifiScanResult_;
     }
     /**
      * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
      */
-    public java.util.List<? extends wifi_endpointOrBuilder>
-        getWifiScanResultOrBuilderList() {
+    public java.util.List<? extends is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpointOrBuilder>
+    getWifiScanResultOrBuilderList() {
       return wifiScanResult_;
     }
     /**
@@ -3317,7 +3423,7 @@ public final class SenseCommandProtos {
      * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
      */
     public is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpointOrBuilder getWifiScanResultOrBuilder(
-        int index) {
+            int index) {
       return wifiScanResult_.get(index);
     }
 
@@ -3382,7 +3488,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int COUNTRY_CODE_FIELD_NUMBER = 19;
-    private Object countryCode_;
+    private java.lang.Object countryCode_;
     /**
      * <code>optional string country_code = 19;</code>
      */
@@ -3392,14 +3498,14 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string country_code = 19;</code>
      */
-    public String getCountryCode() {
-      Object ref = countryCode_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getCountryCode() {
+      java.lang.Object ref = countryCode_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           countryCode_ = s;
         }
@@ -3410,12 +3516,12 @@ public final class SenseCommandProtos {
      * <code>optional string country_code = 19;</code>
      */
     public com.google.protobuf.ByteString
-        getCountryCodeBytes() {
-      Object ref = countryCode_;
-      if (ref instanceof String) {
+    getCountryCodeBytes() {
+      java.lang.Object ref = countryCode_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         countryCode_ = b;
         return b;
       } else {
@@ -3439,7 +3545,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int TOP_VERSION_FIELD_NUMBER = 21;
-    private Object topVersion_;
+    private java.lang.Object topVersion_;
     /**
      * <code>optional string top_version = 21;</code>
      */
@@ -3449,14 +3555,14 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string top_version = 21;</code>
      */
-    public String getTopVersion() {
-      Object ref = topVersion_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getTopVersion() {
+      java.lang.Object ref = topVersion_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           topVersion_ = s;
         }
@@ -3467,12 +3573,12 @@ public final class SenseCommandProtos {
      * <code>optional string top_version = 21;</code>
      */
     public com.google.protobuf.ByteString
-        getTopVersionBytes() {
-      Object ref = topVersion_;
-      if (ref instanceof String) {
+    getTopVersionBytes() {
+      java.lang.Object ref = topVersion_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         topVersion_ = b;
         return b;
       } else {
@@ -3511,7 +3617,7 @@ public final class SenseCommandProtos {
     }
 
     public static final int HTTP_RESPONSE_CODE_FIELD_NUMBER = 24;
-    private Object httpResponseCode_;
+    private java.lang.Object httpResponseCode_;
     /**
      * <code>optional string http_response_code = 24;</code>
      */
@@ -3521,14 +3627,14 @@ public final class SenseCommandProtos {
     /**
      * <code>optional string http_response_code = 24;</code>
      */
-    public String getHttpResponseCode() {
-      Object ref = httpResponseCode_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getHttpResponseCode() {
+      java.lang.Object ref = httpResponseCode_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           httpResponseCode_ = s;
         }
@@ -3539,12 +3645,12 @@ public final class SenseCommandProtos {
      * <code>optional string http_response_code = 24;</code>
      */
     public com.google.protobuf.ByteString
-        getHttpResponseCodeBytes() {
-      Object ref = httpResponseCode_;
-      if (ref instanceof String) {
+    getHttpResponseCodeBytes() {
+      java.lang.Object ref = httpResponseCode_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         httpResponseCode_ = b;
         return b;
       } else {
@@ -3621,7 +3727,7 @@ public final class SenseCommandProtos {
     }
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+            throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeInt32(1, version_);
@@ -3697,87 +3803,87 @@ public final class SenseCommandProtos {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, version_);
+                .computeInt32Size(1, version_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(2, type_.getNumber());
+                .computeEnumSize(2, type_.getNumber());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getDeviceIdBytes());
+                .computeBytesSize(3, getDeviceIdBytes());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getAccountIdBytes());
+                .computeBytesSize(4, getAccountIdBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(5, error_.getNumber());
+                .computeEnumSize(5, error_.getNumber());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(6, getWifiNameBytes());
+                .computeBytesSize(6, getWifiNameBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, getWifiSSIDBytes());
+                .computeBytesSize(7, getWifiSSIDBytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getWifiPasswordBytes());
+                .computeBytesSize(8, getWifiPasswordBytes());
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(13, firmwareVersion_);
+                .computeInt32Size(13, firmwareVersion_);
       }
       for (int i = 0; i < wifiScanResult_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(14, wifiScanResult_.get(i));
+                .computeMessageSize(14, wifiScanResult_.get(i));
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(15, securityType_.getNumber());
+                .computeEnumSize(15, securityType_.getNumber());
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(16, pillData_);
+                .computeMessageSize(16, pillData_);
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(17, wifiConnectionState_.getNumber());
+                .computeEnumSize(17, wifiConnectionState_.getNumber());
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(18, bleBondCount_);
+                .computeInt32Size(18, bleBondCount_);
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(19, getCountryCodeBytes());
+                .computeBytesSize(19, getCountryCodeBytes());
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(20, aesKey_);
+                .computeBytesSize(20, aesKey_);
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(21, getTopVersionBytes());
+                .computeBytesSize(21, getTopVersionBytes());
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(22, serverIp_);
+                .computeUInt32Size(22, serverIp_);
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(23, socketErrorCode_);
+                .computeUInt32Size(23, socketErrorCode_);
       }
       if (((bitField0_ & 0x00040000) == 0x00040000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(24, getHttpResponseCodeBytes());
+                .computeBytesSize(24, getHttpResponseCodeBytes());
       }
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(25, appVersion_);
+                .computeInt32Size(25, appVersion_);
       }
       size += unknownFields.size();
       memoizedSerializedSize = size;
@@ -3785,62 +3891,62 @@ public final class SenseCommandProtos {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    protected Object writeReplace()
-        throws java.io.ObjectStreamException {
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+            throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
 
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
@@ -3855,12 +3961,12 @@ public final class SenseCommandProtos {
      * Protobuf type {@code MorpheusCommand}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand, Builder>
-        implements
-        // @@protoc_insertion_point(builder_implements:MorpheusCommand)
-        is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommandOrBuilder {
-      // Construct using is.hello.commonsense.sense.model.protobuf.SenseCommandProtos.MorpheusCommand.newBuilder()
+            com.google.protobuf.GeneratedMessageLite.Builder<
+                    is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand, Builder>
+            implements
+            // @@protoc_insertion_point(builder_implements:MorpheusCommand)
+            is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommandOrBuilder {
+      // Construct using is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4116,7 +4222,7 @@ public final class SenseCommandProtos {
           setAppVersion(other.getAppVersion());
         }
         setUnknownFields(
-            getUnknownFields().concat(other.unknownFields));
+                getUnknownFields().concat(other.unknownFields));
         return this;
       }
 
@@ -4145,9 +4251,9 @@ public final class SenseCommandProtos {
       }
 
       public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
         is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.MorpheusCommand parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
@@ -4230,7 +4336,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private Object deviceId_ = "";
+      private java.lang.Object deviceId_ = "";
       /**
        * <code>optional string deviceId = 3;</code>
        */
@@ -4240,30 +4346,30 @@ public final class SenseCommandProtos {
       /**
        * <code>optional string deviceId = 3;</code>
        */
-      public String getDeviceId() {
-        Object ref = deviceId_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getDeviceId() {
+        java.lang.Object ref = deviceId_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             deviceId_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>optional string deviceId = 3;</code>
        */
       public com.google.protobuf.ByteString
-          getDeviceIdBytes() {
-        Object ref = deviceId_;
+      getDeviceIdBytes() {
+        java.lang.Object ref = deviceId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           deviceId_ = b;
           return b;
         } else {
@@ -4274,11 +4380,11 @@ public final class SenseCommandProtos {
        * <code>optional string deviceId = 3;</code>
        */
       public Builder setDeviceId(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000004;
         deviceId_ = value;
 
         return this;
@@ -4296,17 +4402,17 @@ public final class SenseCommandProtos {
        * <code>optional string deviceId = 3;</code>
        */
       public Builder setDeviceIdBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000004;
         deviceId_ = value;
 
         return this;
       }
 
-      private Object accountId_ = "";
+      private java.lang.Object accountId_ = "";
       /**
        * <code>optional string accountId = 4;</code>
        *
@@ -4324,18 +4430,18 @@ public final class SenseCommandProtos {
        * Used by MORPHEUS_COMMAND_PAIR_PILL
        * </pre>
        */
-      public String getAccountId() {
-        Object ref = accountId_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getAccountId() {
+        java.lang.Object ref = accountId_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             accountId_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -4346,12 +4452,12 @@ public final class SenseCommandProtos {
        * </pre>
        */
       public com.google.protobuf.ByteString
-          getAccountIdBytes() {
-        Object ref = accountId_;
+      getAccountIdBytes() {
+        java.lang.Object ref = accountId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           accountId_ = b;
           return b;
         } else {
@@ -4366,11 +4472,11 @@ public final class SenseCommandProtos {
        * </pre>
        */
       public Builder setAccountId(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000008;
         accountId_ = value;
 
         return this;
@@ -4396,11 +4502,11 @@ public final class SenseCommandProtos {
        * </pre>
        */
       public Builder setAccountIdBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000008;
         accountId_ = value;
 
         return this;
@@ -4457,7 +4563,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private Object wifiName_ = "";
+      private java.lang.Object wifiName_ = "";
       /**
        * <code>optional string wifiName = 6;</code>
        */
@@ -4467,30 +4573,30 @@ public final class SenseCommandProtos {
       /**
        * <code>optional string wifiName = 6;</code>
        */
-      public String getWifiName() {
-        Object ref = wifiName_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getWifiName() {
+        java.lang.Object ref = wifiName_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             wifiName_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>optional string wifiName = 6;</code>
        */
       public com.google.protobuf.ByteString
-          getWifiNameBytes() {
-        Object ref = wifiName_;
+      getWifiNameBytes() {
+        java.lang.Object ref = wifiName_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           wifiName_ = b;
           return b;
         } else {
@@ -4501,11 +4607,11 @@ public final class SenseCommandProtos {
        * <code>optional string wifiName = 6;</code>
        */
       public Builder setWifiName(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000020;
         wifiName_ = value;
 
         return this;
@@ -4523,17 +4629,17 @@ public final class SenseCommandProtos {
        * <code>optional string wifiName = 6;</code>
        */
       public Builder setWifiNameBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000020;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000020;
         wifiName_ = value;
 
         return this;
       }
 
-      private Object wifiSSID_ = "";
+      private java.lang.Object wifiSSID_ = "";
       /**
        * <code>optional string wifiSSID = 7;</code>
        */
@@ -4543,30 +4649,30 @@ public final class SenseCommandProtos {
       /**
        * <code>optional string wifiSSID = 7;</code>
        */
-      public String getWifiSSID() {
-        Object ref = wifiSSID_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getWifiSSID() {
+        java.lang.Object ref = wifiSSID_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             wifiSSID_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>optional string wifiSSID = 7;</code>
        */
       public com.google.protobuf.ByteString
-          getWifiSSIDBytes() {
-        Object ref = wifiSSID_;
+      getWifiSSIDBytes() {
+        java.lang.Object ref = wifiSSID_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           wifiSSID_ = b;
           return b;
         } else {
@@ -4577,11 +4683,11 @@ public final class SenseCommandProtos {
        * <code>optional string wifiSSID = 7;</code>
        */
       public Builder setWifiSSID(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000040;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000040;
         wifiSSID_ = value;
 
         return this;
@@ -4599,17 +4705,17 @@ public final class SenseCommandProtos {
        * <code>optional string wifiSSID = 7;</code>
        */
       public Builder setWifiSSIDBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000040;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000040;
         wifiSSID_ = value;
 
         return this;
       }
 
-      private Object wifiPassword_ = "";
+      private java.lang.Object wifiPassword_ = "";
       /**
        * <code>optional string wifiPassword = 8;</code>
        */
@@ -4619,30 +4725,30 @@ public final class SenseCommandProtos {
       /**
        * <code>optional string wifiPassword = 8;</code>
        */
-      public String getWifiPassword() {
-        Object ref = wifiPassword_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getWifiPassword() {
+        java.lang.Object ref = wifiPassword_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             wifiPassword_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>optional string wifiPassword = 8;</code>
        */
       public com.google.protobuf.ByteString
-          getWifiPasswordBytes() {
-        Object ref = wifiPassword_;
+      getWifiPasswordBytes() {
+        java.lang.Object ref = wifiPassword_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           wifiPassword_ = b;
           return b;
         } else {
@@ -4653,11 +4759,11 @@ public final class SenseCommandProtos {
        * <code>optional string wifiPassword = 8;</code>
        */
       public Builder setWifiPassword(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000080;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000080;
         wifiPassword_ = value;
 
         return this;
@@ -4675,11 +4781,11 @@ public final class SenseCommandProtos {
        * <code>optional string wifiPassword = 8;</code>
        */
       public Builder setWifiPasswordBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000080;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000080;
         wifiPassword_ = value;
 
         return this;
@@ -4745,19 +4851,19 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private java.util.List<wifi_endpoint> wifiScanResult_ =
-        java.util.Collections.emptyList();
+      private java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint> wifiScanResult_ =
+              java.util.Collections.emptyList();
       private void ensureWifiScanResultIsMutable() {
         if (!((bitField0_ & 0x00000200) == 0x00000200)) {
-          wifiScanResult_ = new java.util.ArrayList<wifi_endpoint>(wifiScanResult_);
+          wifiScanResult_ = new java.util.ArrayList<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint>(wifiScanResult_);
           bitField0_ |= 0x00000200;
-         }
+        }
       }
 
       /**
        * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
        */
-      public java.util.List<wifi_endpoint> getWifiScanResultList() {
+      public java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint> getWifiScanResultList() {
         return java.util.Collections.unmodifiableList(wifiScanResult_);
       }
       /**
@@ -4776,7 +4882,7 @@ public final class SenseCommandProtos {
        * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
        */
       public Builder setWifiScanResult(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint value) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -4789,7 +4895,7 @@ public final class SenseCommandProtos {
        * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
        */
       public Builder setWifiScanResult(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.Builder builderForValue) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.Builder builderForValue) {
         ensureWifiScanResultIsMutable();
         wifiScanResult_.set(index, builderForValue.build());
 
@@ -4811,7 +4917,7 @@ public final class SenseCommandProtos {
        * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
        */
       public Builder addWifiScanResult(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint value) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -4824,7 +4930,7 @@ public final class SenseCommandProtos {
        * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
        */
       public Builder addWifiScanResult(
-          is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.Builder builderForValue) {
+              is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.Builder builderForValue) {
         ensureWifiScanResultIsMutable();
         wifiScanResult_.add(builderForValue.build());
 
@@ -4834,7 +4940,7 @@ public final class SenseCommandProtos {
        * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
        */
       public Builder addWifiScanResult(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.Builder builderForValue) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint.Builder builderForValue) {
         ensureWifiScanResultIsMutable();
         wifiScanResult_.add(index, builderForValue.build());
 
@@ -4844,10 +4950,10 @@ public final class SenseCommandProtos {
        * <code>repeated .wifi_endpoint wifi_scan_result = 14;</code>
        */
       public Builder addAllWifiScanResult(
-          Iterable<? extends wifi_endpoint> values) {
+              java.lang.Iterable<? extends is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.wifi_endpoint> values) {
         ensureWifiScanResultIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, wifiScanResult_);
+                values, wifiScanResult_);
 
         return this;
       }
@@ -4934,7 +5040,7 @@ public final class SenseCommandProtos {
        * <code>optional .pill_data pill_data = 16;</code>
        */
       public Builder setPillData(
-          is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
+              is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
         pillData_ = builderForValue.build();
 
         bitField0_ |= 0x00000800;
@@ -4945,9 +5051,9 @@ public final class SenseCommandProtos {
        */
       public Builder mergePillData(is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
         if (((bitField0_ & 0x00000800) == 0x00000800) &&
-            pillData_ != is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.getDefaultInstance()) {
+                pillData_ != is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.getDefaultInstance()) {
           pillData_ =
-            is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.newBuilder(pillData_).mergeFrom(value).buildPartial();
+                  is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.newBuilder(pillData_).mergeFrom(value).buildPartial();
         } else {
           pillData_ = value;
         }
@@ -5032,7 +5138,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private Object countryCode_ = "";
+      private java.lang.Object countryCode_ = "";
       /**
        * <code>optional string country_code = 19;</code>
        */
@@ -5042,30 +5148,30 @@ public final class SenseCommandProtos {
       /**
        * <code>optional string country_code = 19;</code>
        */
-      public String getCountryCode() {
-        Object ref = countryCode_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getCountryCode() {
+        java.lang.Object ref = countryCode_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             countryCode_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>optional string country_code = 19;</code>
        */
       public com.google.protobuf.ByteString
-          getCountryCodeBytes() {
-        Object ref = countryCode_;
+      getCountryCodeBytes() {
+        java.lang.Object ref = countryCode_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           countryCode_ = b;
           return b;
         } else {
@@ -5076,11 +5182,11 @@ public final class SenseCommandProtos {
        * <code>optional string country_code = 19;</code>
        */
       public Builder setCountryCode(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00004000;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00004000;
         countryCode_ = value;
 
         return this;
@@ -5098,11 +5204,11 @@ public final class SenseCommandProtos {
        * <code>optional string country_code = 19;</code>
        */
       public Builder setCountryCodeBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00004000;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00004000;
         countryCode_ = value;
 
         return this;
@@ -5126,9 +5232,9 @@ public final class SenseCommandProtos {
        */
       public Builder setAesKey(com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00008000;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00008000;
         aesKey_ = value;
 
         return this;
@@ -5143,7 +5249,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private Object topVersion_ = "";
+      private java.lang.Object topVersion_ = "";
       /**
        * <code>optional string top_version = 21;</code>
        */
@@ -5153,30 +5259,30 @@ public final class SenseCommandProtos {
       /**
        * <code>optional string top_version = 21;</code>
        */
-      public String getTopVersion() {
-        Object ref = topVersion_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getTopVersion() {
+        java.lang.Object ref = topVersion_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             topVersion_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>optional string top_version = 21;</code>
        */
       public com.google.protobuf.ByteString
-          getTopVersionBytes() {
-        Object ref = topVersion_;
+      getTopVersionBytes() {
+        java.lang.Object ref = topVersion_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           topVersion_ = b;
           return b;
         } else {
@@ -5187,11 +5293,11 @@ public final class SenseCommandProtos {
        * <code>optional string top_version = 21;</code>
        */
       public Builder setTopVersion(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00010000;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00010000;
         topVersion_ = value;
 
         return this;
@@ -5209,11 +5315,11 @@ public final class SenseCommandProtos {
        * <code>optional string top_version = 21;</code>
        */
       public Builder setTopVersionBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00010000;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00010000;
         topVersion_ = value;
 
         return this;
@@ -5283,7 +5389,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private Object httpResponseCode_ = "";
+      private java.lang.Object httpResponseCode_ = "";
       /**
        * <code>optional string http_response_code = 24;</code>
        */
@@ -5293,30 +5399,30 @@ public final class SenseCommandProtos {
       /**
        * <code>optional string http_response_code = 24;</code>
        */
-      public String getHttpResponseCode() {
-        Object ref = httpResponseCode_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getHttpResponseCode() {
+        java.lang.Object ref = httpResponseCode_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             httpResponseCode_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>optional string http_response_code = 24;</code>
        */
       public com.google.protobuf.ByteString
-          getHttpResponseCodeBytes() {
-        Object ref = httpResponseCode_;
+      getHttpResponseCodeBytes() {
+        java.lang.Object ref = httpResponseCode_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           httpResponseCode_ = b;
           return b;
         } else {
@@ -5327,11 +5433,11 @@ public final class SenseCommandProtos {
        * <code>optional string http_response_code = 24;</code>
        */
       public Builder setHttpResponseCode(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00080000;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00080000;
         httpResponseCode_ = value;
 
         return this;
@@ -5349,11 +5455,11 @@ public final class SenseCommandProtos {
        * <code>optional string http_response_code = 24;</code>
        */
       public Builder setHttpResponseCodeBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00080000;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00080000;
         httpResponseCode_ = value;
 
         return this;
@@ -5403,14 +5509,14 @@ public final class SenseCommandProtos {
   }
 
   public interface batched_pill_dataOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:batched_pill_data)
-      com.google.protobuf.MessageLiteOrBuilder {
+          // @@protoc_insertion_point(interface_extends:batched_pill_data)
+          com.google.protobuf.MessageLiteOrBuilder {
 
     /**
      * <code>repeated .pill_data pills = 1;</code>
      */
-    java.util.List<pill_data>
-        getPillsList();
+    java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data>
+    getPillsList();
     /**
      * <code>repeated .pill_data pills = 1;</code>
      */
@@ -5427,20 +5533,34 @@ public final class SenseCommandProtos {
     /**
      * <code>required string device_id = 2;</code>
      */
-    String getDeviceId();
+    java.lang.String getDeviceId();
     /**
      * <code>required string device_id = 2;</code>
      */
     com.google.protobuf.ByteString
-        getDeviceIdBytes();
+    getDeviceIdBytes();
+
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data>
+    getProxList();
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data getProx(int index);
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    int getProxCount();
   }
   /**
    * Protobuf type {@code batched_pill_data}
    */
   public static final class batched_pill_data extends
-      com.google.protobuf.GeneratedMessageLite implements
-      // @@protoc_insertion_point(message_implements:batched_pill_data)
-      batched_pill_dataOrBuilder {
+          com.google.protobuf.GeneratedMessageLite implements
+          // @@protoc_insertion_point(message_implements:batched_pill_data)
+          batched_pill_dataOrBuilder {
     // Use batched_pill_data.newBuilder() to construct.
     private batched_pill_data(com.google.protobuf.GeneratedMessageLite.Builder builder) {
       super(builder);
@@ -5459,16 +5579,16 @@ public final class SenseCommandProtos {
 
     private final com.google.protobuf.ByteString unknownFields;
     private batched_pill_data(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
       int mutable_bitField0_ = 0;
       com.google.protobuf.ByteString.Output unknownFieldsOutput =
-          com.google.protobuf.ByteString.newOutput();
+              com.google.protobuf.ByteString.newOutput();
       com.google.protobuf.CodedOutputStream unknownFieldsCodedOutput =
-          com.google.protobuf.CodedOutputStream.newInstance(
-              unknownFieldsOutput);
+              com.google.protobuf.CodedOutputStream.newInstance(
+                      unknownFieldsOutput);
       try {
         boolean done = false;
         while (!done) {
@@ -5479,14 +5599,14 @@ public final class SenseCommandProtos {
               break;
             default: {
               if (!parseUnknownField(input, unknownFieldsCodedOutput,
-                                     extensionRegistry, tag)) {
+                      extensionRegistry, tag)) {
                 done = true;
               }
               break;
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                pills_ = new java.util.ArrayList<pill_data>();
+                pills_ = new java.util.ArrayList<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data>();
                 mutable_bitField0_ |= 0x00000001;
               }
               pills_.add(input.readMessage(is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.PARSER, extensionRegistry));
@@ -5498,21 +5618,32 @@ public final class SenseCommandProtos {
               deviceId_ = bs;
               break;
             }
+            case 26: {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+                prox_ = new java.util.ArrayList<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data>();
+                mutable_bitField0_ |= 0x00000004;
+              }
+              prox_.add(input.readMessage(is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.PARSER, extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
         throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
         throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
+                e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
           pills_ = java.util.Collections.unmodifiableList(pills_);
         }
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
+          prox_ = java.util.Collections.unmodifiableList(prox_);
+        }
         try {
           unknownFieldsCodedOutput.flush();
         } catch (java.io.IOException e) {
-        // Should not happen
+          // Should not happen
         } finally {
           unknownFields = unknownFieldsOutput.toByteString();
         }
@@ -5520,34 +5651,34 @@ public final class SenseCommandProtos {
       }
     }
     public static com.google.protobuf.Parser<batched_pill_data> PARSER =
-        new com.google.protobuf.AbstractParser<batched_pill_data>() {
-      public batched_pill_data parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new batched_pill_data(input, extensionRegistry);
-      }
-    };
+            new com.google.protobuf.AbstractParser<batched_pill_data>() {
+              public batched_pill_data parsePartialFrom(
+                      com.google.protobuf.CodedInputStream input,
+                      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+                      throws com.google.protobuf.InvalidProtocolBufferException {
+                return new batched_pill_data(input, extensionRegistry);
+              }
+            };
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<batched_pill_data> getParserForType() {
       return PARSER;
     }
 
     private int bitField0_;
     public static final int PILLS_FIELD_NUMBER = 1;
-    private java.util.List<pill_data> pills_;
+    private java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> pills_;
     /**
      * <code>repeated .pill_data pills = 1;</code>
      */
-    public java.util.List<pill_data> getPillsList() {
+    public java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> getPillsList() {
       return pills_;
     }
     /**
      * <code>repeated .pill_data pills = 1;</code>
      */
-    public java.util.List<? extends pill_dataOrBuilder>
-        getPillsOrBuilderList() {
+    public java.util.List<? extends is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_dataOrBuilder>
+    getPillsOrBuilderList() {
       return pills_;
     }
     /**
@@ -5566,12 +5697,12 @@ public final class SenseCommandProtos {
      * <code>repeated .pill_data pills = 1;</code>
      */
     public is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_dataOrBuilder getPillsOrBuilder(
-        int index) {
+            int index) {
       return pills_.get(index);
     }
 
     public static final int DEVICE_ID_FIELD_NUMBER = 2;
-    private Object deviceId_;
+    private java.lang.Object deviceId_;
     /**
      * <code>required string device_id = 2;</code>
      */
@@ -5581,14 +5712,14 @@ public final class SenseCommandProtos {
     /**
      * <code>required string device_id = 2;</code>
      */
-    public String getDeviceId() {
-      Object ref = deviceId_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getDeviceId() {
+      java.lang.Object ref = deviceId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+                (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
           deviceId_ = s;
         }
@@ -5599,12 +5730,12 @@ public final class SenseCommandProtos {
      * <code>required string device_id = 2;</code>
      */
     public com.google.protobuf.ByteString
-        getDeviceIdBytes() {
-      Object ref = deviceId_;
-      if (ref instanceof String) {
+    getDeviceIdBytes() {
+      java.lang.Object ref = deviceId_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         deviceId_ = b;
         return b;
       } else {
@@ -5612,9 +5743,45 @@ public final class SenseCommandProtos {
       }
     }
 
+    public static final int PROX_FIELD_NUMBER = 3;
+    private java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> prox_;
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    public java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> getProxList() {
+      return prox_;
+    }
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    public java.util.List<? extends is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_dataOrBuilder>
+    getProxOrBuilderList() {
+      return prox_;
+    }
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    public int getProxCount() {
+      return prox_.size();
+    }
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    public is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data getProx(int index) {
+      return prox_.get(index);
+    }
+    /**
+     * <code>repeated .pill_data prox = 3;</code>
+     */
+    public is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_dataOrBuilder getProxOrBuilder(
+            int index) {
+      return prox_.get(index);
+    }
+
     private void initFields() {
       pills_ = java.util.Collections.emptyList();
       deviceId_ = "";
+      prox_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5632,18 +5799,27 @@ public final class SenseCommandProtos {
           return false;
         }
       }
+      for (int i = 0; i < getProxCount(); i++) {
+        if (!getProx(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
+            throws java.io.IOException {
       getSerializedSize();
       for (int i = 0; i < pills_.size(); i++) {
         output.writeMessage(1, pills_.get(i));
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(2, getDeviceIdBytes());
+      }
+      for (int i = 0; i < prox_.size(); i++) {
+        output.writeMessage(3, prox_.get(i));
       }
       output.writeRawBytes(unknownFields);
     }
@@ -5656,11 +5832,15 @@ public final class SenseCommandProtos {
       size = 0;
       for (int i = 0; i < pills_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, pills_.get(i));
+                .computeMessageSize(1, pills_.get(i));
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getDeviceIdBytes());
+                .computeBytesSize(2, getDeviceIdBytes());
+      }
+      for (int i = 0; i < prox_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+                .computeMessageSize(3, prox_.get(i));
       }
       size += unknownFields.size();
       memoizedSerializedSize = size;
@@ -5668,62 +5848,62 @@ public final class SenseCommandProtos {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    protected Object writeReplace()
-        throws java.io.ObjectStreamException {
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+            throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
 
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
     public static is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
@@ -5738,12 +5918,12 @@ public final class SenseCommandProtos {
      * Protobuf type {@code batched_pill_data}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data, Builder>
-        implements
-        // @@protoc_insertion_point(builder_implements:batched_pill_data)
-        is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_dataOrBuilder {
-      // Construct using is.hello.commonsense.sense.model.protobuf.SenseCommandProtos.batched_pill_data.newBuilder()
+            com.google.protobuf.GeneratedMessageLite.Builder<
+                    is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data, Builder>
+            implements
+            // @@protoc_insertion_point(builder_implements:batched_pill_data)
+            is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_dataOrBuilder {
+      // Construct using is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5760,6 +5940,8 @@ public final class SenseCommandProtos {
         bitField0_ = (bitField0_ & ~0x00000001);
         deviceId_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        prox_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -5792,6 +5974,11 @@ public final class SenseCommandProtos {
           to_bitField0_ |= 0x00000001;
         }
         result.deviceId_ = deviceId_;
+        if (((bitField0_ & 0x00000004) == 0x00000004)) {
+          prox_ = java.util.Collections.unmodifiableList(prox_);
+          bitField0_ = (bitField0_ & ~0x00000004);
+        }
+        result.prox_ = prox_;
         result.bitField0_ = to_bitField0_;
         return result;
       }
@@ -5813,8 +6000,18 @@ public final class SenseCommandProtos {
           deviceId_ = other.deviceId_;
 
         }
+        if (!other.prox_.isEmpty()) {
+          if (prox_.isEmpty()) {
+            prox_ = other.prox_;
+            bitField0_ = (bitField0_ & ~0x00000004);
+          } else {
+            ensureProxIsMutable();
+            prox_.addAll(other.prox_);
+          }
+
+        }
         setUnknownFields(
-            getUnknownFields().concat(other.unknownFields));
+                getUnknownFields().concat(other.unknownFields));
         return this;
       }
 
@@ -5829,13 +6026,19 @@ public final class SenseCommandProtos {
             return false;
           }
         }
+        for (int i = 0; i < getProxCount(); i++) {
+          if (!getProx(i).isInitialized()) {
+
+            return false;
+          }
+        }
         return true;
       }
 
       public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
         is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.batched_pill_data parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
@@ -5851,19 +6054,19 @@ public final class SenseCommandProtos {
       }
       private int bitField0_;
 
-      private java.util.List<pill_data> pills_ =
-        java.util.Collections.emptyList();
+      private java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> pills_ =
+              java.util.Collections.emptyList();
       private void ensurePillsIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          pills_ = new java.util.ArrayList<pill_data>(pills_);
+          pills_ = new java.util.ArrayList<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data>(pills_);
           bitField0_ |= 0x00000001;
-         }
+        }
       }
 
       /**
        * <code>repeated .pill_data pills = 1;</code>
        */
-      public java.util.List<pill_data> getPillsList() {
+      public java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> getPillsList() {
         return java.util.Collections.unmodifiableList(pills_);
       }
       /**
@@ -5882,7 +6085,7 @@ public final class SenseCommandProtos {
        * <code>repeated .pill_data pills = 1;</code>
        */
       public Builder setPills(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -5895,7 +6098,7 @@ public final class SenseCommandProtos {
        * <code>repeated .pill_data pills = 1;</code>
        */
       public Builder setPills(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
         ensurePillsIsMutable();
         pills_.set(index, builderForValue.build());
 
@@ -5917,7 +6120,7 @@ public final class SenseCommandProtos {
        * <code>repeated .pill_data pills = 1;</code>
        */
       public Builder addPills(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -5930,7 +6133,7 @@ public final class SenseCommandProtos {
        * <code>repeated .pill_data pills = 1;</code>
        */
       public Builder addPills(
-          is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
+              is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
         ensurePillsIsMutable();
         pills_.add(builderForValue.build());
 
@@ -5940,7 +6143,7 @@ public final class SenseCommandProtos {
        * <code>repeated .pill_data pills = 1;</code>
        */
       public Builder addPills(
-          int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
         ensurePillsIsMutable();
         pills_.add(index, builderForValue.build());
 
@@ -5950,10 +6153,10 @@ public final class SenseCommandProtos {
        * <code>repeated .pill_data pills = 1;</code>
        */
       public Builder addAllPills(
-          Iterable<? extends pill_data> values) {
+              java.lang.Iterable<? extends is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> values) {
         ensurePillsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, pills_);
+                values, pills_);
 
         return this;
       }
@@ -5976,7 +6179,7 @@ public final class SenseCommandProtos {
         return this;
       }
 
-      private Object deviceId_ = "";
+      private java.lang.Object deviceId_ = "";
       /**
        * <code>required string device_id = 2;</code>
        */
@@ -5986,30 +6189,30 @@ public final class SenseCommandProtos {
       /**
        * <code>required string device_id = 2;</code>
        */
-      public String getDeviceId() {
-        Object ref = deviceId_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getDeviceId() {
+        java.lang.Object ref = deviceId_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+                  (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
           if (bs.isValidUtf8()) {
             deviceId_ = s;
           }
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
        * <code>required string device_id = 2;</code>
        */
       public com.google.protobuf.ByteString
-          getDeviceIdBytes() {
-        Object ref = deviceId_;
+      getDeviceIdBytes() {
+        java.lang.Object ref = deviceId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           deviceId_ = b;
           return b;
         } else {
@@ -6020,13 +6223,13 @@ public final class SenseCommandProtos {
        * <code>required string device_id = 2;</code>
        */
       public Builder setDeviceId(
-          String value) {
+              java.lang.String value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
         deviceId_ = value;
-        
+
         return this;
       }
       /**
@@ -6035,20 +6238,145 @@ public final class SenseCommandProtos {
       public Builder clearDeviceId() {
         bitField0_ = (bitField0_ & ~0x00000002);
         deviceId_ = getDefaultInstance().getDeviceId();
-        
+
         return this;
       }
       /**
        * <code>required string device_id = 2;</code>
        */
       public Builder setDeviceIdBytes(
-          com.google.protobuf.ByteString value) {
+              com.google.protobuf.ByteString value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000002;
         deviceId_ = value;
-        
+
+        return this;
+      }
+
+      private java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> prox_ =
+              java.util.Collections.emptyList();
+      private void ensureProxIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          prox_ = new java.util.ArrayList<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data>(prox_);
+          bitField0_ |= 0x00000004;
+        }
+      }
+
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public java.util.List<is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> getProxList() {
+        return java.util.Collections.unmodifiableList(prox_);
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public int getProxCount() {
+        return prox_.size();
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data getProx(int index) {
+        return prox_.get(index);
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder setProx(
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureProxIsMutable();
+        prox_.set(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder setProx(
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
+        ensureProxIsMutable();
+        prox_.set(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder addProx(is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureProxIsMutable();
+        prox_.add(value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder addProx(
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureProxIsMutable();
+        prox_.add(index, value);
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder addProx(
+              is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
+        ensureProxIsMutable();
+        prox_.add(builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder addProx(
+              int index, is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data.Builder builderForValue) {
+        ensureProxIsMutable();
+        prox_.add(index, builderForValue.build());
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder addAllProx(
+              java.lang.Iterable<? extends is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos.pill_data> values) {
+        ensureProxIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+                values, prox_);
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder clearProx() {
+        prox_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000004);
+
+        return this;
+      }
+      /**
+       * <code>repeated .pill_data prox = 3;</code>
+       */
+      public Builder removeProx(int index) {
+        ensureProxIsMutable();
+        prox_.remove(index);
+
         return this;
       }
 
