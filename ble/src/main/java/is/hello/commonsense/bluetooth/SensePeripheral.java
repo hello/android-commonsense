@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import com.google.protobuf.ByteString;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +24,7 @@ import is.hello.buruberi.bluetooth.stacks.GattCharacteristic;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.GattService;
 import is.hello.buruberi.bluetooth.stacks.OperationTimeout;
+import is.hello.buruberi.bluetooth.stacks.android.NativeGattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
@@ -98,6 +100,13 @@ public class SensePeripheral {
     private static final long PAIR_PILL_TIMEOUT_S = 90; // Per Pang
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
+
+    /**
+     * Check byte[] located at this index position of {@link AdvertisingData#records}
+     */
+    private static final int BYTE_INDEX_FOR_MANUFACTURER_DATA = 3;
+
+    private static final byte[] BYTES_FOR_MAC_ADDRESS = "0x22".getBytes();
 
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
@@ -316,6 +325,18 @@ public class SensePeripheral {
         return null;
     }
 
+    public boolean showMacAddress() {
+        final List<byte[]> manufacturerData = gattPeripheral.getAdvertisingData().getRecordsForType(AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA);
+        if (manufacturerData == null || manufacturerData.size() <= BYTE_INDEX_FOR_MANUFACTURER_DATA) {
+            return false;
+        }
+        final byte[] bytesToCheck = manufacturerData.get(BYTE_INDEX_FOR_MANUFACTURER_DATA);
+        if (bytesToCheck == null || bytesToCheck.length != BYTES_FOR_MAC_ADDRESS.length){
+            return false;
+        }
+        return Arrays.equals(bytesToCheck, BYTES_FOR_MAC_ADDRESS);
+    }
+
     @Override
     public String toString() {
         return '{' + getClass().getSimpleName() + ' ' + getName() + '@' + getAddress() + '}';
@@ -328,8 +349,8 @@ public class SensePeripheral {
 
     private @NonNull OperationTimeout createStackTimeout(@NonNull String name) {
         return gattPeripheral.createOperationTimeout(name,
-                                                     STACK_OPERATION_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                STACK_OPERATION_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createSimpleCommandTimeout() {
@@ -340,8 +361,8 @@ public class SensePeripheral {
 
     private @NonNull OperationTimeout createScanWifiTimeout() {
         return gattPeripheral.createOperationTimeout("Scan Wifi",
-                                                     WIFI_SCAN_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                WIFI_SCAN_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createPairPillTimeout() {
