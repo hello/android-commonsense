@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import com.google.protobuf.ByteString;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +23,6 @@ import is.hello.buruberi.bluetooth.stacks.GattCharacteristic;
 import is.hello.buruberi.bluetooth.stacks.GattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.GattService;
 import is.hello.buruberi.bluetooth.stacks.OperationTimeout;
-import is.hello.buruberi.bluetooth.stacks.android.NativeGattPeripheral;
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
 import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
@@ -102,11 +100,27 @@ public class SensePeripheral {
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
 
     /**
-     * Check byte[] located at this index position of {@link AdvertisingData#records}
+     * Sense 1.5 returns a HashMap called {@link AdvertisingData#records}. At the time of writing
+     * this on 10/24/16, the size of records is 6. Each value is a List of bytes aka List<byte[]>.
+     *
+     * Sense 1.0's record size is only 5. Because we're unsure if these sizes will ever change
+     * we need to look at the individual bytes to determine if the Sense is 1.5 or not.
+     *
+     * Sense 1.5 will contain a List of bytes where the first 3 elements are
+     * [0]: 0xEA hex or -22 decimal.
+     * [1]: 0x3 hex or 3 decimal.
+     * [2]: 0x22 hex or 34 decimal.
+     *
+     * Use the following field with {@link #BYTES_COMPANY_BLE_ID_2} and
+     * {@link #BYTES_HARDWARE_BLE_ID_3} to check each index position and determine if the Sense is
+     * 1.5.
+     *
+     * Sense 1.0 may eventually or already contain these three indexes too. But it will have a
+     * different value for {@link #BYTES_HARDWARE_BLE_ID_3}
      */
-    private static final int BYTE_INDEX_FOR_MANUFACTURER_DATA = 3;
-
-    private static final byte[] BYTES_FOR_MAC_ADDRESS = "0x22".getBytes();
+    private static final byte[] BYTES_COMPANY_BLE_ID_1= "0xEA".getBytes();
+    private static final byte[] BYTES_COMPANY_BLE_ID_2= "0x3".getBytes();
+    private static final byte[] BYTES_HARDWARE_BLE_ID_3 = "0x22".getBytes();
 
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
@@ -325,16 +339,50 @@ public class SensePeripheral {
         return null;
     }
 
+    /**
+     * Will always return false if Sense wasn't scanned.
+     *
+     * @return true if Sense 1.5 or false if Sense 1.0.
+     */
     public boolean showMacAddress() {
-        final List<byte[]> manufacturerData = gattPeripheral.getAdvertisingData().getRecordsForType(AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA);
-        if (manufacturerData == null || manufacturerData.size() <= BYTE_INDEX_FOR_MANUFACTURER_DATA) {
+        return isSense1_5();
+    }
+
+    /**
+     * Will always return false if Sense wasn't scanned.
+     *
+     * @return true if Sense 1.5 or false if Sense 1.0.
+     */
+    private boolean isSense1_5() {
+        // Because we're not sure if the Manufacturer specific data may change or not we're going to
+        // check every record type this has.
+        final List<Integer> recordTypes = gattPeripheral.getAdvertisingData().copyRecordTypes();
+        if (recordTypes == null || recordTypes.isEmpty()) {
             return false;
         }
-        final byte[] bytesToCheck = manufacturerData.get(BYTE_INDEX_FOR_MANUFACTURER_DATA);
-        if (bytesToCheck == null || bytesToCheck.length != BYTES_FOR_MAC_ADDRESS.length){
-            return false;
+        for (final Integer recordType : recordTypes) {
+            // Get the list of bytes
+            final List<byte[]> manufacturerData = gattPeripheral.getAdvertisingData().getRecordsForType(recordType);
+            // Make sure it has 3 index's to check.
+            if (manufacturerData == null || manufacturerData.size() < 3) {
+                continue;
+            }
+            // Check them
+            if (manufacturerData.get(0) != BYTES_COMPANY_BLE_ID_1) {
+                break;
+            }
+            if (manufacturerData.get(1) != BYTES_COMPANY_BLE_ID_2) {
+                break;
+            }
+            if (manufacturerData.get(2) != BYTES_HARDWARE_BLE_ID_3) {
+                break;
+            }
+
+            // If we get this far it's safe to assume this is Sense 1.5
+            return true;
+
         }
-        return Arrays.equals(bytesToCheck, BYTES_FOR_MAC_ADDRESS);
+        return false;
     }
 
     @Override
