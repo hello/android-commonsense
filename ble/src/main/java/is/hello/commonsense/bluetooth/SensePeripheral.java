@@ -99,6 +99,29 @@ public class SensePeripheral {
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
 
+    /**
+     * Sense 1.5 returns a HashMap called {@link AdvertisingData#records}. At the time of writing
+     * this on 10/24/16, the size of records is 6. Each value is a List of bytes aka List<byte[]>.
+     *
+     * Sense 1.0's record size is only 5. Because we're unsure if these sizes will ever change
+     * we need to look at the individual bytes to determine if the Sense is 1.5 or not.
+     *
+     * Sense 1.5 will contain a List of bytes where the first 3 elements are
+     * [0]: 0xEA hex or -22 decimal.
+     * [1]: 0x3 hex or 3 decimal.
+     * [2]: 0x22 hex or 34 decimal.
+     *
+     * Use the following field with {@link #BYTES_COMPANY_BLE_ID_2} and
+     * {@link #BYTES_HARDWARE_BLE_ID_3} to check each index position and determine if the Sense is
+     * 1.5.
+     *
+     * Sense 1.0 may eventually or already contain these three indexes too. But it will have a
+     * different value for {@link #BYTES_HARDWARE_BLE_ID_3}
+     */
+    private static final int BYTES_COMPANY_BLE_ID_1= 0xEA;
+    private static final int BYTES_COMPANY_BLE_ID_2= 0x3;
+    private static final int BYTES_HARDWARE_BLE_ID_3 = 0x22;
+
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
     @VisibleForTesting GattService gattService;
@@ -316,6 +339,60 @@ public class SensePeripheral {
         return null;
     }
 
+    /**
+     * Will always return false if Sense wasn't scanned.
+     *
+     * @return true if Sense 1.5 or false if Sense 1.0.
+     */
+    public boolean showMacAddress() {
+        return isSense1_5();
+    }
+
+    /**
+     * Will always return false if Sense wasn't scanned.
+     *
+     * @return true if Sense 1.5 or false if Sense 1.0.
+     */
+    private boolean isSense1_5() {
+        // Because we're not sure if the Manufacturer specific data may change or not we're going to
+        // check every record type this has.
+        final List<Integer> recordTypes = gattPeripheral.getAdvertisingData().copyRecordTypes();
+        if (recordTypes == null || recordTypes.isEmpty()) {
+            return false;
+        }
+        for (final Integer recordType : recordTypes) {
+            // Get the list of bytes
+            final List<byte[]> byteList = gattPeripheral.getAdvertisingData().getRecordsForType(recordType);
+            if (byteList == null || byteList.isEmpty()) {
+                continue;
+            }
+
+            for (final byte[] bytes : byteList){
+
+                // Make sure it has 3 index's to check.
+                if (bytes == null || bytes.length < 3){
+                    continue;
+                }
+                // Check them
+                if (bytes[0] != (byte)BYTES_COMPANY_BLE_ID_1) {
+                    continue;
+                }
+                if (bytes[1] != (byte)BYTES_COMPANY_BLE_ID_2) {
+                    continue;
+                }
+                if (bytes[2] != (byte)BYTES_HARDWARE_BLE_ID_3) {
+                    continue;
+                }
+
+                // If we get this far it's safe to assume this is Sense 1.5
+                return true;
+
+            }
+
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return '{' + getClass().getSimpleName() + ' ' + getName() + '@' + getAddress() + '}';
@@ -328,26 +405,26 @@ public class SensePeripheral {
 
     private @NonNull OperationTimeout createStackTimeout(@NonNull String name) {
         return gattPeripheral.createOperationTimeout(name,
-                                                     STACK_OPERATION_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                STACK_OPERATION_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createSimpleCommandTimeout() {
         return gattPeripheral.createOperationTimeout("Simple Command",
-                                                     SIMPLE_COMMAND_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                SIMPLE_COMMAND_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createScanWifiTimeout() {
         return gattPeripheral.createOperationTimeout("Scan Wifi",
-                                                     WIFI_SCAN_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                WIFI_SCAN_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createPairPillTimeout() {
         return gattPeripheral.createOperationTimeout("Pair Pill",
-                                                     PAIR_PILL_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                PAIR_PILL_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createAnimationTimeout() {
