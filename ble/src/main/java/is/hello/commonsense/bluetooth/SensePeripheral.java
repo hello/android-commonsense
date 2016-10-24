@@ -118,9 +118,9 @@ public class SensePeripheral {
      * Sense 1.0 may eventually or already contain these three indexes too. But it will have a
      * different value for {@link #BYTES_HARDWARE_BLE_ID_3}
      */
-    private static final byte[] BYTES_COMPANY_BLE_ID_1= "0xEA".getBytes();
-    private static final byte[] BYTES_COMPANY_BLE_ID_2= "0x3".getBytes();
-    private static final byte[] BYTES_HARDWARE_BLE_ID_3 = "0x22".getBytes();
+    private static final int BYTES_COMPANY_BLE_ID_1= 0xEA;
+    private static final int BYTES_COMPANY_BLE_ID_2= 0x3;
+    private static final int BYTES_HARDWARE_BLE_ID_3 = 0x22;
 
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
@@ -362,24 +362,32 @@ public class SensePeripheral {
         }
         for (final Integer recordType : recordTypes) {
             // Get the list of bytes
-            final List<byte[]> manufacturerData = gattPeripheral.getAdvertisingData().getRecordsForType(recordType);
-            // Make sure it has 3 index's to check.
-            if (manufacturerData == null || manufacturerData.size() < 3) {
+            final List<byte[]> byteList = gattPeripheral.getAdvertisingData().getRecordsForType(recordType);
+            if (byteList == null || byteList.isEmpty()) {
                 continue;
             }
-            // Check them
-            if (manufacturerData.get(0) != BYTES_COMPANY_BLE_ID_1) {
-                break;
-            }
-            if (manufacturerData.get(1) != BYTES_COMPANY_BLE_ID_2) {
-                break;
-            }
-            if (manufacturerData.get(2) != BYTES_HARDWARE_BLE_ID_3) {
-                break;
-            }
 
-            // If we get this far it's safe to assume this is Sense 1.5
-            return true;
+            for (final byte[] bytes : byteList){
+
+                // Make sure it has 3 index's to check.
+                if (bytes == null || bytes.length < 3){
+                    continue;
+                }
+                // Check them
+                if (bytes[0] != (byte)BYTES_COMPANY_BLE_ID_1) {
+                    continue;
+                }
+                if (bytes[1] != (byte)BYTES_COMPANY_BLE_ID_2) {
+                    continue;
+                }
+                if (bytes[2] != (byte)BYTES_HARDWARE_BLE_ID_3) {
+                    continue;
+                }
+
+                // If we get this far it's safe to assume this is Sense 1.5
+                return true;
+
+            }
 
         }
         return false;
@@ -403,8 +411,8 @@ public class SensePeripheral {
 
     private @NonNull OperationTimeout createSimpleCommandTimeout() {
         return gattPeripheral.createOperationTimeout("Simple Command",
-                                                     SIMPLE_COMMAND_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                SIMPLE_COMMAND_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createScanWifiTimeout() {
@@ -415,8 +423,8 @@ public class SensePeripheral {
 
     private @NonNull OperationTimeout createPairPillTimeout() {
         return gattPeripheral.createOperationTimeout("Pair Pill",
-                                                     PAIR_PILL_TIMEOUT_S,
-                                                     TimeUnit.SECONDS);
+                PAIR_PILL_TIMEOUT_S,
+                TimeUnit.SECONDS);
     }
 
     private @NonNull OperationTimeout createAnimationTimeout() {
