@@ -121,6 +121,10 @@ public class SensePeripheral {
     private static final int BYTES_COMPANY_BLE_ID_1= 0xEA;
     private static final int BYTES_COMPANY_BLE_ID_2= 0x3;
     private static final int BYTES_HARDWARE_BLE_ID_3 = 0x22;
+    /**
+     * These are the first three values of the mac address of for every 1.5 Sense.
+     */
+    private static final String START_OF_MAC_ADDRESS = "5c:6b:4f";
 
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
@@ -340,25 +344,17 @@ public class SensePeripheral {
     }
 
     /**
-     * Will always return false if Sense wasn't scanned.
+     *  1. Confirm Sense is 1.5
+     *  2. Find last three values of manufacturer data and convert to hex string for mac address.
      *
-     * @return true if Sense 1.5 or false if Sense 1.0.
+     * @return mac address or null if not sense 1.5
      */
-    public boolean showMacAddress() {
-        return isSense1_5();
-    }
-
-    /**
-     * Will always return false if Sense wasn't scanned.
-     *
-     * @return true if Sense 1.5 or false if Sense 1.0.
-     */
-    private boolean isSense1_5() {
+    public String getMacAddress() {
         // Because we're not sure if the Manufacturer specific data may change or not we're going to
         // check every record type this has.
         final List<Integer> recordTypes = gattPeripheral.getAdvertisingData().copyRecordTypes();
         if (recordTypes == null || recordTypes.isEmpty()) {
-            return false;
+            return null;
         }
         for (final Integer recordType : recordTypes) {
             // Get the list of bytes
@@ -367,30 +363,50 @@ public class SensePeripheral {
                 continue;
             }
 
-            for (final byte[] bytes : byteList){
+            for (final byte[] bytes : byteList) {
 
                 // Make sure it has 3 index's to check.
-                if (bytes == null || bytes.length < 3){
+                if (bytes == null || bytes.length < 3) {
                     continue;
                 }
                 // Check them
-                if (bytes[0] != (byte)BYTES_COMPANY_BLE_ID_1) {
+                if (bytes[0] != (byte) BYTES_COMPANY_BLE_ID_1) {
                     continue;
                 }
-                if (bytes[1] != (byte)BYTES_COMPANY_BLE_ID_2) {
+                if (bytes[1] != (byte) BYTES_COMPANY_BLE_ID_2) {
                     continue;
                 }
-                if (bytes[2] != (byte)BYTES_HARDWARE_BLE_ID_3) {
+                if (bytes[2] != (byte) BYTES_HARDWARE_BLE_ID_3) {
                     continue;
                 }
 
                 // If we get this far it's safe to assume this is Sense 1.5
-                return true;
+                // Now we need to read the last three bytes of the array and convert them.
+                String macAddress = START_OF_MAC_ADDRESS;
+                macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 3]);
+                macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 2]);
+                macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 1]);
+                return macAddress;
 
             }
 
         }
-        return false;
+        return null;
+    }
+
+    /**
+     * Sometimes {@link Integer#toHexString(int)} returns a large string. Jackson said to only use
+     * the last two values of this string.
+     *
+     * @param value from Advertising data.
+     * @return a string of length 3, with a colon in front of it.
+     */
+    private String getPrettyMacAddressForByte(byte value) {
+        String hexString = Integer.toHexString(value);
+        if (hexString.length() > 2) {
+            hexString = hexString.substring(hexString.length() - 2, hexString.length());
+        }
+        return ":" + hexString;
     }
 
     @Override
