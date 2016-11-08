@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import com.google.protobuf.ByteString;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -89,6 +90,12 @@ public class SensePeripheral {
         US
     }
 
+    public enum DesiredHardwareVersion{
+        ANY,
+        SENSE,
+        SENSE_WITH_VOICE
+    }
+
     //endregion
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
@@ -100,8 +107,9 @@ public class SensePeripheral {
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
 
     /**
-     * Sense 1.5 returns a HashMap called {@link AdvertisingData#records}. At the time of writing
-     * this on 10/24/16, the size of records is 6. Each value is a List of bytes aka List<byte[]>.
+     * Sense 1.5 (aka SenseWithVocie) returns a HashMap called {@link AdvertisingData#records}.
+     * At the time of writing this on 10/24/16, the size of records is 6. Each value is a List of
+     * bytes aka List<byte[]>.
      *
      * Sense 1.0's record size is only 5. Because we're unsure if these sizes will ever change
      * we need to look at the individual bytes to determine if the Sense is 1.5 or not.
@@ -138,32 +146,49 @@ public class SensePeripheral {
 
 
     //region Lifecycle
+    @CheckResult
+    public static Observable<List<SensePeripheral>> discover(@NonNull final BluetoothStack bluetoothStack,
+                                                             @NonNull final PeripheralCriteria criteria) {
+        return discover(bluetoothStack, criteria, DesiredHardwareVersion.ANY);
+    }
 
     @CheckResult
-    public static Observable<List<SensePeripheral>> discover(@NonNull BluetoothStack bluetoothStack,
-                                                             @NonNull PeripheralCriteria criteria) {
+    public static Observable<List<SensePeripheral>> discover(@NonNull final BluetoothStack bluetoothStack,
+                                                             @NonNull final PeripheralCriteria criteria,
+                                                             final DesiredHardwareVersion desiredHardwareVersion) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                                        SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+                SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         return bluetoothStack.discoverPeripherals(criteria).map(new Func1<List<GattPeripheral>, List<SensePeripheral>>() {
             @Override
             public List<SensePeripheral> call(List<GattPeripheral> peripherals) {
+                if (desiredHardwareVersion == DesiredHardwareVersion.SENSE_WITH_VOICE) {
+                    return SensePeripheral.fromDevices(filterSenseWithVoiceOnly(peripherals));
+                }
                 return SensePeripheral.fromDevices(peripherals);
             }
         });
     }
 
     @CheckResult
-    public static Observable<SensePeripheral> rediscover(@NonNull BluetoothStack bluetoothStack,
-                                                         @NonNull String deviceId,
-                                                         boolean includeHighPowerPreScan) {
+    public static Observable<SensePeripheral> rediscover(@NonNull final BluetoothStack bluetoothStack,
+                                                         @NonNull final String deviceId,
+                                                         final boolean includeHighPowerPreScan) {
+        return rediscover(bluetoothStack, deviceId, includeHighPowerPreScan, DesiredHardwareVersion.ANY);
+    }
+
+    @CheckResult
+    public static Observable<SensePeripheral> rediscover(@NonNull final BluetoothStack bluetoothStack,
+                                                         @NonNull final String deviceId,
+                                                         final boolean includeHighPowerPreScan,
+                                                         final DesiredHardwareVersion desiredHardwareVersion) {
         PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setLimit(1);
         criteria.setWantsHighPowerPreScan(includeHighPowerPreScan);
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
-                                        SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
+                SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA,
-                                        SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
-        return discover(bluetoothStack, criteria).flatMap(new Func1<List<SensePeripheral>, Observable<? extends SensePeripheral>>() {
+                SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
+        return discover(bluetoothStack, criteria, desiredHardwareVersion).flatMap(new Func1<List<SensePeripheral>, Observable<? extends SensePeripheral>>() {
             @Override
             public Observable<? extends SensePeripheral> call(List<SensePeripheral> peripherals) {
                 if (peripherals.isEmpty()) {
@@ -190,6 +215,105 @@ public class SensePeripheral {
         this.packetListener = new ProtobufPacketListener();
     }
 
+    //endregion
+
+    //region static sense with voice helper functions
+    /**
+     *
+     * @param gattPeripheral checks if this peripherals advertising data meets the requirements to
+     *                       be considered Sense 1.5 (SenseWithVoice)
+     * @return null if not SenseWithVoice, else an array with at least 6 index positions
+     */
+    @Nullable
+    public static byte[] getBytesForSenseWithVoice(@Nullable final GattPeripheral gattPeripheral) {
+        if (gattPeripheral == null){
+            return null;
+        }
+        // Because we're not sure if the Manufacturer specific data may change or not we're going to
+        // check every record type this has.
+        final List<Integer> recordTypes = gattPeripheral.getAdvertisingData().copyRecordTypes();
+        if (recordTypes == null || recordTypes.isEmpty()) {
+            return null;
+        }
+
+        for (final Integer recordType : recordTypes) {
+            // Get the list of bytes
+            final List<byte[]> byteList = gattPeripheral.getAdvertisingData().getRecordsForType(recordType);
+            if (byteList == null || byteList.isEmpty()) {
+                continue;
+            }
+
+            for (final byte[] bytes : byteList) {
+                if (isSenseWithVoice(bytes)) {
+                    return bytes;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param bytes confirms these meet the requirements to be considered Sense 1.5 (SenseWithVoice).
+     * @return true if this is Sense 1.5 - SenseWithVoice
+     */
+    @SuppressWarnings("RedundantIfStatement")
+    public static boolean isSenseWithVoice(@Nullable byte[] bytes) {
+        // Make sure it has 3 index's to check and 3 more to get the mac address from.
+        if (bytes == null || bytes.length < 6) {
+            return false;
+        }
+
+        // Check them
+        if (bytes[0] != (byte) BYTES_COMPANY_BLE_ID_1) {
+            return false;
+        }
+        if (bytes[1] != (byte) BYTES_COMPANY_BLE_ID_2) {
+            return false;
+        }
+        if (bytes[2] != (byte) BYTES_HARDWARE_BLE_ID_3) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * /**
+     * 1. Confirm Sense is 1.5 (aka SenseWithVoice)
+     * 2. Find last three values of manufacturer data and convert to hex string for mac address.
+     *
+     * @param peripheral peripheral to check
+     * @return mac address or null if not sense 1.5
+     */
+    private static String getMacAddress(@NonNull final GattPeripheral peripheral) {
+        final byte[] bytes = getBytesForSenseWithVoice(peripheral);
+        if (bytes != null) {// If not null is guaranteed to have at least 6 index positions
+
+            // If we get this far it's safe to assume this is Sense 1.5
+            // Now we need to read the last three bytes of the array and convert them.
+            String macAddress = START_OF_MAC_ADDRESS;
+            macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 3]);
+            macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 2]);
+            macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 1]);
+            return macAddress;
+        }
+        return null;
+    }
+    /**
+     * Sometimes {@link Integer#toHexString(int)} returns a large string. Jackson said to only use
+     * the last two values of this string.
+     *
+     * @param value from Advertising data.
+     * @return a string of length 3, with a colon in front of it.
+     */
+    private static String getPrettyMacAddressForByte(byte value) {
+        String hexString = Integer.toHexString(value);
+        if (hexString.length() > 2) {
+            hexString = hexString.substring(hexString.length() - 2, hexString.length());
+        }
+        return ":" + hexString;
+    }
     //endregion
 
 
@@ -344,69 +468,34 @@ public class SensePeripheral {
     }
 
     /**
-     *  1. Confirm Sense is 1.5
-     *  2. Find last three values of manufacturer data and convert to hex string for mac address.
+     * Use to remove anything that isn't a 1.5 Sense - SenseWithVoice Peripheral
+     * @param unfilteredPeripherals should be a list of peripherals, like the one returned from
+     *                              {@link #discover(BluetoothStack, PeripheralCriteria, DesiredHardwareVersion)}
+     * @return a list of 1.5  Sense - SenseWithVoice Peripherals. Empty list if none exist.
+     */
+    @NonNull
+    private static ArrayList<GattPeripheral> filterSenseWithVoiceOnly(@Nullable final List<GattPeripheral> unfilteredPeripherals) {
+        final ArrayList<GattPeripheral> filteredPeripherals = new ArrayList<>();
+        if (unfilteredPeripherals == null) {
+            return filteredPeripherals;
+        }
+        for (final GattPeripheral peripheral : unfilteredPeripherals) {
+            if (getBytesForSenseWithVoice(peripheral) != null) {
+                filteredPeripherals.add(peripheral);
+            }
+        }
+        return filteredPeripherals;
+
+    }
+
+    /**
+     * 1. Confirm Sense is 1.5 (aka SenseWithVoice)
+     * 2. Find last three values of manufacturer data and convert to hex string for mac address.
      *
      * @return mac address or null if not sense 1.5
      */
     public String getMacAddress() {
-        // Because we're not sure if the Manufacturer specific data may change or not we're going to
-        // check every record type this has.
-        final List<Integer> recordTypes = gattPeripheral.getAdvertisingData().copyRecordTypes();
-        if (recordTypes == null || recordTypes.isEmpty()) {
-            return null;
-        }
-        for (final Integer recordType : recordTypes) {
-            // Get the list of bytes
-            final List<byte[]> byteList = gattPeripheral.getAdvertisingData().getRecordsForType(recordType);
-            if (byteList == null || byteList.isEmpty()) {
-                continue;
-            }
-
-            for (final byte[] bytes : byteList) {
-
-                // Make sure it has 3 index's to check.
-                if (bytes == null || bytes.length < 3) {
-                    continue;
-                }
-                // Check them
-                if (bytes[0] != (byte) BYTES_COMPANY_BLE_ID_1) {
-                    continue;
-                }
-                if (bytes[1] != (byte) BYTES_COMPANY_BLE_ID_2) {
-                    continue;
-                }
-                if (bytes[2] != (byte) BYTES_HARDWARE_BLE_ID_3) {
-                    continue;
-                }
-
-                // If we get this far it's safe to assume this is Sense 1.5
-                // Now we need to read the last three bytes of the array and convert them.
-                String macAddress = START_OF_MAC_ADDRESS;
-                macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 3]);
-                macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 2]);
-                macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 1]);
-                return macAddress;
-
-            }
-
-        }
-        return null;
-    }
-
-    /**
-     * Sometimes {@link Integer#toHexString(int)} returns a large string. Jackson said to only use
-     * the last two values of this string.
-     *
-     * @param value from Advertising data.
-     * @return a string of length 3, with a colon in front of it.
-     */
-    private String getPrettyMacAddressForByte(byte value) {
-        String hexString = Integer.toHexString(value);
-        if (hexString.length() > 2) {
-            hexString = hexString.substring(hexString.length() - 2, hexString.length());
-        }
-        return ":" + hexString;
+        return getMacAddress(gattPeripheral);
     }
 
     @Override
