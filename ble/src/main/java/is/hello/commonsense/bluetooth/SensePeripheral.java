@@ -90,6 +90,12 @@ public class SensePeripheral {
         US
     }
 
+    public enum DesiredHardwareVersion{
+        ANY,
+        SENSE,
+        SENSE_WITH_VOICE
+    }
+
     //endregion
 
     private static final long STACK_OPERATION_TIMEOUT_S = 30;
@@ -143,19 +149,19 @@ public class SensePeripheral {
     @CheckResult
     public static Observable<List<SensePeripheral>> discover(@NonNull final BluetoothStack bluetoothStack,
                                                              @NonNull final PeripheralCriteria criteria) {
-        return discover(bluetoothStack, criteria, false);
+        return discover(bluetoothStack, criteria, DesiredHardwareVersion.ANY);
     }
 
     @CheckResult
     public static Observable<List<SensePeripheral>> discover(@NonNull final BluetoothStack bluetoothStack,
                                                              @NonNull final PeripheralCriteria criteria,
-                                                             final boolean onlyWantsSenseWithVoice) {
+                                                             final DesiredHardwareVersion desiredHardwareVersion) {
         criteria.addExactMatchPredicate(AdvertisingData.TYPE_LIST_OF_128_BIT_SERVICE_CLASS_UUIDS,
                 SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         return bluetoothStack.discoverPeripherals(criteria).map(new Func1<List<GattPeripheral>, List<SensePeripheral>>() {
             @Override
             public List<SensePeripheral> call(List<GattPeripheral> peripherals) {
-                if (onlyWantsSenseWithVoice) {
+                if (desiredHardwareVersion == DesiredHardwareVersion.SENSE_WITH_VOICE) {
                     return SensePeripheral.fromDevices(filterSenseWithVoiceOnly(peripherals));
                 }
                 return SensePeripheral.fromDevices(peripherals);
@@ -167,14 +173,14 @@ public class SensePeripheral {
     public static Observable<SensePeripheral> rediscover(@NonNull final BluetoothStack bluetoothStack,
                                                          @NonNull final String deviceId,
                                                          final boolean includeHighPowerPreScan) {
-        return rediscover(bluetoothStack, deviceId, includeHighPowerPreScan, false);
+        return rediscover(bluetoothStack, deviceId, includeHighPowerPreScan, DesiredHardwareVersion.ANY);
     }
 
     @CheckResult
     public static Observable<SensePeripheral> rediscover(@NonNull final BluetoothStack bluetoothStack,
                                                          @NonNull final String deviceId,
                                                          final boolean includeHighPowerPreScan,
-                                                         final boolean onlyWantsSenseWithVoice) {
+                                                         final DesiredHardwareVersion desiredHardwareVersion) {
         PeripheralCriteria criteria = new PeripheralCriteria();
         criteria.setLimit(1);
         criteria.setWantsHighPowerPreScan(includeHighPowerPreScan);
@@ -182,7 +188,7 @@ public class SensePeripheral {
                 SenseIdentifiers.ADVERTISEMENT_SERVICE_128_BIT);
         criteria.addStartsWithPredicate(AdvertisingData.TYPE_SERVICE_DATA,
                 SenseIdentifiers.ADVERTISEMENT_SERVICE_16_BIT + deviceId);
-        return discover(bluetoothStack, criteria, onlyWantsSenseWithVoice).flatMap(new Func1<List<SensePeripheral>, Observable<? extends SensePeripheral>>() {
+        return discover(bluetoothStack, criteria, desiredHardwareVersion).flatMap(new Func1<List<SensePeripheral>, Observable<? extends SensePeripheral>>() {
             @Override
             public Observable<? extends SensePeripheral> call(List<SensePeripheral> peripherals) {
                 if (peripherals.isEmpty()) {
@@ -464,7 +470,7 @@ public class SensePeripheral {
     /**
      * Use to remove anything that isn't a 1.5 Sense - SenseWithVoice Peripheral
      * @param unfilteredPeripherals should be a list of peripherals, like the one returned from
-     *                              {@link #discover(BluetoothStack, PeripheralCriteria, boolean)}
+     *                              {@link #discover(BluetoothStack, PeripheralCriteria, DesiredHardwareVersion)}
      * @return a list of 1.5  Sense - SenseWithVoice Peripherals. Empty list if none exist.
      */
     @NonNull
