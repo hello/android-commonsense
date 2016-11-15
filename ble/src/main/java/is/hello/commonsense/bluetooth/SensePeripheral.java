@@ -106,34 +106,6 @@ public class SensePeripheral {
     private static final long SET_WIFI_TIMEOUT_S = 90;
     private static final long WIFI_SCAN_TIMEOUT_S = 30;
 
-    /**
-     * Sense 1.5 (aka SenseWithVocie) returns a HashMap called {@link AdvertisingData#records}.
-     * At the time of writing this on 10/24/16, the size of records is 6. Each value is a List of
-     * bytes aka List<byte[]>.
-     *
-     * Sense 1.0's record size is only 5. Because we're unsure if these sizes will ever change
-     * we need to look at the individual bytes to determine if the Sense is 1.5 or not.
-     *
-     * Sense 1.5 will contain a List of bytes where the first 3 elements are
-     * [0]: 0xEA hex or -22 decimal.
-     * [1]: 0x3 hex or 3 decimal.
-     * [2]: 0x22 hex or 34 decimal.
-     *
-     * Use the following field with {@link #BYTES_COMPANY_BLE_ID_2} and
-     * {@link #BYTES_HARDWARE_BLE_ID_3} to check each index position and determine if the Sense is
-     * 1.5.
-     *
-     * Sense 1.0 may eventually or already contain these three indexes too. But it will have a
-     * different value for {@link #BYTES_HARDWARE_BLE_ID_3}
-     */
-    private static final int BYTES_COMPANY_BLE_ID_1= 0xEA;
-    private static final int BYTES_COMPANY_BLE_ID_2= 0x3;
-    private static final int BYTES_HARDWARE_BLE_ID_3 = 0x22;
-    /**
-     * These are the first three values of the mac address of for every 1.5 Sense.
-     */
-    private static final String START_OF_MAC_ADDRESS = "5c:6b:4f";
-
     private final GattPeripheral gattPeripheral;
     private final LoggerFacade logger;
     @VisibleForTesting GattService gattService;
@@ -260,22 +232,11 @@ public class SensePeripheral {
     @SuppressWarnings("RedundantIfStatement")
     public static boolean isSenseWithVoice(@Nullable byte[] bytes) {
         // Make sure it has 3 index's to check and 3 more to get the mac address from.
-        if (bytes == null || bytes.length < 6) {
+        if (bytes == null || bytes.length < SenseIdentifiers.ADVERTISEMENT_COMPANY_BLE_ID_RECORD_SENSE_WITH_VOICE_BYTE_SIZE) {
             return false;
         }
 
-        // Check them
-        if (bytes[0] != (byte) BYTES_COMPANY_BLE_ID_1) {
-            return false;
-        }
-        if (bytes[1] != (byte) BYTES_COMPANY_BLE_ID_2) {
-            return false;
-        }
-        if (bytes[2] != (byte) BYTES_HARDWARE_BLE_ID_3) {
-            return false;
-        }
-
-        return true;
+        return Bytes.startWith(bytes, SenseIdentifiers.ADVERTISEMENT_COMPANY_BLE_ID_BYTES_PREFIX);
     }
 
     /**
@@ -288,11 +249,11 @@ public class SensePeripheral {
      */
     private static String getMacAddress(@NonNull final GattPeripheral peripheral) {
         final byte[] bytes = getBytesForSenseWithVoice(peripheral);
-        if (bytes != null) {// If not null is guaranteed to have at least 6 index positions
+        if (bytes != null) {
 
             // If we get this far it's safe to assume this is Sense 1.5
             // Now we need to read the last three bytes of the array and convert them.
-            String macAddress = START_OF_MAC_ADDRESS;
+            String macAddress = SenseIdentifiers.SENSE_WITH_VOICE_MAC_ADDRESS_PREFIX;
             macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 3]);
             macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 2]);
             macAddress += getPrettyMacAddressForByte(bytes[bytes.length - 1]);
