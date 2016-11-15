@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import com.google.protobuf.ByteString;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,6 +37,7 @@ import is.hello.commonsense.bluetooth.errors.SenseSetWifiValidationError;
 import is.hello.commonsense.bluetooth.errors.SenseUnexpectedResponseError;
 import is.hello.commonsense.bluetooth.model.ProtobufPacketListener;
 import is.hello.commonsense.bluetooth.model.SenseConnectToWiFiUpdate;
+import is.hello.commonsense.bluetooth.model.SenseHardwareVersion;
 import is.hello.commonsense.bluetooth.model.SenseLedAnimation;
 import is.hello.commonsense.bluetooth.model.SenseNetworkStatus;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
@@ -465,6 +465,22 @@ public class SensePeripheral {
             }
         }
         return null;
+    }
+
+    /**
+     * FIXME until the {@link AdvertisingData#TYPE_MANUFACTURER_SPECIFIC_DATA} records
+     * can be filtered, we cannot determine if {@link SenseHardwareVersion#SENSE}
+     * @return {@link SenseHardwareVersion} based on advertisement data
+     */
+    @NonNull
+    public SenseHardwareVersion getAdvertisedHardwareVersion(){
+        if(gattPeripheral == null){
+            return SenseHardwareVersion.UNKNOWN;
+        } else if(getBytesForSenseWithVoice(gattPeripheral) != null){
+            return SenseHardwareVersion.SENSE_WITH_VOICE;
+        } else{
+            return SenseHardwareVersion.UNKNOWN;
+        }
     }
 
     /**
