@@ -267,9 +267,6 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
 
         final SensePeripheral peripheral = new SensePeripheral(device);
         assertEquals(SenseHardwareVersion.SENSE_WITH_VOICE, peripheral.getAdvertisedHardwareVersion());
-
-        builder.add(AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA,
-                SenseIdentifiers.ADVERTISEMENT_COMPANY_BLE_ID + testByteString);
     }
 
     @Test
