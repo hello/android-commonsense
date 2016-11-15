@@ -254,7 +254,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
         AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
 
         builder.add(AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA,
-                SenseIdentifiers.ADVERTISEMENT_COMPANY_BLE_ID + testByteString);
+                SenseIdentifiers.ADVERTISEMENT_SENSE_WITH_VOICE_ID + testByteString);
 
         AdvertisingData advertisingData = builder.build();
 
@@ -276,7 +276,7 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
         AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
 
         builder.add(AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA,
-                SenseIdentifiers.ADVERTISEMENT_COMPANY_BLE_ID + testByteString);
+                SenseIdentifiers.ADVERTISEMENT_SENSE_WITH_VOICE_ID + testByteString);
 
         AdvertisingData advertisingData = builder.build();
 

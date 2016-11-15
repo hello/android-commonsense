@@ -236,7 +236,7 @@ public class SensePeripheral {
             return false;
         }
 
-        return Bytes.startWith(bytes, SenseIdentifiers.ADVERTISEMENT_COMPANY_BLE_ID_BYTES_PREFIX);
+        return Bytes.startWith(bytes, SenseIdentifiers.ADVERTISEMENT_SENSE_WITH_VOICE_ID_BYTES_PREFIX);
     }
 
     /**

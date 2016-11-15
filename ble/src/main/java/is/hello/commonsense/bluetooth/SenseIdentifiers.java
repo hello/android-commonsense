@@ -3,6 +3,7 @@ package is.hello.commonsense.bluetooth;
 import java.util.UUID;
 
 import is.hello.buruberi.bluetooth.stacks.util.AdvertisingData;
+import is.hello.buruberi.bluetooth.stacks.util.Bytes;
 
 public class SenseIdentifiers {
     public static final String ADVERTISEMENT_SERVICE_128_BIT = "23D1BCEA5F782315DEEF1212E1FE0000";
@@ -14,15 +15,6 @@ public class SenseIdentifiers {
     public static final UUID CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE = UUID.fromString("0000B00B-0000-1000-8000-00805F9B34FB");
 
     public static final UUID DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB");
-
-    public static final String ADVERTISEMENT_COMPANY_BLE_ID= "EA0322";
-
-    public static final byte[] ADVERTISEMENT_COMPANY_BLE_ID_BYTES_PREFIX = {(byte) 0xEA, 0x3, 0x22};
-
-    /**
-     * These are the first three values of the mac address of for every 1.5 Sense.
-     */
-    public static final String SENSE_WITH_VOICE_MAC_ADDRESS_PREFIX = "5c:6b:4f";
 
     /**
      * Sense 1.5 (aka SenseWithVoice) returns a HashMap called {@link AdvertisingData#records}.
@@ -38,15 +30,32 @@ public class SenseIdentifiers {
      * [2]: 0x22 hex or 34 decimal.
      *
      * Use the following field with {@link #BYTES_COMPANY_BLE_ID_2} and
-     * {@link #BYTES_HARDWARE_BLE_ID_3} to check each index position and determine if the Sense is
+     * {@link #BYTES_SENSE_WITH_VOICE_ID} to check each index position and determine if the Sense is
      * 1.5.
      *
      * Sense 1.0 may eventually or already contain these three indexes too. But it will have a
-     * different value for {@link #BYTES_HARDWARE_BLE_ID_3}
+     * different value for {@link #BYTES_SENSE_WITH_VOICE_ID}
      */
     public static final int BYTES_COMPANY_BLE_ID_1= 0xEA;
-    public static final int BYTES_COMPANY_BLE_ID_2= 0x3;
-    public static final int BYTES_HARDWARE_BLE_ID_3 = 0x22;
+    public static final byte BYTES_COMPANY_BLE_ID_2= 0x3;
+    public static final byte BYTES_SENSE_WITH_VOICE_ID = 0x22;
+
+    private static byte[] getAdvertisementCompanyBleBytes(final byte lastByte){
+        return new byte[]{(byte) BYTES_COMPANY_BLE_ID_1, BYTES_COMPANY_BLE_ID_2, lastByte};
+    }
+
+    private static String getAdvertisementCompanyBleString(final byte lastByte){
+        return Bytes.toString(getAdvertisementCompanyBleBytes(lastByte));
+    }
+
+    public static final String ADVERTISEMENT_SENSE_WITH_VOICE_ID = getAdvertisementCompanyBleString(BYTES_SENSE_WITH_VOICE_ID);
+
+    public static final byte[] ADVERTISEMENT_SENSE_WITH_VOICE_ID_BYTES_PREFIX = getAdvertisementCompanyBleBytes(BYTES_SENSE_WITH_VOICE_ID);
+
+    /**
+     * These are the first three values of the mac address of for every 1.5 Sense.
+     */
+    public static final String SENSE_WITH_VOICE_MAC_ADDRESS_PREFIX = "5c:6b:4f";
 
     /**
      * Minimum expected size of byte[] returned for {@link AdvertisingData#TYPE_MANUFACTURER_SPECIFIC_DATA}
