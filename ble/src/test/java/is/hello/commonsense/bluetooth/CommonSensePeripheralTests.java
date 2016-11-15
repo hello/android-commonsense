@@ -23,6 +23,7 @@ import is.hello.buruberi.bluetooth.stacks.util.LoggerFacade;
 import is.hello.buruberi.bluetooth.stacks.util.PeripheralCriteria;
 import is.hello.buruberi.util.AdvertisingDataBuilder;
 import is.hello.buruberi.util.Operation;
+import is.hello.commonsense.bluetooth.model.SenseHardwareVersion;
 import is.hello.commonsense.bluetooth.model.protobuf.SenseCommandProtos;
 import is.hello.commonsense.util.CommonSenseTestCase;
 import is.hello.commonsense.util.Sync;
@@ -245,6 +246,49 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
 
         final SensePeripheral peripheral = new SensePeripheral(device);
         assertEquals(TEST_DEVICE_ID, peripheral.getDeviceId());
+    }
+
+    @Test
+    public void getAdvertisedHardwareVersion() throws Exception {
+        final String testByteString = "000000";
+        AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
+
+        builder.add(AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA,
+                SenseIdentifiers.ADVERTISEMENT_SENSE_WITH_VOICE_ID + testByteString);
+
+        AdvertisingData advertisingData = builder.build();
+
+        final BluetoothStack stack = createMockBluetoothStack();
+        final GattPeripheral device = createMockPeripheral(stack);
+
+        doReturn(advertisingData)
+                .when(device)
+                .getAdvertisingData();
+
+        final SensePeripheral peripheral = new SensePeripheral(device);
+        assertEquals(SenseHardwareVersion.SENSE_WITH_VOICE, peripheral.getAdvertisedHardwareVersion());
+    }
+
+    @Test
+    public void getMacAddress() throws Exception {
+        final String testByteString = "000000";
+        final String testMacAddress = SenseIdentifiers.SENSE_WITH_VOICE_MAC_ADDRESS_PREFIX + ":0:0:0";
+        AdvertisingDataBuilder builder = new AdvertisingDataBuilder();
+
+        builder.add(AdvertisingData.TYPE_MANUFACTURER_SPECIFIC_DATA,
+                SenseIdentifiers.ADVERTISEMENT_SENSE_WITH_VOICE_ID + testByteString);
+
+        AdvertisingData advertisingData = builder.build();
+
+        final BluetoothStack stack = createMockBluetoothStack();
+        final GattPeripheral device = createMockPeripheral(stack);
+
+        doReturn(advertisingData)
+                .when(device)
+                .getAdvertisingData();
+
+        final SensePeripheral peripheral = new SensePeripheral(device);
+        assertEquals(testMacAddress, peripheral.getMacAddress());
     }
 
     //endregion
