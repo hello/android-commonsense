@@ -521,8 +521,8 @@ public class SensePeripheral {
 
     @VisibleForTesting
     Observable<UUID> subscribeResponse(@NonNull OperationTimeout timeout) {
-        if (responseCharacteristic == null){
-            return null;
+        if (responseCharacteristic == null) {
+            return Observable.just(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
         }
         return responseCharacteristic.enableNotification(SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG,
                                                          timeout);
