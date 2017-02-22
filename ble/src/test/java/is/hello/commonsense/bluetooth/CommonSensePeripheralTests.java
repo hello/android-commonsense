@@ -491,17 +491,31 @@ public class CommonSensePeripheralTests extends CommonSenseTestCase {
         final SensePeripheral peripheral = new SensePeripheral(device);
         peripheral.gattService = createMockGattService();
         peripheral.commandCharacteristic = createMockGattCharacteristic(peripheral.gattService,
-                                                                        SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
+                SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
         peripheral.responseCharacteristic = createMockGattCharacteristic(peripheral.gattService,
-                                                                         SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
+                SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
         doReturn(Observable.error(new GattException(BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION,
-                                                    Operation.ENABLE_NOTIFICATION)))
+                Operation.ENABLE_NOTIFICATION)))
                 .when(peripheral.responseCharacteristic)
                 .enableNotification(eq(descriptorId),
-                                    any(OperationTimeout.class));
+                        any(OperationTimeout.class));
 
         Sync.wrap(peripheral.subscribeResponse(mock(OperationTimeout.class)))
-            .assertThrows(GattException.class);
+                .assertThrows(GattException.class);
+    }
+
+    @Test
+    public void subscribeResponseFailureWhenNull() throws Exception {
+        final UUID descriptorId = SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE;
+
+        final BluetoothStack stack = createMockBluetoothStack();
+        final GattPeripheral device = createMockPeripheral(stack);
+
+        final SensePeripheral peripheral = new SensePeripheral(device);
+        peripheral.responseCharacteristic = null;
+
+        Sync.wrap(peripheral.subscribeResponse(mock(OperationTimeout.class)))
+                .assertThat(equalTo(descriptorId));
     }
 
     @Test

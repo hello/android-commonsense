@@ -521,6 +521,9 @@ public class SensePeripheral {
 
     @VisibleForTesting
     Observable<UUID> subscribeResponse(@NonNull OperationTimeout timeout) {
+        if (responseCharacteristic == null) {
+            return Observable.just(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
+        }
         return responseCharacteristic.enableNotification(SenseIdentifiers.DESCRIPTOR_CHARACTERISTIC_COMMAND_RESPONSE_CONFIG,
                                                          timeout);
     }
@@ -576,6 +579,10 @@ public class SensePeripheral {
                     }
                 };
                 final Observable<UUID> subscribe = subscribeResponse(createStackTimeout("Subscribe"));
+                if (subscribe == null){
+                    responseHandler.onError(new LostConnectionException());
+                    return;
+                }
                 subscribe.subscribe(new Action1<UUID>() {
                     @Override
                     public void call(UUID subscribedCharacteristic) {
