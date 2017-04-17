@@ -279,6 +279,69 @@ public class SensePeripheral {
 
 
     //region Connectivity
+    //todo replace connect with this
+    @CheckResult
+    public Observable<ConnectProgress> davesConnect() {
+
+        final Func1<GattService, ConnectProgress> onDiscoveredServices = new Func1<GattService, ConnectProgress>() {
+            @Override
+            public ConnectProgress call(GattService service) {
+                SensePeripheral.this.gattService = service;
+                SensePeripheral.this.commandCharacteristic = gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND);
+                SensePeripheral.this.responseCharacteristic = gattService.getCharacteristic(SenseIdentifiers.CHARACTERISTIC_PROTOBUF_COMMAND_RESPONSE);
+                responseCharacteristic.setPacketListener(packetListener);
+                return ConnectProgress.CONNECTED;
+            }
+        };
+
+
+        final int connectFlags = GattPeripheral.CONNECT_FLAG_TRANSPORT_LE;
+        final OperationTimeout timeout = createStackTimeout("Connect");
+        final Observable<ConnectProgress> sequence = Observable.concat(
+                Observable.just(ConnectProgress.CONNECTING),
+                gattPeripheral.davesConnect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
+        );
+
+        return sequence.subscribeOn(gattPeripheral.getStack().getScheduler())
+                .doOnNext(new Action1<ConnectProgress>() {
+                    @Override
+                    public void call(ConnectProgress s) {
+                        logger.info(LOG_TAG, "is " + s);
+                    }
+                })
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable connectError) {
+                        if (isConnected()) {
+                            logger.warn(LOG_TAG, "Disconnecting after failed connection attempt.", connectError);
+                            disconnect().subscribe(new Subscriber<SensePeripheral>() {
+                                @Override
+                                public void onCompleted() {
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    logger.error(LOG_TAG, "Disconnected after failed connection attempt failed, ignoring.", e);
+                                }
+
+                                @Override
+                                public void onNext(SensePeripheral sensePeripheral) {
+                                    logger.info(LOG_TAG, "Disconnected after failed connection attempt.");
+                                }
+                            });
+                        }
+                    }
+                })
+                .doOnCompleted(new Action0() {
+                    @Override
+                    public void call() {
+                        packetListener.setResponseListener(null);
+                    }
+                });
+
+    }
 
     /**
      * Connects to the Sense, ensures a bond is present, and performs service discovery.

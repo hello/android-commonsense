@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 // Used for both the 'aar' file and publish.
-def VERSION_NAME = "2017.02.22.1" // <year>.<month>.<day>.<build-number>
+def VERSION_NAME = "2017.04.14.18-SNAPSHOT" // <year>.<month>.<day>.<build-number>
 def PACKAGE = 'is.hello.commonsense'
 
 apply plugin: 'com.android.library'
@@ -40,7 +40,7 @@ android {
 dependencies {
     compile 'io.reactivex:rxjava:1.0.9'
     compile 'com.android.support:support-v4:23.1.1'
-    compile 'is.hello:buruberi-core:1.0.2'
+    compile 'is.hello:buruberi-core:1.0.3.7-SNAPSHOT'
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
