@@ -298,9 +298,12 @@ public class SensePeripheral {
 
         final Observable<ConnectProgress> sequence = Observable.concat(
                 Observable.just(ConnectProgress.CONNECTING),
-                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
-                gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES)),
+                gattPeripheral.connect(connectFlags, timeout).map(Functions.createMapperToValue(ConnectProgress.BONDING))
+                        .delay(1, TimeUnit.SECONDS), // Some phones (like the S6) will cause the top board to crash if we try to bond to fast.
+                gattPeripheral.createBond().map(Functions.createMapperToValue(ConnectProgress.DISCOVERING_SERVICES))
+                        .delay(1, TimeUnit.SECONDS),
                 gattPeripheral.discoverService(SenseIdentifiers.SERVICE, timeout).map(onDiscoveredServices)
+                        .delay(1, TimeUnit.SECONDS)
         );
 
         return sequence.subscribeOn(gattPeripheral.getStack().getScheduler())
@@ -331,12 +334,6 @@ public class SensePeripheral {
                                 }
                             });
                         }
-                    }
-                })
-                .doOnCompleted(new Action0() {
-                    @Override
-                    public void call() {
-                        packetListener.setResponseListener(null);
                     }
                 });
 
